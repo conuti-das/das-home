@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 from app.api.config_routes import router as config_router
+from app.ws.proxy import router as ws_router
 
 # API routes
 @app.get("/api/health")
@@ -22,6 +23,7 @@ async def health():
     return {"status": "ok", "version": "0.1.0", "mode": "addon" if settings.is_addon else "standalone"}
 
 app.include_router(config_router)
+app.include_router(ws_router)
 
 # Serve frontend static files (added after frontend build)
 static_dir = Path(__file__).parent.parent.parent / "frontend" / "dist"
