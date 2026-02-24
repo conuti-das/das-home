@@ -14,10 +14,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API routes will be added in later tasks
+from app.api.config_routes import router as config_router
+
+# API routes
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "version": "0.1.0", "mode": "addon" if settings.is_addon else "standalone"}
+
+app.include_router(config_router)
 
 # Serve frontend static files (added after frontend build)
 static_dir = Path(__file__).parent.parent.parent / "frontend" / "dist"
