@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  das-home:
+    build: .
+    ports:
+      - "5050:5050"
+    volumes:
+      - das-home-data:/data
+    environment:
+      - DAS_HOME_HASS_URL=http://homeassistant.local:8123
+      - DAS_HOME_HASS_TOKEN=${HASS_TOKEN:-}
+      - DAS_HOME_DEBUG=false
+    restart: unless-stopped
+
+volumes:
+  das-home-data:

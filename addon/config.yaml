@@ -1,0 +1,21 @@
+name: "das-home"
+version: "0.1.0"
+slug: "das-home"
+description: "SAP UI5 based Home Assistant Dashboard"
+url: "https://github.com/das-home/das-home"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+startup: application
+boot: auto
+ingress: true
+ingress_port: 5050
+panel_icon: "mdi:view-dashboard"
+panel_title: "das-home"
+map:
+  - config:rw
+options:
+  debug: false
+schema:
+  debug: bool
