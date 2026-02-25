@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ViewRenderer } from "@/components/layout/ViewRenderer";
 import { SetupWizard } from "@/components/wizard/SetupWizard";
+import { SettingsDialog } from "@/components/settings/SettingsDialog";
 import { useHomeAssistant } from "@/hooks/useHomeAssistant";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useConfigStore } from "@/stores/configStore";
@@ -11,6 +12,7 @@ import { api } from "@/services/api";
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [showSetup, setShowSetup] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const setDashboard = useDashboardStore((s) => s.setDashboard);
   const setConfig = useConfigStore((s) => s.setConfig);
   useHomeAssistant();
@@ -26,7 +28,6 @@ export default function App() {
         setConfig(config);
         setDashboard(dashboardData);
 
-        // Show setup wizard if not configured or no views
         if (!authStatus.configured || dashboardData.views.length === 0) {
           setShowSetup(true);
         }
@@ -50,7 +51,11 @@ export default function App() {
         open={showSetup}
         onComplete={() => setShowSetup(false)}
       />
-      <AppShell onSettingsClick={() => console.log("TODO: settings dialog")}>
+      <SettingsDialog
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
+      <AppShell onSettingsClick={() => setShowSettings(true)}>
         <Sidebar />
         <ViewRenderer />
       </AppShell>
