@@ -1,11 +1,17 @@
 import { Title, FlexBox, FlexBoxDirection, FlexBoxAlignItems, FlexBoxJustifyContent } from "@ui5/webcomponents-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import { useHomeAssistant } from "@/hooks/useHomeAssistant";
+import { GridView } from "@/components/views/GridView";
+import { ObjectPageView } from "@/components/views/ObjectPageView";
+import "@/components/cards"; // ensure card registrations run
 
 export function ViewRenderer() {
   const activeView = useDashboardStore((s) => {
     const { dashboard, activeViewId } = s;
     return dashboard?.views.find((v) => v.id === activeViewId);
   });
+
+  const { callService } = useHomeAssistant();
 
   if (!activeView) {
     return (
@@ -20,13 +26,9 @@ export function ViewRenderer() {
     );
   }
 
-  return (
-    <div style={{ flex: 1, padding: "1rem", overflow: "auto" }}>
-      <Title level="H2">{activeView.name}</Title>
-      <p style={{ color: "var(--sapContent_LabelColor)" }}>
-        View type: {activeView.type} | Sections: {activeView.sections.length}
-      </p>
-      {/* Card rendering will be added in Phase 4 */}
-    </div>
-  );
+  if (activeView.type === "object_page") {
+    return <ObjectPageView view={activeView} callService={callService} />;
+  }
+
+  return <GridView view={activeView} callService={callService} />;
 }
