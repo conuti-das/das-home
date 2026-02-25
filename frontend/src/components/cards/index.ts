@@ -5,6 +5,7 @@ import { LightCard } from "./LightCard";
 import { ClimateCard } from "./ClimateCard";
 import { MediaPlayerCard } from "./MediaPlayerCard";
 import { SceneCard } from "./SceneCard";
+import { HacsCardBridge } from "./HacsCardBridge";
 
 // Register all built-in card types
 registerCard("switch", SwitchCard);
@@ -14,6 +15,7 @@ registerCard("light", LightCard);
 registerCard("climate", ClimateCard);
 registerCard("media_player", MediaPlayerCard);
 registerCard("scene", SceneCard);
+registerCard("hacs", HacsCardBridge);
 
 export { BaseCard } from "./BaseCard";
 export { CardErrorBoundary } from "./CardErrorBoundary";
