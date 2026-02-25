@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ViewRenderer } from "@/components/layout/ViewRenderer";
+import { ConnectionStatus } from "@/components/layout/ConnectionStatus";
 import { SetupWizard } from "@/components/wizard/SetupWizard";
 import { SettingsDialog } from "@/components/settings/SettingsDialog";
 import { useHomeAssistant } from "@/hooks/useHomeAssistant";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboard";
+import { useThemeSync } from "@/hooks/useTheme";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useConfigStore } from "@/stores/configStore";
 import { api } from "@/services/api";
@@ -16,6 +19,8 @@ export default function App() {
   const setDashboard = useDashboardStore((s) => s.setDashboard);
   const setConfig = useConfigStore((s) => s.setConfig);
   useHomeAssistant();
+  useKeyboardShortcuts();
+  useThemeSync();
 
   useEffect(() => {
     async function init() {
@@ -56,8 +61,11 @@ export default function App() {
         onClose={() => setShowSettings(false)}
       />
       <AppShell onSettingsClick={() => setShowSettings(true)}>
-        <Sidebar />
-        <ViewRenderer />
+        <ConnectionStatus />
+        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+          <Sidebar />
+          <ViewRenderer />
+        </div>
       </AppShell>
     </>
   );
