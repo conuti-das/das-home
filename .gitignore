@@ -32,6 +32,8 @@ data/*.bak
 *.png
 *.jpg
 *.jpeg
+!das-home/icon.png
+!das-home/logo.png
 tmpdelete/
 console-debug*.log
 
