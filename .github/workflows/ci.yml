@@ -59,13 +59,60 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+
+      - name: Read version from config.yaml
+        id: version
+        run: |
+          VERSION=$(grep '^version:' das-home/config.yaml | sed 's/version: *"\(.*\)"/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # Standalone Docker image
+      - name: Build and push standalone image
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=standalone
+          cache-to: type=gha,mode=max,scope=standalone
+
+      # HA Add-on images (one per architecture, as required by HA Supervisor)
+      - name: Build and push addon image (amd64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-addon-amd64:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}-addon-amd64:latest
+          cache-from: type=gha,scope=addon-amd64
+          cache-to: type=gha,mode=max,scope=addon-amd64
+
+      - name: Build and push addon image (aarch64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-addon-aarch64:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}-addon-aarch64:latest
+          cache-from: type=gha,scope=addon-aarch64
+          cache-to: type=gha,mode=max,scope=addon-aarch64
+
+      - name: Build and push addon image (armv7)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm/v7
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-addon-armv7:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}-addon-armv7:latest
+          cache-from: type=gha,scope=addon-armv7
+          cache-to: type=gha,mode=max,scope=addon-armv7

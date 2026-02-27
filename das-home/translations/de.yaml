@@ -1,0 +1,4 @@
+configuration:
+  debug:
+    name: Debug
+    description: Debug-Logging fuer Fehleranalyse aktivieren

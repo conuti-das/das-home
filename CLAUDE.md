@@ -34,7 +34,7 @@ docker-compose up -d             # Full stack auf :5050
 
 - `backend/` - FastAPI server (app/main.py, api/, config/, ws/)
 - `frontend/` - React + Vite + UI5 (src/components/, stores/, hooks/)
-- `addon/` - Home Assistant Add-on Manifest
+- `das-home/` - HA Add-on (config.yaml, CHANGELOG.md, DOCS.md, translations/)
 - `data/` - YAML config (gitignored)
 - `docs/plans/` - Design-Dokumente
 - `docs/changelog/` - Changelog pro Tag (YYYY-MM-DD.md)

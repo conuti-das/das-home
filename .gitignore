@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Data (persisted config)
+data/*.yaml
+data/*.json
+data/*.bak
+!data/.gitkeep
+
+# Screenshots & temp files
+*.png
+*.jpg
+*.jpeg
+tmpdelete/
+console-debug*.log
+
+# Playwright MCP logs
+.playwright-mcp/
