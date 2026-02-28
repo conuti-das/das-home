@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6
+
+### Behoben
+
+- **[Admin]** Add-on: Korrekte Supervisor WebSocket-URL (`ws://supervisor/core/websocket` statt `/api/websocket`)
+- **[Admin]** Add-on: Settings erkennt `SUPERVISOR_TOKEN` und setzt automatisch die richtigen Defaults (URL, Data-Dir)
+- **[Admin]** Add-on: Logging zeigt jetzt WebSocket-URL und Token-Status fuer einfacheres Debugging
+
 ## 0.1.5
 
 ### Behoben

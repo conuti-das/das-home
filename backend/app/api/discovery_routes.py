@@ -40,27 +40,29 @@ class _HaSession:
 async def _connect_ha() -> _HaSession:
     """Connect to HA WebSocket, authenticate, and return a session."""
     if settings.is_addon:
-        # Addon mode: use internal Supervisor URL and Supervisor token
-        url = settings.hass_url.rstrip("/")
+        # Addon mode: use Supervisor internal WebSocket endpoint
+        ws_url = "ws://supervisor/core/websocket"
         token = settings.supervisor_token
     else:
         config = config_manager.load_app_config()
         url = config.connection.hass_url.rstrip("/")
         token = settings.hass_token
+        ws_url = url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
 
     if not token:
         raise HTTPException(status_code=400, detail="No HA token configured")
 
-    ws_url = url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
-
+    logger.info("Connecting to HA WebSocket at %s (addon=%s, token_len=%d)", ws_url, settings.is_addon, len(token))
     ws = await websockets.connect(ws_url)
     auth_msg = json.loads(await ws.recv())
     if auth_msg.get("type") == "auth_required":
         await ws.send(json.dumps({"type": "auth", "access_token": token}))
         result = json.loads(await ws.recv())
         if result.get("type") != "auth_ok":
+            logger.error("HA auth failed: %s", result)
             await ws.close()
-            raise HTTPException(status_code=401, detail="HA authentication failed")
+            raise HTTPException(status_code=401, detail=f"HA authentication failed: {result.get('message', 'unknown')}")
+    logger.info("HA WebSocket connected and authenticated")
     return _HaSession(ws)
 
 

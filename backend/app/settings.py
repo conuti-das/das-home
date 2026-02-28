@@ -10,6 +10,12 @@ _env_file = Path(__file__).resolve().parent.parent.parent / ".env"
 if _env_file.exists():
     load_dotenv(_env_file, override=False)
 
+# Addon mode: override defaults before Settings class reads env
+_is_addon = bool(os.environ.get("SUPERVISOR_TOKEN"))
+if _is_addon:
+    os.environ.setdefault("DAS_HOME_HASS_URL", "http://supervisor/core")
+    os.environ.setdefault("DAS_HOME_DATA_DIR", "/config/das-home")
+
 
 class Settings(BaseSettings):
     hass_url: str = "http://homeassistant.local:8123"
@@ -20,7 +26,7 @@ class Settings(BaseSettings):
 
     @property
     def is_addon(self) -> bool:
-        return bool(os.environ.get("SUPERVISOR_TOKEN"))
+        return _is_addon
 
     @property
     def supervisor_token(self) -> str:
