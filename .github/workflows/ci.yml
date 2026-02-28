@@ -20,6 +20,8 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
       - name: Run tests
+        env:
+          DAS_HOME_DATA_DIR: /tmp/das-home-test-data
         run: |
           cd backend
           python -m pytest tests/ -v
