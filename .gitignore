@@ -39,3 +39,6 @@ console-debug*.log
 
 # Playwright MCP logs
 .playwright-mcp/
+
+# Claude Code config (local only)
+.claude/
