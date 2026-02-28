@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,6 +34,17 @@ app.include_router(geo_router)
 app.include_router(ws_router)
 
 # Serve frontend static files (added after frontend build)
-static_dir = Path(__file__).parent.parent.parent / "frontend" / "dist"
-if static_dir.exists():
+# Check multiple candidate paths: env override, Docker layout, dev layout
+_static_candidates = [
+    os.environ.get("DAS_HOME_STATIC_DIR", ""),           # explicit override
+    str(Path(__file__).parent.parent / "frontend" / "dist"),  # Docker: /app/frontend/dist
+    str(Path(__file__).parent.parent.parent / "frontend" / "dist"),  # Dev: ../../frontend/dist
+]
+static_dir = None
+for _candidate in _static_candidates:
+    if _candidate and Path(_candidate).is_dir():
+        static_dir = Path(_candidate)
+        break
+
+if static_dir:
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
