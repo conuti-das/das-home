@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Behoben
+
+- **[Admin]** Frontend laedt jetzt korrekt im Docker-Container (Static-Files-Pfad korrigiert)
+
 ## 0.1.0
 
 ### Hinzugefuegt
