@@ -10,7 +10,7 @@ arch:
   - armv7
 startup: application
 boot: auto
-stage: experimental
+stage: stable
 ingress: true
 ingress_port: 5050
 panel_icon: "mdi:view-dashboard"
