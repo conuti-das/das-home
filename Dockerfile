@@ -15,7 +15,8 @@ COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
-COPY backend/ ./backend/
+COPY backend/app ./app/
+COPY backend/pyproject.toml ./
 
 # Copy built frontend
 COPY --from=frontend-build /build/dist ./frontend/dist
@@ -29,4 +30,4 @@ EXPOSE 5050
 # Create data directory
 RUN mkdir -p /data
 
-CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "5050"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5050"]

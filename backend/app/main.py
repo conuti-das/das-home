@@ -17,6 +17,7 @@ app.add_middleware(
 from app.api.config_routes import router as config_router
 from app.api.discovery_routes import router as discovery_router
 from app.api.hacs_routes import router as hacs_router
+from app.api.media_routes import router as media_router, geo_router
 from app.ws.proxy import router as ws_router
 
 # API routes
@@ -27,6 +28,8 @@ async def health():
 app.include_router(config_router)
 app.include_router(discovery_router)
 app.include_router(hacs_router)
+app.include_router(media_router)
+app.include_router(geo_router)
 app.include_router(ws_router)
 
 # Serve frontend static files (added after frontend build)
