@@ -1,23 +1,14 @@
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import type { CardComponentProps } from "./CardRegistry";
 
 export function MarkdownCard({ card }: CardComponentProps) {
   const content = (card.config?.content as string) || "";
-  const title = (card.config?.title as string) || "Markdown";
 
   return (
-    <BaseCard title={title} cardType="markdown" size={card.size}>
-      <div
-        style={{
-          padding: "0.5rem",
-          whiteSpace: "pre-wrap",
-          fontFamily: "var(--sapFontFamily)",
-          fontSize: "var(--sapFontSize)",
-          color: "var(--sapTextColor)",
-        }}
-      >
+    <PillCard entityId={card.entity || "markdown"} label="Markdown" cardType="markdown">
+      <div style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.5, overflow: "hidden", maxHeight: 100 }}>
         {content}
       </div>
-    </BaseCard>
+    </PillCard>
   );
 }

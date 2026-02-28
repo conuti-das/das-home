@@ -1,0 +1,51 @@
+.status-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 8px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.status-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  background: var(--dh-gray300);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--dh-transition-normal);
+}
+
+.status-chip:active {
+  background: var(--dh-gray200);
+}
+
+.status-chip__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-chip__text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dh-gray100);
+}
+
+.status-chip__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dh-gray100);
+}

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useEntityStore } from "@/stores/entityStore";
 import type { EntityState } from "@/types";
 
@@ -6,18 +7,28 @@ export function useEntity(entityId: string): EntityState | undefined {
 }
 
 export function useEntitiesByDomain(domain: string): EntityState[] {
-  return useEntityStore((s) => {
+  const entities = useEntityStore((s) => s.entities);
+  return useMemo(() => {
     const result: EntityState[] = [];
-    for (const [id, state] of s.entities) {
+    for (const [id, state] of entities) {
       if (id.startsWith(`${domain}.`)) {
         result.push(state);
       }
     }
     return result;
-  });
+  }, [entities, domain]);
 }
 
-export function useEntitiesByArea(_areaId: string): EntityState[] {
-  // TODO: filter by device-area mapping once available
-  return useEntityStore((s) => Array.from(s.entities.values()));
+export function useEntitiesByArea(areaId: string): EntityState[] {
+  const entities = useEntityStore((s) => s.entities);
+  const entityAreaMap = useEntityStore((s) => s.entityAreaMap);
+  return useMemo(() => {
+    const result: EntityState[] = [];
+    for (const [id, state] of entities) {
+      if (entityAreaMap.get(id) === areaId) {
+        result.push(state);
+      }
+    }
+    return result;
+  }, [entities, entityAreaMap, areaId]);
 }

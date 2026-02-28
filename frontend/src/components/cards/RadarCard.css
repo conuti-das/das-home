@@ -1,0 +1,14 @@
+.radar-card {
+  border-radius: var(--dh-card-radius);
+  overflow: hidden;
+  height: 300px;
+  grid-column: span 2;
+  background: var(--dh-gray300);
+}
+
+.radar-card iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}

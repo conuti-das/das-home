@@ -1,0 +1,49 @@
+.bottom-toolbar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  background: var(--dh-gray200);
+  border-radius: var(--dh-card-radius-lg);
+  border: var(--dh-surface-border);
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-toolbar__btn {
+  width: auto;
+  min-width: 40px;
+  height: auto;
+  padding: 6px 8px;
+  border-radius: var(--dh-card-radius);
+  border: none;
+  background: transparent;
+  color: var(--dh-gray100);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: background var(--dh-transition-normal);
+}
+
+.bottom-toolbar__btn:hover {
+  background: rgba(250, 251, 252, 0.1);
+}
+
+.bottom-toolbar__btn--active {
+  background: rgba(250, 251, 252, 0.15);
+}
+
+.bottom-toolbar__label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.6;
+  line-height: 1;
+  white-space: nowrap;
+}

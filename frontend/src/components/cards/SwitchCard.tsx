@@ -1,5 +1,4 @@
-import { Switch } from "@ui5/webcomponents-react";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
@@ -14,14 +13,15 @@ export function SwitchCard({ card, callService }: CardComponentProps) {
   };
 
   return (
-    <BaseCard title={name} status={isOn ? "On" : "Off"} cardType="switch" size={card.size}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0" }}>
-        <span style={{ color: "var(--sapContent_LabelColor)" }}>{card.entity}</span>
-        <Switch
-          checked={isOn}
-          onChange={toggle}
-        />
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value={isOn ? "On" : "Off"}
+      icon="switch-classes"
+      isOn={isOn}
+      onClick={toggle}
+      variant="small"
+      cardType="switch"
+    />
   );
 }

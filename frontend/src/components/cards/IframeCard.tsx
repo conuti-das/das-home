@@ -1,22 +1,18 @@
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import type { CardComponentProps } from "./CardRegistry";
 
 export function IframeCard({ card }: CardComponentProps) {
   const url = (card.config?.url as string) || "";
-  const title = (card.config?.title as string) || "Iframe";
 
   return (
-    <BaseCard title={title} cardType="iframe" size={card.size}>
-      {url ? (
+    <PillCard entityId={card.entity || "iframe"} label="Iframe" cardType="iframe">
+      {url && (
         <iframe
           src={url}
-          title={title}
-          style={{ width: "100%", height: "300px", border: "none", borderRadius: "var(--sapElement_BorderCornerRadius)" }}
-          sandbox="allow-scripts allow-same-origin"
+          style={{ width: "100%", height: 120, border: "none", borderRadius: 16 }}
+          title="embedded"
         />
-      ) : (
-        <div style={{ padding: "1rem", color: "var(--sapContent_LabelColor)" }}>No URL configured</div>
       )}
-    </BaseCard>
+    </PillCard>
   );
 }

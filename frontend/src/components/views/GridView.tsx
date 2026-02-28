@@ -1,65 +1,91 @@
-import { Title } from "@ui5/webcomponents-react";
+import { useCallback } from "react";
 import { getCardComponent } from "@/components/cards";
+import { StatusBar } from "@/components/layout/StatusBar";
+import { DraggableGrid } from "@/components/views/DraggableGrid";
+import { useDashboardStore } from "@/stores/dashboardStore";
+import { api } from "@/services/api";
 import type { ViewConfig } from "@/types";
+import "./GridView.css";
 
 interface GridViewProps {
   view: ViewConfig;
   callService: (domain: string, service: string, data?: Record<string, unknown>, target?: Record<string, unknown>) => void;
+  onOpenPopup?: (popupId: string, props?: Record<string, unknown>) => void;
 }
 
-export function GridView({ view, callService }: GridViewProps) {
-  const minColWidth = (view.layout?.min_column_width as number) || 280;
+const SMALL_CARD_TYPES = new Set(["switch", "input_boolean", "button", "automation", "lock", "script", "scene", "binary_sensor", "update", "number", "select", "person", "area_small"]);
+
+export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
+  const isOverview = view.id === "overview";
+  const editMode = useDashboardStore((s) => s.editMode);
+  const reorderCards = useDashboardStore((s) => s.reorderCards);
+
+  const handleReorder = useCallback(
+    (sectionId: string, oldIndex: number, newIndex: number) => {
+      reorderCards(sectionId, oldIndex, newIndex);
+      // Persist after reorder
+      const current = useDashboardStore.getState().dashboard;
+      if (current) {
+        api.putDashboard(current).catch(console.error);
+      }
+    },
+    [reorderCards]
+  );
 
   return (
-    <div style={{ padding: "1rem", overflow: "auto", flex: 1 }}>
-      {view.sections.map((section) => (
-        <div key={section.id} style={{ marginBottom: "1.5rem" }}>
-          <Title level="H4" style={{ marginBottom: "0.75rem" }}>{section.title}</Title>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(auto-fill, minmax(${minColWidth}px, 1fr))`,
-              gap: "1rem",
-            }}
-          >
-            {section.items.map((card) => {
-              const CardComp = getCardComponent(card.type);
-              if (!CardComp) {
-                return (
-                  <div key={card.id} style={{ padding: "1rem", border: "1px dashed var(--sapContent_ForegroundBorderColor)", borderRadius: "var(--sapElement_BorderCornerRadius)" }}>
-                    Unknown card type: {card.type}
-                  </div>
-                );
-              }
-              return <CardComp key={card.id} card={card} callService={callService} />;
-            })}
-          </div>
-          {section.subsections.map((sub) => (
-            <div key={sub.id} style={{ marginTop: "1rem" }}>
-              <Title level="H5" style={{ marginBottom: "0.5rem" }}>{sub.title}</Title>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: `repeat(auto-fill, minmax(${minColWidth}px, 1fr))`,
-                  gap: "1rem",
-                }}
-              >
-                {sub.items.map((card) => {
-                  const CardComp = getCardComponent(card.type);
-                  if (!CardComp) {
-                    return (
-                      <div key={card.id} style={{ padding: "1rem", border: "1px dashed var(--sapContent_ForegroundBorderColor)" }}>
-                        Unknown: {card.type}
-                      </div>
-                    );
-                  }
-                  return <CardComp key={card.id} card={card} callService={callService} />;
-                })}
-              </div>
+    <div className="grid-view">
+      {isOverview && (
+        <StatusBar
+          onWeatherClick={() => onOpenPopup?.("weather")}
+          onTrashClick={() => onOpenPopup?.("trash")}
+          onLightsClick={() => onOpenPopup?.("lights")}
+        />
+      )}
+      {view.sections.map((section) => {
+        // In normal mode, filter out hidden cards
+        const visibleItems = editMode
+          ? section.items
+          : section.items.filter((c) => c.visible !== false);
+
+        if (visibleItems.length === 0 && !editMode) return null;
+
+        const allSmall = visibleItems.every((c) => SMALL_CARD_TYPES.has(c.type));
+
+        if (editMode) {
+          // In edit mode, show all cards (including hidden ones) via DraggableGrid
+          return (
+            <div key={section.id} className="grid-view__section">
+              <div className="grid-view__section-title">{section.title}</div>
+              <DraggableGrid
+                section={section}
+                callService={callService}
+                onReorder={handleReorder}
+                onOpenPopup={onOpenPopup}
+              />
             </div>
-          ))}
-        </div>
-      ))}
+          );
+        }
+
+        return (
+          <div key={section.id} className="grid-view__section">
+            <div className="grid-view__section-title">{section.title}</div>
+            <div className={`grid-view__grid ${allSmall ? "grid-view__grid--single-col" : ""}`}>
+              {visibleItems.map((card) => {
+                const CardComp = getCardComponent(card.type);
+                if (!CardComp) return null;
+                return (
+                  <CardComp
+                    key={card.id}
+                    card={card}
+                    callService={callService}
+                    onCardAction={onOpenPopup}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

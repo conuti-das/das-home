@@ -1,5 +1,4 @@
-import { ObjectStatus } from "@ui5/webcomponents-react";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
@@ -8,17 +7,20 @@ export function BinarySensorCard({ card }: CardComponentProps) {
   const name = (entity?.attributes?.friendly_name as string) || card.entity;
   const isOn = entity?.state === "on";
   const deviceClass = (entity?.attributes?.device_class as string) || "";
+  const icon = deviceClass === "motion" ? "person-placeholder"
+    : deviceClass === "door" ? "windows-doors"
+    : deviceClass === "window" ? "open-command-field"
+    : "status-positive";
 
   return (
-    <BaseCard title={name} subtitle={deviceClass} status={isOn ? "Active" : "Inactive"} cardType="binary_sensor" size={card.size}>
-      <div style={{ display: "flex", justifyContent: "center", padding: "1rem 0" }}>
-        <ObjectStatus
-          state={isOn ? "Critical" : "Positive"}
-          showDefaultIcon
-        >
-          {isOn ? "On" : "Off"}
-        </ObjectStatus>
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value={isOn ? "Detected" : "Clear"}
+      icon={icon}
+      isOn={isOn}
+      variant="small"
+      cardType="binary_sensor"
+    />
   );
 }

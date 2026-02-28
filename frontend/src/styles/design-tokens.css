@@ -1,0 +1,59 @@
+:root {
+  /* Grays */
+  --dh-gray100: #FAFBFC;
+  --dh-gray200: #2A2D35;
+  --dh-gray300: #23262E;
+  --dh-gray400: #1E2028;
+  --dh-gray500: #1A1C23;
+  --dh-gray600: #16181E;
+  --dh-gray1000: #0D0E12;
+
+  /* Domain colors */
+  --dh-yellow: #F2C94C;
+  --dh-yellow-tint: rgba(242, 201, 76, 0.15);
+  --dh-red: #EB5757;
+  --dh-red-tint: rgba(235, 87, 87, 0.15);
+  --dh-green: #6FCF97;
+  --dh-green-tint: rgba(111, 207, 151, 0.15);
+  --dh-blue: #56CCF2;
+  --dh-blue-tint: rgba(86, 204, 242, 0.15);
+  --dh-blue-dark: #2D9CDB;
+  --dh-orange: #F2994A;
+  --dh-orange-tint: rgba(242, 153, 74, 0.15);
+  --dh-purple: #BB6BD9;
+  --dh-purple-tint: rgba(187, 107, 217, 0.15);
+  --dh-pink: #F2A0B7;
+  --dh-pink-tint: rgba(242, 160, 183, 0.15);
+
+  /* Dimensions */
+  --dh-card-radius: 8px;
+  --dh-card-radius-sm: 4px;
+  --dh-card-radius-lg: 12px;
+  --dh-card-height-big: 160px;
+  --dh-card-height-small: 65px;
+  --dh-icon-size-circle: 40px;
+  --dh-icon-size: 22px;
+  --dh-grid-gap: 8px;
+  --dh-slider-height: 75px;
+  --dh-toolbar-height: 56px;
+
+  /* Surface */
+  --dh-surface-border: 1px solid rgba(250, 251, 252, 0.08);
+  --dh-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --dh-transition-normal: 0.2s ease;
+
+  /* Typography */
+  --dh-font-value: 28px;
+  --dh-font-label: 14px;
+  --dh-font-weight-value: 700;
+  --dh-font-weight-label: 400;
+}
+
+body {
+  background: var(--dh-gray500);
+  color: var(--dh-gray100);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}

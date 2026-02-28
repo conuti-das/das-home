@@ -11,6 +11,8 @@ export function useHomeAssistant() {
   const setStatus = useConnectionStore((s) => s.setStatus);
   const setEntity = useEntityStore((s) => s.setEntity);
   const setEntities = useEntityStore((s) => s.setEntities);
+  const setAreas = useEntityStore((s) => s.setAreas);
+  const setEntityAreaMap = useEntityStore((s) => s.setEntityAreaMap);
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -24,6 +26,14 @@ export function useHomeAssistant() {
       reconnectDelay.current = 1000;
       // Request all current states
       ws.send(JSON.stringify({ type: "get_states" }));
+      // Fetch entity-area mapping from discovery endpoint
+      fetch("/api/discovery")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.entity_area_map) setEntityAreaMap(data.entity_area_map);
+          if (data.areas) setAreas(data.areas);
+        })
+        .catch(() => { /* discovery not available */ });
     };
 
     ws.onmessage = (event) => {
@@ -57,7 +67,7 @@ export function useHomeAssistant() {
     };
 
     wsRef.current = ws;
-  }, [setStatus, setEntity, setEntities]);
+  }, [setStatus, setEntity, setEntities, setAreas, setEntityAreaMap]);
 
   const callService = useCallback(
     (domain: string, service: string, data?: Record<string, unknown>, target?: Record<string, unknown>) => {
@@ -70,6 +80,37 @@ export function useHomeAssistant() {
     []
   );
 
+  const sendCommand = useCallback(
+    (command: Record<string, unknown>): Promise<unknown> => {
+      return new Promise((resolve, reject) => {
+        if (wsRef.current?.readyState !== WebSocket.OPEN) {
+          reject(new Error("WebSocket not connected"));
+          return;
+        }
+        const id = Math.random().toString(36).slice(2);
+        const handler = (event: MessageEvent) => {
+          const msg = JSON.parse(event.data);
+          if (msg.id === id) {
+            wsRef.current?.removeEventListener("message", handler);
+            if (msg.success === false) {
+              reject(new Error(msg.error?.message || "Command failed"));
+            } else {
+              resolve(msg.result);
+            }
+          }
+        };
+        wsRef.current.addEventListener("message", handler);
+        wsRef.current.send(JSON.stringify({ ...command, id }));
+        // Timeout after 10s
+        setTimeout(() => {
+          wsRef.current?.removeEventListener("message", handler);
+          reject(new Error("Command timeout"));
+        }, 10000);
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     connect();
     return () => {
@@ -78,5 +119,5 @@ export function useHomeAssistant() {
     };
   }, [connect]);
 
-  return { callService };
+  return { callService, sendCommand };
 }

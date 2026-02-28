@@ -5,6 +5,7 @@ import "@ui5/webcomponents-react/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/AllIcons.js";
 import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
 import App from "./App";
+import "@/styles/design-tokens.css";
 
 setTheme("sap_horizon_dark");
 

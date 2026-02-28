@@ -9,7 +9,12 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
+  preview: {
+    host: true,
+    port: 4173,
+  },
   server: {
+    host: true,
     port: 3000,
     proxy: {
       "/api": "http://localhost:5050",

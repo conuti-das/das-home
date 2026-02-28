@@ -32,6 +32,11 @@ export interface CardItem {
   entity: string;
   size: string;
   config: Record<string, unknown>;
+  order?: number;
+  visible?: boolean;
+  customLabel?: string;
+  customIcon?: string;
+  customColor?: string;
 }
 
 export interface SubSection {

@@ -1,0 +1,52 @@
+/* Weather icon animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+@keyframes drop {
+  0% { transform: translateY(-4px); opacity: 1; }
+  100% { transform: translateY(8px); opacity: 0; }
+}
+@keyframes flake {
+  0% { transform: translateY(-4px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(8px) rotate(90deg); opacity: 0; }
+}
+@keyframes flash {
+  0%, 90%, 100% { opacity: 0; }
+  92%, 98% { opacity: 1; }
+}
+@keyframes fog-drift {
+  0%, 100% { transform: translateX(-2px); opacity: 0.6; }
+  50% { transform: translateX(2px); opacity: 0.9; }
+}
+@keyframes wind-wave {
+  0%, 100% { transform: translateX(0) scaleX(1); }
+  50% { transform: translateX(3px) scaleX(1.05); }
+}
+
+.weather-icon .rays { animation: spin-slow 12s linear infinite; transform-origin: center; }
+.weather-icon .star { animation: twinkle 2s ease-in-out infinite; }
+.weather-icon .star:nth-child(2) { animation-delay: 0.7s; }
+.weather-icon .star:nth-child(3) { animation-delay: 1.4s; }
+.weather-icon .cloud-drift { animation: drift 4s ease-in-out infinite; }
+.weather-icon .raindrop { animation: drop 1s linear infinite; }
+.weather-icon .raindrop:nth-child(2) { animation-delay: 0.3s; }
+.weather-icon .raindrop:nth-child(3) { animation-delay: 0.6s; }
+.weather-icon .snowflake { animation: flake 2s linear infinite; }
+.weather-icon .snowflake:nth-child(2) { animation-delay: 0.5s; }
+.weather-icon .snowflake:nth-child(3) { animation-delay: 1s; }
+.weather-icon .lightning-bolt { animation: flash 3s ease-in-out infinite; }
+.weather-icon .fog-line { animation: fog-drift 3s ease-in-out infinite; }
+.weather-icon .fog-line:nth-child(2) { animation-delay: 0.5s; }
+.weather-icon .fog-line:nth-child(3) { animation-delay: 1s; }
+.weather-icon .wind-line { animation: wind-wave 2s ease-in-out infinite; }
+.weather-icon .wind-line:nth-child(2) { animation-delay: 0.4s; }
+.weather-icon .wind-line:nth-child(3) { animation-delay: 0.8s; }

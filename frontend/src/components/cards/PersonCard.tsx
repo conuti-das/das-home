@@ -1,5 +1,4 @@
-import { ObjectStatus } from "@ui5/webcomponents-react";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
@@ -10,15 +9,14 @@ export function PersonCard({ card }: CardComponentProps) {
   const isHome = state === "home";
 
   return (
-    <BaseCard title={name} status={state} cardType="person" size={card.size}>
-      <div style={{ display: "flex", justifyContent: "center", padding: "1rem 0" }}>
-        <ObjectStatus
-          state={isHome ? "Positive" : "Information"}
-          showDefaultIcon
-        >
-          {isHome ? "Home" : state}
-        </ObjectStatus>
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value={isHome ? "Home" : state}
+      icon="person-placeholder"
+      isOn={isHome}
+      variant="small"
+      cardType="person"
+    />
   );
 }

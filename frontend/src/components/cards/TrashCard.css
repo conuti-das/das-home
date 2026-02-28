@@ -1,0 +1,38 @@
+.trash-card {
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  box-shadow: var(--dh-card-shadow);
+  background: var(--dh-green-tint);
+  height: var(--dh-card-height-big);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.trash-card__days {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--dh-green);
+}
+
+.trash-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--dh-gray100);
+  opacity: 0.7;
+}
+
+.trash-card__waste {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,280 @@
+.vehicle-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: var(--dh-card-radius-lg);
+  border: var(--dh-surface-border);
+  box-shadow: var(--dh-card-shadow);
+  background: var(--dh-gray300);
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Name */
+.vehicle-card__name {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--dh-gray100);
+}
+
+/* Stats Row: 3 columns with dividers */
+.vehicle-card__stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.vehicle-card__stat-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.vehicle-card__stat-icon {
+  opacity: 0.5;
+  margin-bottom: 2px;
+}
+
+.vehicle-card__stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vehicle-card__stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dh-gray100);
+}
+
+.vehicle-card__stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(250, 251, 252, 0.1);
+  flex-shrink: 0;
+}
+
+/* Battery Bar */
+.vehicle-card__battery {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vehicle-card__battery-bar {
+  flex: 1;
+  height: 22px;
+  background: rgba(250, 251, 252, 0.08);
+  border-radius: 11px;
+  overflow: hidden;
+  position: relative;
+}
+
+.vehicle-card__battery-fill {
+  height: 100%;
+  border-radius: 11px;
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  min-width: 45px;
+}
+
+.vehicle-card__battery-fill--high {
+  background: linear-gradient(90deg, #4CAF50, #6FCF97);
+}
+
+.vehicle-card__battery-fill--mid {
+  background: linear-gradient(90deg, #F2994A, #F2C94C);
+}
+
+.vehicle-card__battery-fill--low {
+  background: linear-gradient(90deg, #EB5757, #F2994A);
+}
+
+.vehicle-card__battery-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+
+.vehicle-card__battery-range {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* Map Area */
+.vehicle-card__map-area {
+  position: relative;
+  height: 150px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--dh-gray400);
+}
+
+.vehicle-card__map-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.5) saturate(0.6);
+}
+
+.vehicle-card__map-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--dh-gray400) 0%, var(--dh-gray500) 100%);
+}
+
+.vehicle-card__map-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.4) 100%);
+  pointer-events: none;
+}
+
+.vehicle-card__vehicle-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 110px;
+  max-width: 85%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  z-index: 1;
+}
+
+.vehicle-card__vehicle-placeholder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.vehicle-card__map-pin {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dh-orange);
+  box-shadow: 0 0 0 3px rgba(242,153,74,0.3), 0 0 8px rgba(242,153,74,0.4);
+  z-index: 2;
+}
+
+/* Address */
+.vehicle-card__address {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.vehicle-card__address-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.vehicle-card__address-street {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+}
+
+.vehicle-card__address-city {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Status Grid 2x2 */
+.vehicle-card__status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.vehicle-card__status-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(250, 251, 252, 0.04);
+}
+
+.vehicle-card__status-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(250, 251, 252, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.vehicle-card__status-icon-wrap.ok {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--dh-green);
+  opacity: 1;
+}
+
+.vehicle-card__status-icon-wrap.warn {
+  background: rgba(242, 153, 74, 0.15);
+  color: var(--dh-orange);
+  opacity: 1;
+}
+
+.vehicle-card__status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.vehicle-card__status-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+}
+
+.vehicle-card__status-value {
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.vehicle-card__status-value.ok {
+  color: var(--dh-green);
+  opacity: 1;
+}
+
+.vehicle-card__status-value.warn {
+  color: var(--dh-orange);
+  opacity: 1;
+}
+

@@ -1,0 +1,147 @@
+.media-card {
+  position: relative;
+  display: flex;
+  height: 75px;
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  box-shadow: var(--dh-card-shadow);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.media-card__bg {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) brightness(0.6);
+  transform: scale(1.3);
+  z-index: 0;
+}
+
+.media-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+/* Fallback background when no artwork */
+.media-card--no-art {
+  background: var(--dh-gray300);
+}
+
+.media-card__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 0 16px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.media-card__thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(250, 251, 252, 0.1);
+}
+
+.media-card__thumb-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: rgba(250, 251, 252, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.media-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--dh-gray100);
+}
+
+.media-card__artist {
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--dh-gray100);
+  opacity: 0.7;
+}
+
+.media-card__state {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  text-transform: capitalize;
+}
+
+/* Right controls column */
+.media-card__controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  border-left: 1px solid rgba(250, 251, 252, 0.08);
+  min-width: 52px;
+  height: 100%;
+}
+
+.media-card__play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--dh-gray100);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.media-card__play-btn:hover {
+  background: rgba(250, 251, 252, 0.06);
+}
+
+.media-card__play-btn.playing {
+  color: var(--dh-blue);
+}
+
+.media-card__sonos-badge {
+  position: absolute;
+  top: 6px;
+  right: 58px;
+  z-index: 3;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(86, 204, 242, 0.2);
+  color: var(--dh-blue);
+  padding: 2px 6px;
+  border-radius: 4px;
+}

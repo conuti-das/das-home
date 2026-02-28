@@ -1,0 +1,157 @@
+/* AreaCard Big */
+.area-card--big {
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  box-shadow: var(--dh-card-shadow);
+  background: var(--dh-gray300);
+  height: 180px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--dh-transition-normal);
+}
+
+.area-card--big:active {
+  transform: scale(0.97);
+}
+
+.area-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.area-card__name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dh-gray100);
+  line-height: 1.2;
+}
+
+.area-card__temp--big {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--dh-gray100);
+  opacity: 0.8;
+}
+
+.area-card__icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.area-card__icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(250, 251, 252, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.area-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.area-card__dot--green {
+  background: var(--dh-green);
+  box-shadow: 0 0 6px var(--dh-green);
+}
+
+.area-card__active-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  margin-left: 4px;
+}
+
+/* AreaCard Small */
+.area-card--small {
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  box-shadow: var(--dh-card-shadow);
+  background: var(--dh-gray300);
+  height: var(--dh-card-height-small);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--dh-transition-normal);
+}
+
+.area-card--small:active {
+  transform: scale(0.97);
+}
+
+.area-card__icon-circle {
+  width: var(--dh-icon-size-circle);
+  height: var(--dh-icon-size-circle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.area-card__name--small {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.area-card__stats {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dh-gray100);
+  opacity: 0.6;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Device chips */
+.area-card__chips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.area-card__chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--dh-card-radius-sm);
+  border: none;
+  background: rgba(250, 251, 252, 0.08);
+  color: var(--dh-gray100);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--dh-transition-normal);
+}
+
+.area-card__chip:active {
+  background: rgba(250, 251, 252, 0.15);
+}
+
+.area-card__chip--active {
+  background: var(--dh-yellow);
+  color: var(--dh-gray1000);
+}

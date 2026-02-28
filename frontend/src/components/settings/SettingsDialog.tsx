@@ -15,9 +15,11 @@ import {
 import "@ui5/webcomponents-icons/dist/settings.js";
 import "@ui5/webcomponents-icons/dist/connected.js";
 import "@ui5/webcomponents-icons/dist/palette.js";
+import "@ui5/webcomponents-icons/dist/synchronize.js";
 import { useConfigStore } from "@/stores/configStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
+import { suggestDashboard } from "@/services/discovery";
 import type { AppConfiguration } from "@/types";
 
 interface SettingsDialogProps {
@@ -44,6 +46,7 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const [accentColor, setAccentColor] = useState(dashboard?.accent_color || "#0070f3");
   const [autoTheme, setAutoTheme] = useState(dashboard?.auto_theme || false);
   const [saving, setSaving] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const handleSave = async () => {
     if (!config || !dashboard) return;
@@ -75,6 +78,20 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
       onClose();
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    setRegenerating(true);
+    try {
+      const newDashboard = await suggestDashboard();
+      await api.putDashboard(newDashboard);
+      setDashboard(newDashboard);
+      onClose();
+    } catch (e) {
+      console.error("Regenerate failed:", e);
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -117,6 +134,20 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                 onInput={(e) => setHassUrl((e.target as unknown as { value: string }).value)}
                 style={{ width: "100%" }}
               />
+            </div>
+          </FlexBox>
+        </Tab>
+
+        <Tab text="Dashboard" icon="synchronize">
+          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
+            <div>
+              <Label>Dashboard neu generieren</Label>
+              <div style={{ fontSize: 13, opacity: 0.6, marginTop: 4, marginBottom: 12 }}>
+                Erkennt alle Entities neu und erstellt ein frisches Dashboard mit allen neuen Card-Typen (Wetter, Radar, Müllabfuhr, Bereiche).
+              </div>
+              <Button design="Attention" onClick={handleRegenerate} disabled={regenerating}>
+                {regenerating ? "Wird generiert..." : "Dashboard neu generieren"}
+              </Button>
             </div>
           </FlexBox>
         </Tab>

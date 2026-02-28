@@ -1,15 +1,13 @@
-import { Switch, Slider } from "@ui5/webcomponents-react";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
+import { LightSliderCard } from "./LightSliderCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
-export function LightCard({ card, callService }: CardComponentProps) {
+export function LightCard({ card, callService, onCardAction }: CardComponentProps) {
   const entity = useEntity(card.entity);
   const isOn = entity?.state === "on";
   const name = (entity?.attributes?.friendly_name as string) || card.entity;
-  const brightness = entity?.attributes?.brightness as number | undefined;
-  const brightnessPct = brightness !== undefined ? Math.round((brightness / 255) * 100) : 0;
-  const supportsbrightness = (entity?.attributes?.supported_color_modes as string[] || []).some(
+  const supportsBrightness = (entity?.attributes?.supported_color_modes as string[] || []).some(
     (m) => m !== "onoff"
   );
 
@@ -17,33 +15,22 @@ export function LightCard({ card, callService }: CardComponentProps) {
     callService("light", isOn ? "turn_off" : "turn_on", {}, { entity_id: card.entity });
   };
 
-  const setBrightness = (pct: number) => {
-    callService("light", "turn_on", { brightness_pct: pct }, { entity_id: card.entity });
-  };
+  // Use slider variant for dimmable lights
+  if (supportsBrightness) {
+    return <LightSliderCard card={card} callService={callService} onCardAction={onCardAction} />;
+  }
 
+  // Simple toggle for on/off only lights
   return (
-    <BaseCard title={name} status={isOn ? `${brightnessPct}%` : "Off"} cardType="light" size={card.size}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", padding: "0.5rem 0" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ color: "var(--sapContent_LabelColor)" }}>Power</span>
-          <Switch checked={isOn} onChange={toggle} />
-        </div>
-        {supportsbrightness && isOn && (
-          <div>
-            <span style={{ color: "var(--sapContent_LabelColor)", fontSize: "0.75rem" }}>Brightness</span>
-            <Slider
-              value={brightnessPct}
-              min={1}
-              max={100}
-              showTooltip
-              onInput={(e) => {
-                const val = (e.target as unknown as { value: number }).value;
-                setBrightness(Number(val));
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value={isOn ? "On" : "Off"}
+      icon="lightbulb"
+      isOn={isOn}
+      onClick={toggle}
+      variant="small"
+      cardType="light"
+    />
   );
 }

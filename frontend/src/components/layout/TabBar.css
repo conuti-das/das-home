@@ -1,0 +1,34 @@
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-bar__tab {
+  padding: 6px 14px;
+  border-radius: var(--dh-card-radius-sm);
+  border: 1px solid rgba(250,251,252,0.15);
+  background: transparent;
+  color: var(--dh-gray100);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dh-transition-normal);
+}
+
+.tab-bar__tab:hover {
+  background: rgba(250,251,252,0.05);
+}
+
+.tab-bar__tab--active {
+  background: var(--dh-pink);
+  color: var(--dh-gray1000);
+  border-color: transparent;
+}

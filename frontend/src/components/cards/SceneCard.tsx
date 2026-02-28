@@ -1,6 +1,4 @@
-import { Button } from "@ui5/webcomponents-react";
-import "@ui5/webcomponents-icons/dist/play.js";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
@@ -13,12 +11,14 @@ export function SceneCard({ card, callService }: CardComponentProps) {
   };
 
   return (
-    <BaseCard title={name} cardType="scene" size={card.size}>
-      <div style={{ display: "flex", justifyContent: "center", padding: "1rem 0" }}>
-        <Button icon="play" design="Emphasized" onClick={activate}>
-          Activate
-        </Button>
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value="Activate"
+      icon="palette"
+      onClick={activate}
+      variant="small"
+      cardType="scene"
+    />
   );
 }

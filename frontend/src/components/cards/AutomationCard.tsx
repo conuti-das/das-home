@@ -1,6 +1,4 @@
-import { Switch, Button } from "@ui5/webcomponents-react";
-import "@ui5/webcomponents-icons/dist/play.js";
-import { BaseCard } from "./BaseCard";
+import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
 import type { CardComponentProps } from "./CardRegistry";
 
@@ -9,14 +7,20 @@ export function AutomationCard({ card, callService }: CardComponentProps) {
   const name = (entity?.attributes?.friendly_name as string) || card.entity;
   const isOn = entity?.state === "on";
 
+  const toggle = () => {
+    callService("automation", "toggle", {}, { entity_id: card.entity });
+  };
+
   return (
-    <BaseCard title={name} status={isOn ? "Enabled" : "Disabled"} cardType="automation" size={card.size}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0" }}>
-        <Switch checked={isOn} onChange={() => callService("automation", "toggle", {}, { entity_id: card.entity })} />
-        <Button icon="play" design="Transparent" onClick={() => callService("automation", "trigger", {}, { entity_id: card.entity })}>
-          Trigger
-        </Button>
-      </div>
-    </BaseCard>
+    <PillCard
+      entityId={card.entity}
+      label={name}
+      value={isOn ? "On" : "Off"}
+      icon="process"
+      isOn={isOn}
+      onClick={toggle}
+      variant="small"
+      cardType="automation"
+    />
   );
 }
