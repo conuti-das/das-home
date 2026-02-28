@@ -1,5 +1,5 @@
 name: "das-home"
-version: "0.1.4"
+version: "0.1.5"
 slug: "das-home"
 description: "SAP UI5 based Home Assistant Dashboard with auto-discovery and 24+ card types"
 url: "https://github.com/conuti-das/das-home"

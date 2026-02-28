@@ -33,8 +33,12 @@ def _next_id() -> int:
 
 
 async def _get_ha_url() -> str:
-    config = config_manager.load_app_config()
-    url = config.connection.hass_url.rstrip("/")
+    from app.settings import settings
+    if settings.is_addon:
+        url = settings.hass_url.rstrip("/")
+    else:
+        config = config_manager.load_app_config()
+        url = config.connection.hass_url.rstrip("/")
     return url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
 
 

@@ -16,11 +16,12 @@ geo_router = APIRouter(prefix="/api/geo")
 
 def _get_ha_auth() -> tuple[str, str]:
     """Return (base_url, token) for HA API access."""
-    config = config_manager.load_app_config()
-    base_url = config.connection.hass_url.rstrip("/")
     if settings.is_addon:
+        base_url = settings.hass_url.rstrip("/")
         token = settings.supervisor_token
     else:
+        config = config_manager.load_app_config()
+        base_url = config.connection.hass_url.rstrip("/")
         token = settings.hass_token
     return base_url, token
 

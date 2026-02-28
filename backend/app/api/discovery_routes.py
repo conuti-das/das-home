@@ -39,13 +39,19 @@ class _HaSession:
 
 async def _connect_ha() -> _HaSession:
     """Connect to HA WebSocket, authenticate, and return a session."""
-    config = config_manager.load_app_config()
-    url = config.connection.hass_url.rstrip("/")
-    ws_url = url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
+    if settings.is_addon:
+        # Addon mode: use internal Supervisor URL and Supervisor token
+        url = settings.hass_url.rstrip("/")
+        token = settings.supervisor_token
+    else:
+        config = config_manager.load_app_config()
+        url = config.connection.hass_url.rstrip("/")
+        token = settings.hass_token
 
-    token = settings.supervisor_token if settings.is_addon else settings.hass_token
     if not token:
         raise HTTPException(status_code=400, detail="No HA token configured")
+
+    ws_url = url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
 
     ws = await websockets.connect(ws_url)
     auth_msg = json.loads(await ws.recv())

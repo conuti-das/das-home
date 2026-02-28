@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5
+
+### Behoben
+
+- **[Admin]** Add-on Modus: HA-Verbindung nutzt jetzt den internen Supervisor-URL (`http://supervisor/core`) statt externen URL
+- **[Admin]** Discovery, WebSocket-Proxy, Media-Proxy und HACS-Scanner verwenden im Add-on Modus alle den Supervisor-Token korrekt
+- **[Admin]** `run.sh` setzt `DAS_HOME_HASS_URL` auf den internen Supervisor-Endpoint
+
 ## 0.1.4
 
 ### Hinzugefuegt

@@ -13,6 +13,9 @@ router = APIRouter(prefix="/api/hacs")
 
 
 async def _get_ha_base_url() -> str:
+    from app.settings import settings
+    if settings.is_addon:
+        return settings.hass_url.rstrip("/")
     config = config_manager.load_app_config()
     return config.connection.hass_url.rstrip("/")
 
