@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntityStore } from "@/stores/entityStore";
+import { apiUrl } from "@/utils/basePath";
 import { PopupModal } from "@/components/layout/PopupModal";
 import type { PopupProps } from "./PopupRegistry";
 import "./VehiclePopup.css";
@@ -42,7 +43,7 @@ function useReverseGeocode(lat: number | undefined, lon: number | undefined): st
   useEffect(() => {
     if (lat === undefined || lon === undefined) return;
     let cancelled = false;
-    fetch(`/api/geo/reverse?lat=${lat}&lon=${lon}`)
+    fetch(apiUrl(`/api/geo/reverse?lat=${lat}&lon=${lon}`))
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled || !data) return;

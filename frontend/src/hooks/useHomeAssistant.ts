@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useConnectionStore } from "@/stores/connectionStore";
 import { useEntityStore } from "@/stores/entityStore";
+import { apiUrl, wsUrl } from "@/utils/basePath";
 import type { EntityState } from "@/types";
 
 export function useHomeAssistant() {
@@ -18,8 +19,7 @@ export function useHomeAssistant() {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
     setStatus("connecting");
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+    const ws = new WebSocket(wsUrl("/ws"));
 
     ws.onopen = () => {
       setStatus("connected");
@@ -27,7 +27,7 @@ export function useHomeAssistant() {
       // Request all current states
       ws.send(JSON.stringify({ type: "get_states" }));
       // Fetch entity-area mapping from discovery endpoint
-      fetch("/api/discovery")
+      fetch(apiUrl("/api/discovery"))
         .then((r) => r.json())
         .then((data) => {
           if (data.entity_area_map) setEntityAreaMap(data.entity_area_map);

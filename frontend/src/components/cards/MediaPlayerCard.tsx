@@ -1,5 +1,6 @@
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntity } from "@/hooks/useEntity";
+import { apiUrl } from "@/utils/basePath";
 import type { CardComponentProps } from "./CardRegistry";
 import "./MediaPlayerCard.css";
 
@@ -19,7 +20,7 @@ export function MediaPlayerCard({ card, callService, onCardAction }: CardCompone
     (name.toLowerCase().includes("sonos"));
 
   const useArtwork = (card.config?.artworkBackground !== false) && !!entityPicture;
-  const artworkUrl = entityPicture ? `/api/media/artwork?entity_id=${encodeURIComponent(card.entity)}` : "";
+  const artworkUrl = entityPicture ? apiUrl(`/api/media/artwork?entity_id=${encodeURIComponent(card.entity)}`) : "";
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation();

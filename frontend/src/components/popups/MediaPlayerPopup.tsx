@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntity, useEntitiesByDomain } from "@/hooks/useEntity";
+import { apiUrl } from "@/utils/basePath";
 import { PopupModal } from "@/components/layout/PopupModal";
 import type { PopupProps } from "./PopupRegistry";
 import "./MediaPlayerPopup.css";
@@ -48,7 +49,7 @@ export function MediaPlayerPopup({ onClose, callService, props }: PopupProps) {
   const repeat = attrs.repeat as string | undefined;
 
   const artworkUrl = entityPicture
-    ? `/api/media/artwork?entity_id=${encodeURIComponent(entityId)}`
+    ? apiUrl(`/api/media/artwork?entity_id=${encodeURIComponent(entityId)}`)
     : "";
 
   // Tabs
@@ -100,7 +101,7 @@ export function MediaPlayerPopup({ onClose, callService, props }: PopupProps) {
         const params = new URLSearchParams({ entity_id: entityId });
         if (contentId) params.set("media_content_id", contentId);
         if (contentType) params.set("media_content_type", contentType);
-        const resp = await fetch(`/api/media/browse?${params}`);
+        const resp = await fetch(apiUrl(`/api/media/browse?${params}`));
         if (!resp.ok) throw new Error("Browse failed");
         const data = await resp.json();
         setBrowseTitle(data.title || "Medien");

@@ -1,10 +1,17 @@
 # Changelog
 
-## 0.1.1
+## 0.1.2
 
 ### Behoben
 
 - **[Admin]** Frontend laedt jetzt korrekt im Docker-Container (Static-Files-Pfad korrigiert)
+- **[Admin]** HA Ingress-Kompatibilitaet: Asset-Pfade (CSS/JS) und API/WebSocket-URLs nutzen jetzt relative Pfade statt absolute
+
+## 0.1.1
+
+### Behoben
+
+- **[Admin]** Static-Files-Pfad im Docker-Container korrigiert
 
 ## 0.1.0
 

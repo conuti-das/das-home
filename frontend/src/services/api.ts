@@ -1,6 +1,7 @@
 import type { AppConfiguration, DashboardConfig } from "@/types";
+import { apiUrl } from "@/utils/basePath";
 
-const BASE = "/api";
+const BASE = apiUrl("/api");
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const resp = await fetch(`${BASE}${path}`, {

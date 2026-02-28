@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BaseCard } from "./BaseCard";
 import { useEntityStore } from "@/stores/entityStore";
 import { useConnectionStore } from "@/stores/connectionStore";
+import { apiUrl } from "@/utils/basePath";
 import type { CardComponentProps } from "./CardRegistry";
 
 interface HassShim {
@@ -30,7 +31,7 @@ export function HacsCardBridge({ card, callService }: CardComponentProps) {
       return;
     }
 
-    const proxyUrl = `/api/hacs/proxy/${jsUrl.replace(/^\//, "")}`;
+    const proxyUrl = apiUrl(`/api/hacs/proxy/${jsUrl.replace(/^\//, "")}`);
 
     // Check if already loaded
     if (customElements.get(cardTag)) {

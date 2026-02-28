@@ -1,6 +1,7 @@
 import type { DashboardConfig } from "@/types";
+import { apiUrl } from "@/utils/basePath";
 
-const BASE = "/api/discovery";
+const BASE = apiUrl("/api/discovery");
 
 export interface DiscoveryResult {
   states: Array<{ entity_id: string; state: string; attributes: Record<string, unknown> }>;
