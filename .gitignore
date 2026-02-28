@@ -42,3 +42,8 @@ console-debug*.log
 
 # Claude Code config (local only)
 .claude/
+CLAUDE.md
+
+# Local docs (not for public repo)
+docs/plans/
+data/design-ref/

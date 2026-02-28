@@ -1,1 +1,0 @@
-I use these files together with the weather template sensor. Place the the custom_templates folder inside your Home Assistant config folder.

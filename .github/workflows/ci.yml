@@ -106,15 +106,3 @@ jobs:
             ghcr.io/${{ github.repository }}-addon-aarch64:latest
           cache-from: type=gha,scope=addon-aarch64
           cache-to: type=gha,mode=max,scope=addon-aarch64
-
-      - name: Build and push addon image (armv7)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm/v7
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}-addon-armv7:${{ steps.version.outputs.version }}
-            ghcr.io/${{ github.repository }}-addon-armv7:latest
-          cache-from: type=gha,scope=addon-armv7
-          cache-to: type=gha,mode=max,scope=addon-armv7
