@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3
+
+### Hinzugefuegt
+
+- **[Benutzer]** Versionshinweise im Settings-Dialog: Version, Modus (Addon/Standalone) und Link zu GitHub Releases
+- **[Entwickler]** Automatischer GitHub Release bei Version-Bump (`.github/workflows/release.yml`)
+- **[Entwickler]** Health-Endpoint liefert jetzt `releases_url` und `mode`
+
 ## 0.1.2
 
 ### Behoben

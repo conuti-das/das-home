@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   TabContainer,
@@ -11,11 +11,14 @@ import {
   FlexBox,
   FlexBoxDirection,
   Label,
+  Link,
+  Icon,
 } from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-icons/dist/settings.js";
 import "@ui5/webcomponents-icons/dist/connected.js";
 import "@ui5/webcomponents-icons/dist/palette.js";
 import "@ui5/webcomponents-icons/dist/synchronize.js";
+import "@ui5/webcomponents-icons/dist/sys-help.js";
 import { useConfigStore } from "@/stores/configStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
@@ -47,6 +50,13 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const [autoTheme, setAutoTheme] = useState(dashboard?.auto_theme || false);
   const [saving, setSaving] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [versionInfo, setVersionInfo] = useState<{ version: string; mode: string; releases_url: string } | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      api.getHealth().then(setVersionInfo).catch(() => {});
+    }
+  }, [open]);
 
   const handleSave = async () => {
     if (!config || !dashboard) return;
@@ -182,6 +192,33 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                 onChange={() => setAutoTheme(!autoTheme)}
               />
             </div>
+          </FlexBox>
+        </Tab>
+        <Tab text="Version" icon="sys-help">
+          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <Icon name="home" style={{ width: 32, height: 32, color: "var(--sapBrandColor)" }} />
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 600 }}>das-home</div>
+                <div style={{ fontSize: 13, opacity: 0.6 }}>
+                  {versionInfo ? `v${versionInfo.version} (${versionInfo.mode})` : "..."}
+                </div>
+              </div>
+            </div>
+            {versionInfo && (
+              <div>
+                <Link href={`${versionInfo.releases_url}/tag/${versionInfo.version}`} target="_blank">
+                  Versionshinweise lesen
+                </Link>
+              </div>
+            )}
+            {versionInfo && (
+              <div style={{ fontSize: 13, opacity: 0.5, marginTop: "0.5rem" }}>
+                <Link href={versionInfo.releases_url} target="_blank">
+                  Alle Releases auf GitHub
+                </Link>
+              </div>
+            )}
           </FlexBox>
         </Tab>
       </TabContainer>

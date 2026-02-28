@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.current }}
+      changed: ${{ steps.version.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check version change
+        id: version
+        run: |
+          CURRENT=$(grep '^version:' das-home/config.yaml | sed 's/version: *"\(.*\)"/\1/')
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+
+          # Check if config.yaml was changed in this push
+          if git diff HEAD~1 -- das-home/config.yaml | grep -q '^+version:'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  create-release:
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+
+          # Extract the section for this version from CHANGELOG.md
+          NOTES=$(awk "/^## ${VERSION}/{found=1; next} /^## [0-9]/{if(found) exit} found{print}" das-home/CHANGELOG.md)
+
+          # Write to file for the release body
+          cat > /tmp/release-body.md << 'HEADER'
+          ## What's New / Was ist neu
+
+          HEADER
+
+          if [ -n "$NOTES" ]; then
+            echo "$NOTES" >> /tmp/release-body.md
+          else
+            echo "See [CHANGELOG.md](das-home/CHANGELOG.md) for details." >> /tmp/release-body.md
+          fi
+
+          cat >> /tmp/release-body.md << 'FOOTER'
+
+          ---
+
+          ### Installation
+
+          **Home Assistant Add-on:**
+          Settings > Add-ons > Check for updates > Update das-home
+
+          **Docker:**
+          ```bash
+          docker pull ghcr.io/conuti-das/das-home:latest
+          ```
+
+          ---
+          *Full changelog: see [CHANGELOG.md](das-home/CHANGELOG.md)*
+          FOOTER
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+          gh release create "$VERSION" \
+            --title "v$VERSION" \
+            --notes-file /tmp/release-body.md \
+            --latest

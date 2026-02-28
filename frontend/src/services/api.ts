@@ -15,7 +15,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  getHealth: () => request<{ status: string; version: string }>("/health"),
+  getHealth: () => request<{ status: string; version: string; mode: string; releases_url: string }>("/health"),
   getConfig: () => request<AppConfiguration>("/config"),
   putConfig: (config: AppConfiguration) =>
     request("/config", { method: "PUT", body: JSON.stringify(config) }),

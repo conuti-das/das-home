@@ -6,7 +6,10 @@ from pathlib import Path
 
 from app.settings import settings
 
-app = FastAPI(title="das-home", version="0.1.0")
+__version__ = "0.1.3"
+RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
+
+app = FastAPI(title="das-home", version=__version__)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,7 +27,12 @@ from app.ws.proxy import router as ws_router
 # API routes
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "version": "0.1.0", "mode": "addon" if settings.is_addon else "standalone"}
+    return {
+        "status": "ok",
+        "version": __version__,
+        "mode": "addon" if settings.is_addon else "standalone",
+        "releases_url": RELEASES_URL,
+    }
 
 app.include_router(config_router)
 app.include_router(discovery_router)
