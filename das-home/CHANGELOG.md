@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4
+
+### Hinzugefuegt
+
+- **[Benutzer]** Setup-Wizard komplett auf Deutsch, mit Hilfe-Box zum Token erstellen inkl. Direkt-Link zur HA-Profilseite
+- **[Benutzer]** Im Add-on-Modus wird der Token automatisch vom Supervisor uebernommen (kein manuelles Eingeben noetig)
+- **[Benutzer]** Sidebar-Name ist jetzt "DAS Home" mit Fisch-Icon statt "das-home"
+
 ## 0.1.3
 
 ### Hinzugefuegt
