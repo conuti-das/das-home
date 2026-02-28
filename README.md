@@ -2,7 +2,7 @@
 
 Home Assistant Dashboard mit SAP UI5 Web Components.
 
-[![CI](https://github.com/das-home/das-home/actions/workflows/ci.yml/badge.svg)](https://github.com/das-home/das-home/actions/workflows/ci.yml)
+[![CI](https://github.com/conuti-das/das-home/actions/workflows/ci.yml/badge.svg)](https://github.com/conuti-das/das-home/actions/workflows/ci.yml)
 
 ## Features
 
@@ -20,11 +20,11 @@ Home Assistant Dashboard mit SAP UI5 Web Components.
 2. Drei-Punkte-Menu oben rechts > **Repositories**
 3. Repository-URL einfuegen:
    ```
-   https://github.com/das-home/das-home
+   https://github.com/conuti-das/das-home
    ```
 4. **Add** klicken, dann das Add-on **das-home** installieren
 
-[![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fdas-home%2Fdas-home)
+[![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fconuti-das%2Fdas-home)
 
 ## Installation mit Docker
 
@@ -34,13 +34,13 @@ docker run -d \
   -e DAS_HOME_HASS_URL=http://homeassistant.local:8123 \
   -e DAS_HOME_HASS_TOKEN=your_token \
   -v das-home-data:/data \
-  ghcr.io/das-home/das-home:latest
+  ghcr.io/conuti-das/das-home:latest
 ```
 
 Oder mit Docker Compose:
 
 ```bash
-git clone https://github.com/das-home/das-home.git
+git clone https://github.com/conuti-das/das-home.git
 cd das-home
 cp .env.example .env  # HA URL und Token eintragen
 docker-compose up -d

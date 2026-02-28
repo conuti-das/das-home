@@ -16,7 +16,7 @@ Home Assistant Dashboard mit SAP UI5 Web Components.
 Dieses Add-on ueber den Add-on Store installieren oder die Repository-URL manuell hinzufuegen:
 
 ```
-https://github.com/das-home/das-home
+https://github.com/conuti-das/das-home
 ```
 
 ## Konfiguration
