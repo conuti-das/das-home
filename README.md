@@ -1,6 +1,6 @@
 # das-home
 
-Home Assistant Dashboard built with SAP UI5 Web Components.
+What happens when an enterprise UI framework meets your light switches. A Home Assistant dashboard that your IT department would accidentally approve.
 
 [![CI](https://github.com/conuti-das/das-home/actions/workflows/ci.yml/badge.svg)](https://github.com/conuti-das/das-home/actions/workflows/ci.yml)
 
@@ -129,7 +129,7 @@ MIT License - see [LICENSE](LICENSE)
 
 # das-home (Deutsch)
 
-Home Assistant Dashboard mit SAP UI5 Web Components.
+Was passiert, wenn ein Enterprise-UI-Framework auf deine Lichtschalter trifft. Ein Home Assistant Dashboard, das deine IT-Abteilung aus Versehen freigeben wuerde.
 
 ## Funktionen
 
