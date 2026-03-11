@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.7
+
+### Hinzugefuegt
+
+- **[Benutzer]** Kartenleiste (Strip Section): Neuer Section-Typ, der Karten in einer horizontalen Reihe mit flexiblen Breiten anzeigt (1x/2x/3x Gewichtung)
+- **[Benutzer]** Sonos Gruppen-Karte: Zeigt alle Sonos-Player, ermoeglicht Gruppierung/Aufloesen, Wiedergabesteuerung, Lautstaerke und Quellenwahl per Popup
+- **[Benutzer]** Gewichtung-Tab im Karten-Editor: Bei Karten in einer Kartenleiste kann die relative Breite (1x, 2x, 3x) eingestellt werden
+
+### Geaendert
+
+- **[Entwickler]** Section-Datenmodell erweitert um `layout` Feld ("grid" oder "strip")
+- **[Entwickler]** CardItem-Datenmodell erweitert um `flexWeight` Feld fuer Strip-Karten
+- **[Entwickler]** DraggableGrid und GridView unterstuetzen Strip-Sections mit Flexbox-Layout
+
 ## 0.1.6
 
 ### Behoben
