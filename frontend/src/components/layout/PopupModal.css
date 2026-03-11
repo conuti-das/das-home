@@ -84,4 +84,9 @@
     animation: fadeIn 0.2s ease;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
   }
+
+  /* Wide variant for weather popup and similar */
+  .popup-modal__sheet.weather-popup-modal {
+    max-width: 640px;
+  }
 }

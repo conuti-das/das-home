@@ -1,6 +1,5 @@
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntitiesByDomain } from "@/hooks/useEntity";
-import { WeatherIcon } from "@/components/cards/WeatherIcon";
 import "./StatusBar.css";
 
 interface StatusBarProps {
@@ -9,14 +8,9 @@ interface StatusBarProps {
   onLightsClick?: () => void;
 }
 
-export function StatusBar({ onWeatherClick, onTrashClick, onLightsClick }: StatusBarProps) {
-  const weatherEntities = useEntitiesByDomain("weather");
-  const weather = weatherEntities[0];
+export function StatusBar({ onTrashClick, onLightsClick }: StatusBarProps) {
   const lights = useEntitiesByDomain("light");
   const lightsOn = lights.filter((e) => e.state === "on").length;
-
-  const temp = weather?.attributes?.temperature as number | undefined;
-  const condition = weather?.state || "";
 
   // Find trash sensor (common patterns)
   const allSensors = useEntitiesByDomain("sensor");
@@ -31,18 +25,6 @@ export function StatusBar({ onWeatherClick, onTrashClick, onLightsClick }: Statu
 
   return (
     <div className="status-bar">
-      {/* Weather Chip */}
-      {weather && (
-        <div className="status-chip" onClick={onWeatherClick}>
-          <div className="status-chip__icon">
-            <WeatherIcon condition={condition} size={24} />
-          </div>
-          <span className="status-chip__value">
-            {temp !== undefined ? `${Math.round(temp)}°` : "--"}
-          </span>
-        </div>
-      )}
-
       {/* Trash Chip */}
       {trashSensor && trashDays !== undefined && !isNaN(trashDays) && (
         <div className="status-chip" onClick={onTrashClick}>

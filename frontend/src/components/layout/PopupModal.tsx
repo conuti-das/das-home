@@ -6,11 +6,12 @@ interface PopupModalProps {
   open: boolean;
   title: string;
   icon?: string;
+  className?: string;
   onClose: () => void;
   children: React.ReactNode;
 }
 
-export function PopupModal({ open, title, icon, onClose, children }: PopupModalProps) {
+export function PopupModal({ open, title, icon, className, onClose, children }: PopupModalProps) {
   const mouseDownTarget = useRef<EventTarget | null>(null);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export function PopupModal({ open, title, icon, onClose, children }: PopupModalP
 
   return (
     <div className="popup-modal__backdrop" onMouseDown={handleBackdropMouseDown} onClick={handleBackdropClick}>
-      <div className="popup-modal__sheet" onClick={(e) => e.stopPropagation()}>
+      <div className={`popup-modal__sheet ${className || ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="popup-modal__header">
           {icon && (
             <div style={{
