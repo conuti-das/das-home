@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.8
+
+### Behoben
+
+- **[Benutzer]** Kartenleiste (Strip): Auf Mobilgeraeten werden Karten jetzt vertikal gestapelt statt horizontal gequetscht
+- **[Benutzer]** Wizard: Muellabfuhr-Karte zeigt nur noch relevante Entities (statt alle Sensoren inkl. Wetter)
+- **[Benutzer]** Wizard: Suchfeld im Entity-Zuordnungs-Schritt bei vielen Entities
+
+### Geaendert
+
+- **[Benutzer]** Entity-Liste im Wizard: Hauptgeraete (Medien, Licht, Klima) werden vor Hilfs-Entities (Bass, Balance, Loudness) sortiert
+- **[Entwickler]** CardMetadata um `entityKeywords` erweitert fuer intelligentere Entity-Vorfilterung
+- **[Entwickler]** CI: Docker-Builds laufen jetzt parallel (3 Jobs statt sequentiell)
+
 ## 0.1.7
 
 ### Hinzugefuegt

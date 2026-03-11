@@ -17,6 +17,8 @@ export interface CardMetadata {
   compatibleDomains: string[];
   defaultSize: string;
   iconName: string;
+  /** Optional keywords to pre-filter entities by id/name (e.g. ["trash", "abfall"]) */
+  entityKeywords?: string[];
 }
 
 interface RegistryEntry {

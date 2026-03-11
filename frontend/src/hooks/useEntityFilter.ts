@@ -7,6 +7,26 @@ export type SortDirection = "asc" | "desc";
 
 const PAGE_SIZE = 50;
 
+/** Domain priority for sorting: lower = more important (shown first) */
+const DOMAIN_PRIORITY: Record<string, number> = {
+  // Tier 1: Main devices
+  media_player: 1, light: 1, climate: 1, cover: 1, camera: 1, vacuum: 1, fan: 1, lock: 1,
+  // Tier 2: Interactive controls
+  scene: 2, script: 2, automation: 2, button: 2,
+  // Tier 3: Status/info
+  weather: 3, person: 3, calendar: 3, device_tracker: 3, update: 3,
+  // Tier 4: Simple toggles
+  switch: 4, input_boolean: 4,
+  // Tier 5: Sensors
+  sensor: 5, binary_sensor: 5,
+  // Tier 6: Config/tuning entities
+  number: 6, input_number: 6, select: 6, input_select: 6, timer: 6,
+};
+
+function getDomainPriority(domain: string): number {
+  return DOMAIN_PRIORITY[domain] ?? 7;
+}
+
 interface UseEntityFilterReturn {
   search: string;
   setSearch: (s: string) => void;
@@ -95,9 +115,18 @@ export function useEntityFilter(): UseEntityFilterReturn {
       let cmp = 0;
       switch (sortField) {
         case "name": {
-          const na = ((a.attributes?.friendly_name as string) || a.entity_id).toLowerCase();
-          const nb = ((b.attributes?.friendly_name as string) || b.entity_id).toLowerCase();
-          cmp = na.localeCompare(nb);
+          // Primary sort: domain priority (main devices first)
+          const da = a.entity_id.split(".")[0];
+          const db = b.entity_id.split(".")[0];
+          const pa = getDomainPriority(da);
+          const pb = getDomainPriority(db);
+          cmp = pa - pb;
+          if (cmp === 0) {
+            // Secondary sort: alphabetical by name
+            const na = ((a.attributes?.friendly_name as string) || a.entity_id).toLowerCase();
+            const nb = ((b.attributes?.friendly_name as string) || b.entity_id).toLowerCase();
+            cmp = na.localeCompare(nb);
+          }
           break;
         }
         case "entity_id":

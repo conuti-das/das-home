@@ -45,9 +45,19 @@ export function WidgetGallery({ onSelect }: WidgetGalleryProps) {
     if (widget.compatibleDomains.length > 0) {
       for (const [id, state] of entities) {
         const domain = id.split(".")[0];
-        if (widget.compatibleDomains.includes(domain)) {
-          matching.push(state);
+        if (!widget.compatibleDomains.includes(domain)) continue;
+
+        // If widget has entityKeywords, further filter by id/name match
+        if (widget.entityKeywords && widget.entityKeywords.length > 0) {
+          const idLower = id.toLowerCase();
+          const nameLower = ((state.attributes?.friendly_name as string) || "").toLowerCase();
+          const matches = widget.entityKeywords.some(
+            (kw) => idLower.includes(kw) || nameLower.includes(kw),
+          );
+          if (!matches) continue;
         }
+
+        matching.push(state);
       }
     }
     onSelect(widget, matching);

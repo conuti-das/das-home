@@ -299,6 +299,7 @@ registerCard("trash", TrashCard, {
   compatibleDomains: ["calendar", "sensor"],
   defaultSize: "2x1",
   iconName: "delete",
+  entityKeywords: ["abholung", "mullabfuhr", "müllabfuhr", "trash", "abfall", "waste", "muell", "müll", "restmuell", "biomuell", "papier", "gelber_sack"],
 });
 registerCard("area", AreaCard, {
   displayName: "Bereich",

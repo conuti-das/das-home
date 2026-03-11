@@ -58,11 +58,24 @@
 /* Strip section layout */
 .grid-view__strip {
   display: flex;
+  flex-direction: column;
   gap: var(--dh-grid-gap);
-  height: 120px;
 }
 
 .grid-view__strip-card {
   min-width: 0;
   overflow: hidden;
+  height: 120px;
+}
+
+/* Strip goes horizontal on tablet+ */
+@media (min-width: 768px) {
+  .grid-view__strip {
+    flex-direction: row;
+    height: 120px;
+  }
+
+  .grid-view__strip-card {
+    height: auto;
+  }
 }

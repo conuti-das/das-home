@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getRegisteredTypes } from "@/components/cards/CardRegistry";
 import { getDomainStyle } from "@/utils/domainColors";
 import { getBestWidget, getRecommendedWidgets } from "@/utils/widgetRecommendation";
@@ -22,6 +22,7 @@ export function EntityWidgetPairing({
   onNext,
 }: EntityWidgetPairingProps) {
   const registeredTypes = useMemo(() => getRegisteredTypes(), []);
+  const [search, setSearch] = useState("");
 
   // Initialize pairings from selected entities if empty
   useEffect(() => {
@@ -58,11 +59,36 @@ export function EntityWidgetPairing({
     ? selectedWidget.type
     : pairings[0]?.widgetType;
 
+  // Filter pairings by search
+  const searchLower = search.toLowerCase();
+  const filteredPairings = searchLower
+    ? pairings
+        .map((pair, index) => ({ pair, index }))
+        .filter(({ pair }) => {
+          const name = ((pair.entity.attributes?.friendly_name as string) || "").toLowerCase();
+          return (
+            pair.entity.entity_id.toLowerCase().includes(searchLower) ||
+            name.includes(searchLower)
+          );
+        })
+    : pairings.map((pair, index) => ({ pair, index }));
+
   return (
     <div>
       <div style={{ fontSize: 14, opacity: 0.6, color: "var(--dh-gray100)", marginBottom: 12 }}>
         Ordne jeder Entity ein Widget zu
       </div>
+
+      {/* Search filter */}
+      {pairings.length > 3 && (
+        <input
+          className="widget-wizard__input"
+          placeholder="Entity suchen..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ marginBottom: 12 }}
+        />
+      )}
 
       {/* Batch apply */}
       {pairings.length > 1 && (
@@ -85,7 +111,7 @@ export function EntityWidgetPairing({
 
       {/* Pairing list */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {pairings.map((pair, index) => {
+        {filteredPairings.map(({ pair, index }) => {
           const domain = pair.entity.entity_id.split(".")[0];
           const style = getDomainStyle(domain);
           const recommended = getRecommendedWidgets(domain).map((m) => m.type);
