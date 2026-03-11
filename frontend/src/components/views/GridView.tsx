@@ -1,9 +1,8 @@
-import { useCallback } from "react";
 import { getCardComponent } from "@/components/cards";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { DraggableGrid } from "@/components/views/DraggableGrid";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { api } from "@/services/api";
+import { getCardSpan, getCardPosition } from "@/utils/gridLayout";
 import type { ViewConfig } from "@/types";
 import "./GridView.css";
 
@@ -18,19 +17,6 @@ const SMALL_CARD_TYPES = new Set(["switch", "input_boolean", "button", "automati
 export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
   const isOverview = view.id === "overview";
   const editMode = useDashboardStore((s) => s.editMode);
-  const reorderCards = useDashboardStore((s) => s.reorderCards);
-
-  const handleReorder = useCallback(
-    (sectionId: string, oldIndex: number, newIndex: number) => {
-      reorderCards(sectionId, oldIndex, newIndex);
-      // Persist after reorder
-      const current = useDashboardStore.getState().dashboard;
-      if (current) {
-        api.putDashboard(current).catch(console.error);
-      }
-    },
-    [reorderCards]
-  );
 
   return (
     <div className="grid-view">
@@ -42,44 +28,94 @@ export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
         />
       )}
       {view.sections.map((section) => {
-        // In normal mode, filter out hidden cards
         const visibleItems = editMode
           ? section.items
           : section.items.filter((c) => c.visible !== false);
 
         if (visibleItems.length === 0 && !editMode) return null;
 
+        // Strip layout
+        if (section.layout === "strip") {
+          if (editMode) {
+            return (
+              <div key={section.id} className="grid-view__section">
+                {section.title && <div className="grid-view__section-title">{section.title}</div>}
+                <DraggableGrid
+                  section={section}
+                  callService={callService}
+                  onOpenPopup={onOpenPopup}
+                />
+              </div>
+            );
+          }
+
+          return (
+            <div key={section.id} className="grid-view__section">
+              {section.title && <div className="grid-view__section-title">{section.title}</div>}
+              <div className="grid-view__strip">
+                {visibleItems.map((card) => {
+                  const CardComp = getCardComponent(card.type);
+                  if (!CardComp) return null;
+                  return (
+                    <div
+                      key={card.id}
+                      className="grid-view__strip-card"
+                      style={{ flex: card.flexWeight || 1 }}
+                    >
+                      <CardComp
+                        card={card}
+                        callService={callService}
+                        onCardAction={onOpenPopup}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        // Grid layout (existing)
         const allSmall = visibleItems.every((c) => SMALL_CARD_TYPES.has(c.type));
 
         if (editMode) {
-          // In edit mode, show all cards (including hidden ones) via DraggableGrid
           return (
             <div key={section.id} className="grid-view__section">
               <div className="grid-view__section-title">{section.title}</div>
               <DraggableGrid
                 section={section}
                 callService={callService}
-                onReorder={handleReorder}
                 onOpenPopup={onOpenPopup}
               />
             </div>
           );
         }
 
+        const hasPositions = visibleItems.some((c) => c.gridCol != null && c.gridRow != null);
+
         return (
           <div key={section.id} className="grid-view__section">
             <div className="grid-view__section-title">{section.title}</div>
-            <div className={`grid-view__grid ${allSmall ? "grid-view__grid--single-col" : ""}`}>
+            <div className={`grid-view__grid ${allSmall ? "grid-view__grid--single-col" : ""} ${hasPositions ? "grid-view__grid--positioned" : ""}`}>
               {visibleItems.map((card) => {
                 const CardComp = getCardComponent(card.type);
                 if (!CardComp) return null;
+
+                const pos = getCardPosition(card);
+                const span = getCardSpan(card);
+                const gridStyle = pos ? {
+                  gridColumn: `${pos.gridCol} / span ${span.colSpan}`,
+                  gridRow: `${pos.gridRow} / span ${span.rowSpan}`,
+                } : undefined;
+
                 return (
-                  <CardComp
-                    key={card.id}
-                    card={card}
-                    callService={callService}
-                    onCardAction={onOpenPopup}
-                  />
+                  <div key={card.id} style={gridStyle}>
+                    <CardComp
+                      card={card}
+                      callService={callService}
+                      onCardAction={onOpenPopup}
+                    />
+                  </div>
                 );
               })}
             </div>
