@@ -1,55 +1,81 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import {
   DndContext,
-  closestCenter,
+  useDraggable,
   PointerSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  rectSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { Icon } from "@ui5/webcomponents-react";
 import { getCardComponent } from "@/components/cards";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
 import { CardEditPopup } from "@/components/wizard/CardEditPopup";
+import { getCardSpan, getCardPosition } from "@/utils/gridLayout";
 import type { CardItem, Section } from "@/types";
 import "./DraggableGrid.css";
 
 interface DraggableGridProps {
   section: Section;
   callService: (domain: string, service: string, data?: Record<string, unknown>, target?: Record<string, unknown>) => void;
-  onReorder: (sectionId: string, oldIndex: number, newIndex: number) => void;
   onOpenPopup?: (popupId: string, props?: Record<string, unknown>) => void;
 }
 
-function SortableCard({
+interface GridMetrics {
+  cols: number;
+  cellW: number;
+  rowH: number;
+  gap: number;
+}
+
+function DraggableCard({
   card,
   sectionId,
   callService,
   onOpenPopup,
+  gridMetrics,
+  isStrip,
 }: {
   card: CardItem;
   sectionId: string;
   callService: DraggableGridProps["callService"];
   onOpenPopup?: DraggableGridProps["onOpenPopup"];
+  gridMetrics: GridMetrics;
+  isStrip?: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: card.id });
   const [showEdit, setShowEdit] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizePreview, setResizePreview] = useState<{ colSpan: number; rowSpan: number } | null>(null);
   const toggleCardVisibility = useDashboardStore((s) => s.toggleCardVisibility);
   const removeCard = useDashboardStore((s) => s.removeCard);
+  const resizeCard = useDashboardStore((s) => s.resizeCard);
+  const resizeStartRef = useRef<{ x: number; y: number; colSpan: number; rowSpan: number } | null>(null);
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.6 : 1,
-    zIndex: isDragging ? 50 : "auto" as const,
-  };
+  const span = getCardSpan(card);
+  const pos = getCardPosition(card);
+
+  const displaySpan = resizePreview || span;
+
+  const style: React.CSSProperties = isStrip
+    ? {
+        flex: card.flexWeight || 1,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 50 : "auto",
+        transform: transform ? `translate(${transform.x}px, 0)` : undefined,
+        transition: isDragging ? undefined : "box-shadow 0.2s ease",
+        height: "100%",
+        minWidth: 0,
+      }
+    : {
+        gridColumn: pos ? `${pos.gridCol} / span ${displaySpan.colSpan}` : undefined,
+        gridRow: pos ? `${pos.gridRow} / span ${displaySpan.rowSpan}` : undefined,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 50 : isResizing ? 40 : "auto",
+        transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+        transition: isDragging ? undefined : "box-shadow 0.2s ease",
+      };
 
   const isHidden = card.visible === false;
 
@@ -74,15 +100,51 @@ function SortableCard({
     }
   };
 
+  const handleResizePointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsResizing(true);
+    resizeStartRef.current = { x: e.clientX, y: e.clientY, colSpan: span.colSpan, rowSpan: span.rowSpan };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handleResizePointerMove = (e: React.PointerEvent) => {
+    if (!resizeStartRef.current) return;
+    const dx = e.clientX - resizeStartRef.current.x;
+    const dy = e.clientY - resizeStartRef.current.y;
+    const { cellW, rowH, gap, cols } = gridMetrics;
+    const dCols = Math.round(dx / (cellW + gap));
+    const dRows = Math.round(dy / (rowH + gap));
+    const newColSpan = Math.max(1, Math.min(cols, resizeStartRef.current.colSpan + dCols));
+    const newRowSpan = Math.max(1, resizeStartRef.current.rowSpan + dRows);
+    setResizePreview({ colSpan: newColSpan, rowSpan: newRowSpan });
+  };
+
+  const handleResizePointerUp = (e: React.PointerEvent) => {
+    if (!resizeStartRef.current) return;
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    setIsResizing(false);
+    if (resizePreview) {
+      resizeCard(sectionId, card.id, resizePreview.colSpan, resizePreview.rowSpan);
+      const current = useDashboardStore.getState().dashboard;
+      if (current) {
+        api.putDashboard(current).catch(console.error);
+      }
+    }
+    resizeStartRef.current = null;
+    setResizePreview(null);
+  };
+
   return (
     <>
       <div
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
-        className={`draggable-grid__item ${isHidden ? "draggable-grid__item--hidden" : ""}`}
+        className={`draggable-grid__item ${isHidden ? "draggable-grid__item--hidden" : ""} ${isDragging ? "draggable-grid__item--dragging" : ""}`}
       >
+        {/* Drag handle area */}
+        <div className="draggable-grid__drag-zone" {...attributes} {...listeners} />
+
         <CardComp card={card} callService={callService} onCardAction={onOpenPopup} />
 
         {/* Edit overlay controls */}
@@ -113,6 +175,31 @@ function SortableCard({
         {isHidden && (
           <div className="draggable-grid__hidden-badge">Ausgeblendet</div>
         )}
+
+        {/* Resize handle */}
+        <div
+          className="draggable-grid__resize-handle"
+          onPointerDown={handleResizePointerDown}
+          onPointerMove={handleResizePointerMove}
+          onPointerUp={handleResizePointerUp}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="10" y1="6" x2="6" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="10" y1="10" x2="10" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </div>
+
+        {/* Size indicator */}
+        {isStrip ? (
+          <div className="draggable-grid__weight-badge">
+            {card.flexWeight || 1}x
+          </div>
+        ) : (
+          <div className="draggable-grid__size-badge">
+            {displaySpan.colSpan}x{displaySpan.rowSpan}
+          </div>
+        )}
       </div>
 
       {showEdit && (
@@ -127,43 +214,99 @@ function SortableCard({
   );
 }
 
-export function DraggableGrid({ section, callService, onReorder, onOpenPopup }: DraggableGridProps) {
+export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGridProps) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridMetrics, setGridMetrics] = useState<GridMetrics>({ cols: 4, cellW: 200, rowH: 120, gap: 12 });
+  const moveCard = useDashboardStore((s) => s.moveCard);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
     })
   );
 
+  // Measure grid metrics on resize
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const style = getComputedStyle(el);
+      const cols = style.gridTemplateColumns.split(" ").length;
+      const gap = parseFloat(style.gap) || 12;
+      const totalW = el.clientWidth;
+      const cellW = (totalW - (cols - 1) * gap) / cols;
+      const rowH = 120; // matches grid-auto-rows minmax
+      setGridMetrics({ cols, cellW, rowH, gap });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
-      const oldIndex = section.items.findIndex((item) => item.id === active.id);
-      const newIndex = section.items.findIndex((item) => item.id === over.id);
-      if (oldIndex !== -1 && newIndex !== -1) {
-        onReorder(section.id, oldIndex, newIndex);
+      const { active, delta } = event;
+      if (!delta || (delta.x === 0 && delta.y === 0)) return;
+
+      const cardId = active.id as string;
+      const card = section.items.find((c) => c.id === cardId);
+      if (!card) return;
+
+      const pos = getCardPosition(card);
+      if (!pos) return;
+
+      const { cellW, rowH, gap, cols } = gridMetrics;
+      const span = getCardSpan(card);
+      const dCols = Math.round(delta.x / (cellW + gap));
+      const dRows = Math.round(delta.y / (rowH + gap));
+
+      const newCol = Math.max(1, Math.min(cols - span.colSpan + 1, pos.gridCol + dCols));
+      const newRow = Math.max(1, pos.gridRow + dRows);
+
+      if (newCol !== pos.gridCol || newRow !== pos.gridRow) {
+        moveCard(section.id, cardId, newCol, newRow);
+        const current = useDashboardStore.getState().dashboard;
+        if (current) {
+          api.putDashboard(current).catch(console.error);
+        }
       }
     },
-    [section.id, section.items, onReorder]
+    [section.id, section.items, gridMetrics, moveCard]
   );
 
-  const itemIds = section.items.map((item) => item.id);
+  const isStrip = section.layout === "strip";
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={itemIds} strategy={rectSortingStrategy}>
-        <div className="draggable-grid">
-          {section.items.map((card) => (
-            <SortableCard
-              key={card.id}
-              card={card}
-              sectionId={section.id}
-              callService={callService}
-              onOpenPopup={onOpenPopup}
-            />
-          ))}
-        </div>
-      </SortableContext>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <div
+        ref={gridRef}
+        className={`draggable-grid ${isStrip ? "draggable-grid--strip" : "draggable-grid--edit"}`}
+      >
+        {!isStrip && <div className="draggable-grid__overlay" />}
+        {section.items.map((card) => (
+          <DraggableCard
+            key={card.id}
+            card={card}
+            sectionId={section.id}
+            callService={callService}
+            onOpenPopup={onOpenPopup}
+            gridMetrics={gridMetrics}
+            isStrip={isStrip}
+          />
+        ))}
+        {isStrip && (
+          <button
+            className="draggable-grid__strip-add"
+            title="Karte hinzufuegen"
+            onClick={() => onOpenPopup?.("widget-wizard", { sectionId: section.id })}
+          >
+            +
+          </button>
+        )}
+      </div>
     </DndContext>
   );
 }
