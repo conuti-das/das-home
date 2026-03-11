@@ -31,6 +31,7 @@ import { RadarCard } from "./RadarCard";
 import { TrashCard } from "./TrashCard";
 import { AreaCard, AreaCardSmall } from "./AreaCard";
 import { VehicleCard } from "./VehicleCard";
+import { SonosGroupCard } from "./SonosGroupCard";
 
 // Group A: Display-only (Anzeige)
 registerCard("sensor", SensorCard, {
@@ -322,6 +323,14 @@ registerCard("vehicle", VehicleCard, {
   compatibleDomains: ["device_tracker", "sensor", "binary_sensor"],
   defaultSize: "2x3",
   iconName: "car-rental",
+});
+registerCard("sonos_group", SonosGroupCard, {
+  displayName: "Sonos Gruppe",
+  description: "Sonos Player gruppieren und gemeinsam steuern",
+  category: "spezial",
+  compatibleDomains: ["media_player"],
+  defaultSize: "1x1",
+  iconName: "media-play",
 });
 
 export { BaseCard } from "./BaseCard";

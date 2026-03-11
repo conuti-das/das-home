@@ -1,0 +1,59 @@
+.sonos-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  height: 100%;
+  border-radius: var(--dh-card-radius);
+  background: var(--dh-gray400);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.15s ease;
+}
+
+.sonos-card:hover {
+  background: var(--dh-gray300);
+}
+
+.sonos-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(86, 204, 242, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sonos-card__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sonos-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sonos-card__now-playing {
+  font-size: 11px;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sonos-card__count {
+  font-size: 11px;
+  color: var(--dh-blue);
+  font-weight: 600;
+  flex-shrink: 0;
+}
