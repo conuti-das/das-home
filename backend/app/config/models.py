@@ -35,6 +35,11 @@ class CardItem(BaseModel):
     entity: str = ""
     size: str = "1x1"
     config: dict = Field(default_factory=dict)
+    grid_col: int | None = None
+    grid_row: int | None = None
+    col_span: int | None = None
+    row_span: int | None = None
+    flex_weight: int | None = None
 
 
 class SubSection(BaseModel):
@@ -47,6 +52,7 @@ class Section(BaseModel):
     id: str
     title: str
     icon: str = ""
+    layout: str = "grid"
     items: list[CardItem] = Field(default_factory=list)
     subsections: list[SubSection] = Field(default_factory=list)
 
