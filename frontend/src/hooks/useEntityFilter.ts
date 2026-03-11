@@ -110,30 +110,27 @@ export function useEntityFilter(): UseEntityFilterReturn {
       arr.push(state);
     }
 
-    // Sort
+    // Sort: domain priority always applies first (important devices on top),
+    // then the selected sort field/direction for secondary ordering
     arr.sort((a, b) => {
+      const da = a.entity_id.split(".")[0];
+      const db = b.entity_id.split(".")[0];
+      const prioCmp = getDomainPriority(da) - getDomainPriority(db);
+      if (prioCmp !== 0) return prioCmp;
+
       let cmp = 0;
       switch (sortField) {
         case "name": {
-          // Primary sort: domain priority (main devices first)
-          const da = a.entity_id.split(".")[0];
-          const db = b.entity_id.split(".")[0];
-          const pa = getDomainPriority(da);
-          const pb = getDomainPriority(db);
-          cmp = pa - pb;
-          if (cmp === 0) {
-            // Secondary sort: alphabetical by name
-            const na = ((a.attributes?.friendly_name as string) || a.entity_id).toLowerCase();
-            const nb = ((b.attributes?.friendly_name as string) || b.entity_id).toLowerCase();
-            cmp = na.localeCompare(nb);
-          }
+          const na = ((a.attributes?.friendly_name as string) || a.entity_id).toLowerCase();
+          const nb = ((b.attributes?.friendly_name as string) || b.entity_id).toLowerCase();
+          cmp = na.localeCompare(nb);
           break;
         }
         case "entity_id":
           cmp = a.entity_id.localeCompare(b.entity_id);
           break;
         case "domain":
-          cmp = a.entity_id.split(".")[0].localeCompare(b.entity_id.split(".")[0]);
+          cmp = da.localeCompare(db);
           break;
         case "state":
           cmp = a.state.localeCompare(b.state);
