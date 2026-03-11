@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.1.9
+
+### Improved
+
+- Sonos popup shows friendly player name as title instead of "Sonos Gruppe"
+- Now-playing info (title + artist) shown prominently at the top
+- Each player row is expandable with per-player settings: volume, bass, treble, balance sliders and loudness toggle
+- Source selector moved inline next to "Quelle" label
+- Player state shows readable labels ("Spielt · TV" instead of "playing")
+
+### Verbessert
+
+- Sonos-Popup zeigt Friendly Name des Players als Titel statt "Sonos Gruppe"
+- Wiedergabe-Info (Titel + Kuenstler) prominent oben angezeigt
+- Jeder Player aufklappbar mit Einstellungen: Lautstaerke, Bass, Hoehen, Balance und Loudness
+- Quellen-Auswahl inline neben "Quelle" Label
+- Player-Status zeigt lesbare Labels ("Spielt · TV" statt "playing")
+
+### Fixed
+
+- Entity sort priority always applies (main devices first) regardless of sort direction
+
+### Behoben
+
+- Entity-Sortierung nach Prioritaet greift jetzt immer (Hauptgeraete zuerst), unabhaengig von Sortierrichtung
+
 ## 0.1.8
 
 ### Fixed

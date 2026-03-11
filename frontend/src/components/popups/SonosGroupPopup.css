@@ -1,21 +1,51 @@
+/* Now playing */
+.sonos-popup__now-playing {
+  text-align: center;
+  padding: 8px 0 4px 0;
+}
+
+.sonos-popup__now-playing-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+}
+
+.sonos-popup__now-playing-artist {
+  font-size: 13px;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+/* Players */
 .sonos-popup__players {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .sonos-popup__player {
+  border-radius: var(--dh-card-radius-sm);
+  background: rgba(250, 251, 252, 0.05);
+  overflow: hidden;
+}
+
+.sonos-popup__player--active {
+  background: rgba(86, 204, 242, 0.08);
+}
+
+.sonos-popup__player-main {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: var(--dh-card-radius-sm);
-  background: rgba(250, 251, 252, 0.05);
+  cursor: pointer;
+  transition: background 0.1s ease;
 }
 
-.sonos-popup__player--active {
-  background: rgba(86, 204, 242, 0.1);
+.sonos-popup__player-main:hover {
+  background: rgba(250, 251, 252, 0.04);
 }
 
 .sonos-popup__player-icon {
@@ -38,6 +68,19 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--dh-gray100);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sonos-popup__master-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(86, 204, 242, 0.2);
+  color: var(--dh-blue);
 }
 
 .sonos-popup__player-state {
@@ -46,10 +89,67 @@
   opacity: 0.5;
 }
 
+/* Player settings (expanded) */
+.sonos-popup__player-settings {
+  padding: 4px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(250, 251, 252, 0.06);
+}
+
+.sonos-popup__setting-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sonos-popup__setting-label {
+  font-size: 12px;
+  color: var(--dh-gray100);
+  opacity: 0.6;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.sonos-popup__setting-slider {
+  flex: 1;
+  accent-color: var(--dh-blue);
+  height: 4px;
+}
+
+.sonos-popup__setting-value {
+  font-size: 12px;
+  color: var(--dh-gray100);
+  opacity: 0.6;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Toggle button */
+.sonos-popup__toggle {
+  padding: 4px 12px;
+  border-radius: var(--dh-card-radius-sm);
+  border: 1px solid rgba(250, 251, 252, 0.1);
+  background: rgba(250, 251, 252, 0.05);
+  color: var(--dh-gray100);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sonos-popup__toggle--on {
+  background: rgba(86, 204, 242, 0.15);
+  border-color: rgba(86, 204, 242, 0.3);
+  color: var(--dh-blue);
+}
+
+/* Actions */
 .sonos-popup__actions {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .sonos-popup__btn {
@@ -81,12 +181,13 @@
   background: rgba(250, 251, 252, 0.12);
 }
 
+/* Playback controls */
 .sonos-popup__controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .sonos-popup__control-btn {
@@ -118,11 +219,12 @@
   background: #3dbde8;
 }
 
+/* Volume */
 .sonos-popup__volume {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
+  padding: 4px 0 8px 0;
 }
 
 .sonos-popup__volume-slider {
@@ -138,6 +240,31 @@
   text-align: right;
 }
 
+/* Source */
+.sonos-popup__source-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0 12px 0;
+}
+
+.sonos-popup__source-label {
+  font-size: 13px;
+  color: var(--dh-gray100);
+  opacity: 0.6;
+}
+
+.sonos-popup__source-select {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--dh-card-radius-sm);
+  border: 1px solid rgba(250, 251, 252, 0.1);
+  background: rgba(250, 251, 252, 0.05);
+  color: var(--dh-gray100);
+  font-size: 13px;
+}
+
+/* Section titles */
 .sonos-popup__section-title {
   font-size: 11px;
   font-weight: 600;
@@ -146,14 +273,4 @@
   color: var(--dh-gray100);
   opacity: 0.4;
   padding: 8px 0 4px 0;
-}
-
-.sonos-popup__source-select {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: var(--dh-card-radius-sm);
-  border: 1px solid rgba(250, 251, 252, 0.1);
-  background: rgba(250, 251, 252, 0.05);
-  color: var(--dh-gray100);
-  font-size: 13px;
 }
