@@ -8,9 +8,16 @@ interface StatusBarProps {
   onLightsClick?: () => void;
 }
 
+/** Filter out sub-entities like WLED segments */
+function isMainLight(e: { entity_id: string; attributes: Record<string, unknown> }): boolean {
+  if (e.entity_id.includes("_segment_") || e.entity_id.includes("_channel_")) return false;
+  if (e.attributes?.entity_category === "config" || e.attributes?.entity_category === "diagnostic") return false;
+  return true;
+}
+
 export function StatusBar({ onTrashClick, onLightsClick }: StatusBarProps) {
-  const lights = useEntitiesByDomain("light");
-  const lightsOn = lights.filter((e) => e.state === "on").length;
+  const allLights = useEntitiesByDomain("light");
+  const lightsOn = allLights.filter((e) => e.state === "on" && isMainLight(e)).length;
 
   // Find trash sensor (common patterns)
   const allSensors = useEntitiesByDomain("sensor");

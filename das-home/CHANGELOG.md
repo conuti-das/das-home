@@ -21,10 +21,12 @@
 ### Fixed
 
 - Entity sort priority always applies (main devices first) regardless of sort direction
+- Lights popup and status bar count now hide WLED segments and sub-entities (only show main lights)
 
 ### Behoben
 
 - Entity-Sortierung nach Prioritaet greift jetzt immer (Hauptgeraete zuerst), unabhaengig von Sortierrichtung
+- Lichter-Popup und StatusBar-Zaehler blenden WLED-Segmente und Sub-Entities aus (nur Hauptlampen)
 
 ## 0.1.8
 

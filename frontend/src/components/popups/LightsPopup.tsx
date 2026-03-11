@@ -4,8 +4,21 @@ import { PopupModal } from "@/components/layout/PopupModal";
 import { LightSliderCard } from "@/components/cards/LightSliderCard";
 import type { PopupProps } from "./PopupRegistry";
 
+/** Filter out sub-entities like WLED segments, channels, etc. */
+function isMainLight(entity: { entity_id: string; attributes: Record<string, unknown> }): boolean {
+  const id = entity.entity_id;
+  const name = ((entity.attributes?.friendly_name as string) || "").toLowerCase();
+  // Filter out WLED segments, channels, and other sub-entities
+  if (id.includes("_segment_") || id.includes("_channel_")) return false;
+  if (/segment\s*\d/i.test(name)) return false;
+  // HA marks sub-entities with entity_category
+  if (entity.attributes?.entity_category === "config" || entity.attributes?.entity_category === "diagnostic") return false;
+  return true;
+}
+
 export function LightsPopup({ onClose, callService, onOpenPopup }: PopupProps) {
-  const lights = useEntitiesByDomain("light");
+  const allLights = useEntitiesByDomain("light");
+  const lights = allLights.filter(isMainLight);
   const onLights = lights.filter((e) => e.state === "on");
   const offLights = lights.filter((e) => e.state !== "on");
 
