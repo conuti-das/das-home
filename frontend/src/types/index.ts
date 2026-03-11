@@ -37,6 +37,11 @@ export interface CardItem {
   customLabel?: string;
   customIcon?: string;
   customColor?: string;
+  gridCol?: number;
+  gridRow?: number;
+  colSpan?: number;
+  rowSpan?: number;
+  flexWeight?: number;
 }
 
 export interface SubSection {
@@ -49,6 +54,7 @@ export interface Section {
   id: string;
   title: string;
   icon: string;
+  layout?: "grid" | "strip";
   items: CardItem[];
   subsections: SubSection[];
 }
