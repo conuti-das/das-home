@@ -208,6 +208,7 @@ function DraggableCard({
           onClose={() => setShowEdit(false)}
           sectionId={sectionId}
           card={card}
+          sectionLayout={isStrip ? "strip" : "grid"}
         />
       )}
     </>

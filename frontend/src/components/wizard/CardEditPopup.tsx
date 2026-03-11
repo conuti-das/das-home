@@ -3,6 +3,7 @@ import { PopupModal } from "@/components/layout/PopupModal";
 import { getRegisteredTypes, getCardMetadata } from "@/components/cards/CardRegistry";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
+import { parseSizeString } from "@/utils/gridLayout";
 import type { CardItem } from "@/types";
 
 interface CardEditPopupProps {
@@ -10,6 +11,7 @@ interface CardEditPopupProps {
   onClose: () => void;
   sectionId: string;
   card: CardItem;
+  sectionLayout?: "grid" | "strip";
 }
 
 const SIZES = ["1x1", "2x1", "1x2", "2x2"];
@@ -25,36 +27,48 @@ const PRESET_COLORS = [
   { label: "Standard", value: "", hex: "transparent" },
 ];
 
-export function CardEditPopup({ open, onClose, sectionId, card }: CardEditPopupProps) {
-  const [tab, setTab] = useState<"type" | "size" | "styling" | "entity">("type");
+export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }: CardEditPopupProps) {
+  const [tab, setTab] = useState<"type" | "size" | "weight" | "styling" | "entity">("type");
   const [cardType, setCardType] = useState(card.type);
   const [cardSize, setCardSize] = useState(card.size);
   const [customLabel, setCustomLabel] = useState(card.customLabel ?? "");
   const [customIcon, setCustomIcon] = useState(card.customIcon ?? "");
   const [customColor, setCustomColor] = useState(card.customColor ?? "");
+  const [flexWeight, setFlexWeight] = useState(card.flexWeight ?? 1);
 
   const updateCardConfig = useDashboardStore((s) => s.updateCardConfig);
   const registeredTypes = useMemo(() => getRegisteredTypes(), []);
 
   const handleSave = useCallback(() => {
-    updateCardConfig(sectionId, card.id, {
+    const { colSpan, rowSpan } = parseSizeString(cardSize);
+    const updates: Partial<CardItem> = {
       type: cardType,
       size: cardSize,
+      colSpan,
+      rowSpan,
       customLabel: customLabel || undefined,
       customIcon: customIcon || undefined,
       customColor: customColor || undefined,
-    });
+    };
+    if (sectionLayout === "strip") {
+      updates.flexWeight = flexWeight;
+    }
+    updateCardConfig(sectionId, card.id, updates);
     // Persist
     const current = useDashboardStore.getState().dashboard;
     if (current) {
       api.putDashboard(current).catch(console.error);
     }
     onClose();
-  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, updateCardConfig, onClose]);
+  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, flexWeight, sectionLayout, updateCardConfig, onClose]);
+
+  const isStrip = sectionLayout === "strip";
 
   const tabs = [
     { key: "type" as const, label: "Widget" },
-    { key: "size" as const, label: "Groesse" },
+    ...(isStrip
+      ? [{ key: "weight" as const, label: "Gewichtung" }]
+      : [{ key: "size" as const, label: "Groesse" }]),
     { key: "styling" as const, label: "Styling" },
     { key: "entity" as const, label: "Entity" },
   ];
@@ -109,6 +123,22 @@ export function CardEditPopup({ open, onClose, sectionId, card }: CardEditPopupP
                 style={{ padding: "16px 24px" }}
               >
                 <span className="sz__label">{size}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Weight tab (strip only) */}
+        {tab === "weight" && (
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {[1, 2, 3].map((w) => (
+              <button
+                key={w}
+                className={`sz__option ${w === flexWeight ? "sz__option--active" : ""}`}
+                onClick={() => setFlexWeight(w)}
+                style={{ padding: "16px 24px" }}
+              >
+                <span className="sz__label">{w}x</span>
               </button>
             ))}
           </div>
