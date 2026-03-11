@@ -1,18 +1,38 @@
 .draggable-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: minmax(120px, auto);
   gap: var(--dh-grid-gap);
+  position: relative;
+}
+
+.draggable-grid--edit {
+  min-height: 200px;
 }
 
 .draggable-grid__item {
   position: relative;
-  transition: transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
+  border-radius: var(--dh-card-radius);
+  overflow: visible;
 }
 
 .draggable-grid__item--dragging {
-  opacity: 0.6;
-  transform: scale(1.03);
+  opacity: 0.5;
   z-index: 50;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Drag zone covers the card for grab interaction */
+.draggable-grid__drag-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: grab;
+}
+
+.draggable-grid__drag-zone:active {
+  cursor: grabbing;
 }
 
 /* Hidden card styling */
@@ -32,6 +52,28 @@
   font-weight: 600;
   pointer-events: none;
   z-index: 5;
+}
+
+/* Size badge (bottom-left) */
+.draggable-grid__size-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--dh-gray100);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.draggable-grid__item:hover .draggable-grid__size-badge {
+  opacity: 1;
 }
 
 /* Edit controls overlay */
@@ -63,6 +105,8 @@
   justify-content: center;
   backdrop-filter: blur(8px);
   transition: background 0.15s ease;
+  position: relative;
+  z-index: 12;
 }
 
 .draggable-grid__edit-btn:hover {
@@ -71,6 +115,45 @@
 
 .draggable-grid__edit-btn--danger:hover {
   background: rgba(235, 87, 87, 0.85);
+}
+
+/* Resize handle */
+.draggable-grid__resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: nwse-resize;
+  z-index: 15;
+  color: rgba(250, 251, 252, 0.3);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  touch-action: none;
+}
+
+.draggable-grid__item:hover .draggable-grid__resize-handle {
+  opacity: 1;
+}
+
+.draggable-grid__resize-handle:hover {
+  color: var(--dh-blue);
+}
+
+/* Grid overlay (edit mode visual guide) */
+.draggable-grid__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, rgba(250, 251, 252, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(250, 251, 252, 0.04) 1px, transparent 1px);
+  background-size: calc(100% / var(--grid-cols, 4)) 132px;
+  border-radius: var(--dh-card-radius);
 }
 
 @media (min-width: 768px) {
@@ -83,4 +166,74 @@
   .draggable-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Strip mode */
+.draggable-grid--strip {
+  display: flex;
+  gap: var(--dh-grid-gap);
+  height: 120px;
+  min-height: 120px;
+  position: relative;
+}
+
+.draggable-grid--strip .draggable-grid__item {
+  min-width: 0;
+  height: 100%;
+}
+
+.draggable-grid--strip .draggable-grid__overlay {
+  display: none;
+}
+
+.draggable-grid--strip .draggable-grid__resize-handle {
+  display: none;
+}
+
+.draggable-grid--strip .draggable-grid__size-badge {
+  display: none;
+}
+
+/* Weight badge for strip cards */
+.draggable-grid__weight-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--dh-gray100);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.draggable-grid__item:hover .draggable-grid__weight-badge {
+  opacity: 1;
+}
+
+/* Add button for strip sections */
+.draggable-grid__strip-add {
+  width: 48px;
+  flex-shrink: 0;
+  border-radius: var(--dh-card-radius);
+  border: 2px dashed rgba(250, 251, 252, 0.15);
+  background: none;
+  color: rgba(250, 251, 252, 0.3);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.draggable-grid__strip-add:hover {
+  border-color: var(--dh-blue);
+  color: var(--dh-blue);
+  background: rgba(86, 204, 242, 0.05);
 }

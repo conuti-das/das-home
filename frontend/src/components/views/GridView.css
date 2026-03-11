@@ -24,6 +24,10 @@
   gap: var(--dh-grid-gap);
 }
 
+.grid-view__grid--positioned {
+  grid-auto-rows: minmax(120px, auto);
+}
+
 .grid-view__grid--single-col {
   grid-template-columns: 1fr;
 }
@@ -49,4 +53,16 @@
   .grid-view__grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Strip section layout */
+.grid-view__strip {
+  display: flex;
+  gap: var(--dh-grid-gap);
+  height: 120px;
+}
+
+.grid-view__strip-card {
+  min-width: 0;
+  overflow: hidden;
 }
