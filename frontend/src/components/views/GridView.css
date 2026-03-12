@@ -28,6 +28,17 @@
   grid-auto-rows: minmax(120px, auto);
 }
 
+/* Ensure cards stretch to fill grid cell height */
+.grid-view__grid > div {
+  display: flex;
+  min-height: 0;
+}
+
+.grid-view__grid > div > * {
+  flex: 1;
+  min-height: 0;
+}
+
 .grid-view__grid--single-col {
   grid-template-columns: 1fr;
 }
