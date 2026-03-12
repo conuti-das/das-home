@@ -7,7 +7,7 @@ from pathlib import Path
 
 from app.settings import settings
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
 
 app = FastAPI(title="das-home", version=__version__)

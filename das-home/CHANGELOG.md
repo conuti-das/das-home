@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.3
+
+### Fixed
+
+- HA Ingress iframe caching: auto-reloads when version changes on visibility (fixes stale dashboard after updates)
+- Added no-cache meta tags to index.html for aggressive cache prevention
+
+### Behoben
+
+- HA Ingress iframe Caching: automatischer Reload bei Versionswechsel wenn Seite sichtbar wird (behebt veraltetes Dashboard nach Updates)
+- No-Cache Meta-Tags in index.html fuer aggressive Cache-Verhinderung
+
 ## 0.2.2
 
 ### Added
