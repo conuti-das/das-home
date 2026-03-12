@@ -6,8 +6,9 @@
   min-height: var(--dh-card-height-big);
   padding: 16px 20px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
   overflow: hidden;
   cursor: pointer;
 }
