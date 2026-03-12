@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PopupModal } from "@/components/layout/PopupModal";
-import { getRegisteredTypes, getCardMetadata } from "@/components/cards/CardRegistry";
+import { getRegisteredTypes, getCardMetadata, getCardComponent } from "@/components/cards/CardRegistry";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useEntitiesByDomain } from "@/hooks/useEntity";
 import { api } from "@/services/api";
@@ -29,7 +29,7 @@ const PRESET_COLORS = [
 ];
 
 export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }: CardEditPopupProps) {
-  const [tab, setTab] = useState<"type" | "size" | "weight" | "styling" | "datasource" | "entity">("type");
+  const [tab, setTab] = useState<"type" | "size" | "weight" | "styling" | "datasource" | "entity" | "section">("type");
   const [cardType, setCardType] = useState(card.type);
   const [cardSize, setCardSize] = useState(card.size);
   const [customLabel, setCustomLabel] = useState(card.customLabel ?? "");
@@ -37,8 +37,14 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
   const [customColor, setCustomColor] = useState(card.customColor ?? "");
   const [flexWeight, setFlexWeight] = useState(card.flexWeight ?? 1);
   const [cardConfig, setCardConfig] = useState<Record<string, unknown>>(card.config ?? {});
+  const [targetSectionId, setTargetSectionId] = useState(sectionId);
 
   const updateCardConfig = useDashboardStore((s) => s.updateCardConfig);
+  const moveCardToSection = useDashboardStore((s) => s.moveCardToSection);
+  const sections = useDashboardStore((s) => {
+    const view = s.dashboard?.views.find((v) => v.id === s.activeViewId);
+    return view?.sections || [];
+  });
   const registeredTypes = useMemo(() => getRegisteredTypes(), []);
 
   // For weather card: get all sensors to allow custom entity selection
@@ -85,13 +91,17 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       updates.flexWeight = flexWeight;
     }
     updateCardConfig(sectionId, card.id, updates);
+    // Move to different section if changed
+    if (targetSectionId !== sectionId) {
+      moveCardToSection(sectionId, card.id, targetSectionId);
+    }
     // Persist
     const current = useDashboardStore.getState().dashboard;
     if (current) {
       api.putDashboard(current).catch(console.error);
     }
     onClose();
-  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, flexWeight, cardConfig, sectionLayout, updateCardConfig, onClose]);
+  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, flexWeight, cardConfig, sectionLayout, targetSectionId, updateCardConfig, moveCardToSection, onClose]);
 
   const isStrip = sectionLayout === "strip";
 
@@ -100,6 +110,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
     ...(isStrip
       ? [{ key: "weight" as const, label: "Gewichtung" }]
       : [{ key: "size" as const, label: "Groesse" }]),
+    { key: "section" as const, label: "Sektion" },
     { key: "styling" as const, label: "Styling" },
     ...(isWeatherCard ? [{ key: "datasource" as const, label: "Datenquellen" }] : []),
     { key: "entity" as const, label: "Entity" },
@@ -146,17 +157,22 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
 
         {/* Size tab */}
         {tab === "size" && (
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {SIZES.map((size) => (
-              <button
-                key={size}
-                className={`sz__option ${size === cardSize ? "sz__option--active" : ""}`}
-                onClick={() => setCardSize(size)}
-                style={{ padding: "16px 24px" }}
-              >
-                <span className="sz__label">{size}</span>
-              </button>
-            ))}
+          <div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+              {SIZES.map((size) => (
+                <button
+                  key={size}
+                  className={`sz__option ${size === cardSize ? "sz__option--active" : ""}`}
+                  onClick={() => setCardSize(size)}
+                  style={{ padding: "16px 24px" }}
+                >
+                  <span className="sz__label">{size}</span>
+                </button>
+              ))}
+            </div>
+            {/* Size preview */}
+            <div style={{ fontSize: 12, opacity: 0.5, color: "var(--dh-gray100)", marginBottom: 8 }}>Vorschau</div>
+            <SizePreview card={card} size={cardSize} cardType={cardType} />
           </div>
         )}
 
@@ -171,6 +187,30 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
                 style={{ padding: "16px 24px" }}
               >
                 <span className="sz__label">{w}x</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Section tab */}
+        {tab === "section" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div style={{ fontSize: 12, opacity: 0.5, color: "var(--dh-gray100)", marginBottom: 4 }}>
+              Karte in eine andere Sektion verschieben
+            </div>
+            {sections.map((s) => (
+              <button
+                key={s.id}
+                className={`cep__type-row ${targetSectionId === s.id ? "cep__type-row--active" : ""}`}
+                onClick={() => setTargetSectionId(s.id)}
+              >
+                <span className="cep__type-name">
+                  {s.title || s.id}
+                  {s.id === sectionId && " (aktuell)"}
+                </span>
+                <span className="cep__type-desc">
+                  {s.layout === "strip" ? "Strip" : "Grid"} · {s.items.length} Karten
+                </span>
               </button>
             ))}
           </div>
@@ -420,5 +460,52 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
         }
       `}</style>
     </PopupModal>
+  );
+}
+
+function SizePreview({ card, size, cardType }: { card: CardItem; size: string; cardType: string }) {
+  const { colSpan, rowSpan } = parseSizeString(size);
+  const CardComp = getCardComponent(cardType);
+
+  // Scale factor to fit preview in popup
+  const previewWidth = colSpan === 2 ? 280 : 140;
+  const previewHeight = rowSpan === 2 ? 200 : 100;
+
+  return (
+    <div style={{
+      background: "var(--dh-gray400)",
+      borderRadius: "var(--dh-card-radius)",
+      padding: 12,
+      display: "flex",
+      justifyContent: "center",
+      overflow: "hidden",
+    }}>
+      <div style={{
+        width: previewWidth,
+        height: previewHeight,
+        transform: "scale(0.85)",
+        transformOrigin: "center center",
+        pointerEvents: "none",
+      }}>
+        {CardComp ? (
+          <CardComp card={{ ...card, type: cardType, size }} callService={() => {}} />
+        ) : (
+          <div style={{
+            width: "100%",
+            height: "100%",
+            background: "var(--dh-gray300)",
+            borderRadius: "var(--dh-card-radius)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--dh-gray100)",
+            opacity: 0.4,
+            fontSize: 13,
+          }}>
+            {size}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

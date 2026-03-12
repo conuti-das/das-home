@@ -25,6 +25,7 @@ export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
           onWeatherClick={() => onOpenPopup?.("weather")}
           onTrashClick={() => onOpenPopup?.("trash")}
           onLightsClick={() => onOpenPopup?.("lights")}
+          onOpenPopup={onOpenPopup}
         />
       )}
       {view.sections.map((section) => {

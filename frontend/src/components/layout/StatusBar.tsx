@@ -7,6 +7,7 @@ interface StatusBarProps {
   onWeatherClick?: () => void;
   onTrashClick?: () => void;
   onLightsClick?: () => void;
+  onOpenPopup?: (popupId: string, props?: Record<string, unknown>) => void;
 }
 
 /** Filter out sub-entities like WLED segments */
@@ -42,7 +43,7 @@ function formatRemaining(attrs: Record<string, unknown>): string {
   return "";
 }
 
-export function StatusBar({ onTrashClick, onLightsClick }: StatusBarProps) {
+export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBarProps) {
   const time = useCurrentTime();
 
   const allLights = useEntitiesByDomain("light");
@@ -77,8 +78,11 @@ export function StatusBar({ onTrashClick, onLightsClick }: StatusBarProps) {
   return (
     <div className="status-bar">
       {/* Clock */}
-      <div className="status-chip status-chip--subtle">
-        <span className="status-chip__text">{time}</span>
+      <div className="status-chip">
+        <div className="status-chip__icon">
+          <Icon name="history" style={{ width: 16, height: 16, color: "var(--dh-gray100)", opacity: 0.6 }} />
+        </div>
+        <span className="status-chip__value">{time}</span>
       </div>
 
       {/* Trash Chip */}
@@ -109,7 +113,11 @@ export function StatusBar({ onTrashClick, onLightsClick }: StatusBarProps) {
         const name = (mp.attributes?.friendly_name as string) || mp.entity_id.split(".")[1];
         const label = title ? `${name}: ${title}` : name;
         return (
-          <div key={mp.entity_id} className="status-chip status-chip--media">
+          <div
+            key={mp.entity_id}
+            className="status-chip status-chip--media"
+            onClick={() => onOpenPopup?.("media-detail", { entityId: mp.entity_id })}
+          >
             <div className="status-chip__icon">
               <Icon name="media-play" style={{ width: 16, height: 16, color: "var(--dh-blue)" }} />
             </div>

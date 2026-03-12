@@ -77,5 +77,6 @@
   .grid-view__strip {
     flex-direction: row;
     align-items: stretch;
+    min-height: 140px;
   }
 }

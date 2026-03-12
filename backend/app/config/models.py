@@ -35,6 +35,12 @@ class CardItem(BaseModel):
     entity: str = ""
     size: str = "1x1"
     config: dict = Field(default_factory=dict)
+    order: int | None = None
+    visible: bool | None = None
+    favorite: bool | None = None
+    custom_label: str | None = None
+    custom_icon: str | None = None
+    custom_color: str | None = None
     grid_col: int | None = None
     grid_row: int | None = None
     col_span: int | None = None

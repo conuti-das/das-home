@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.0
+
+### Added
+
+- Calendar popup with day, week and month views, event details and multi-calendar support
+- Calendar card now fetches real events via HA Calendar REST API with countdown to next event
+- Favorites system: cards marked as favorite are grouped at the top of the view
+- Move cards between sections via new "Section" tab in card editor
+- Size preview in card editor shows live card preview when changing size
+- Trash card redesigned with waste-type icons and urgency color coding (red/yellow/green)
+- CardItem model extended with order, visible, favorite, custom_label, custom_icon, custom_color fields
+- Automatic UTF-8 encoding fix for dashboard view names
+- Snake_case to camelCase normalization for API data
+
+### Hinzugefuegt
+
+- Kalender-Popup mit Tag-, Wochen- und Monatsansicht, Termindetails und Multi-Kalender-Unterstuetzung
+- Kalender-Karte holt jetzt echte Termine ueber HA Calendar REST API mit Countdown zum naechsten Termin
+- Favoriten-System: Als Favorit markierte Karten werden oben in der Ansicht gruppiert
+- Karten zwischen Sektionen verschieben ueber neuen "Sektion"-Tab im Karten-Editor
+- Groessenvorschau im Karten-Editor zeigt Live-Vorschau beim Aendern der Kartengroesse
+- Muellabfuhr-Karte ueberarbeitet mit Abfalltyp-Icons und Dringlichkeits-Farbkodierung (rot/gelb/gruen)
+- CardItem-Modell erweitert um order, visible, favorite, custom_label, custom_icon, custom_color Felder
+- Automatische UTF-8 Encoding-Korrektur fuer Dashboard-Viewnamen
+- Snake_case zu camelCase Normalisierung fuer API-Daten
+
 ## 0.1.9
 
 ### Improved

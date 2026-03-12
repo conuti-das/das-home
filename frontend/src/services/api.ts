@@ -23,4 +23,8 @@ export const api = {
   putDashboard: (dashboard: DashboardConfig) =>
     request("/dashboard", { method: "PUT", body: JSON.stringify(dashboard) }),
   getAuthStatus: () => request<{ configured: boolean; mode: string }>("/auth/status"),
+  getCalendarEvents: (entityId: string, start: string, end: string) =>
+    request<Array<{ summary: string; start: { dateTime?: string; date?: string }; end: { dateTime?: string; date?: string }; description?: string; location?: string }>>(
+      `/calendar/events/${entityId}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
+    ),
 };

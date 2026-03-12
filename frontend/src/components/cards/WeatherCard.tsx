@@ -56,7 +56,6 @@ export function WeatherCard({ card, onCardAction }: CardComponentProps) {
           gap: 20,
           minHeight: 120,
           overflow: "hidden",
-          gridColumn: "span 2",
           cursor: "pointer",
         }}
       >

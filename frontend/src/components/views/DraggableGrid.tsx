@@ -49,6 +49,7 @@ function DraggableCard({
   const [isResizing, setIsResizing] = useState(false);
   const [resizePreview, setResizePreview] = useState<{ colSpan: number; rowSpan: number } | null>(null);
   const toggleCardVisibility = useDashboardStore((s) => s.toggleCardVisibility);
+  const toggleFavorite = useDashboardStore((s) => s.toggleFavorite);
   const removeCard = useDashboardStore((s) => s.removeCard);
   const resizeCard = useDashboardStore((s) => s.resizeCard);
   const resizeStartRef = useRef<{ x: number; y: number; colSpan: number; rowSpan: number } | null>(null);
@@ -94,6 +95,15 @@ function DraggableCard({
   const handleToggleVisibility = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleCardVisibility(sectionId, card.id);
+    const current = useDashboardStore.getState().dashboard;
+    if (current) {
+      api.putDashboard(current).catch(console.error);
+    }
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavorite(sectionId, card.id);
     const current = useDashboardStore.getState().dashboard;
     if (current) {
       api.putDashboard(current).catch(console.error);
@@ -149,6 +159,13 @@ function DraggableCard({
 
         {/* Edit overlay controls */}
         <div className="draggable-grid__edit-controls">
+          <button
+            className={`draggable-grid__edit-btn ${card.favorite ? "draggable-grid__edit-btn--favorite" : ""}`}
+            title={card.favorite ? "Favorit entfernen" : "Als Favorit markieren"}
+            onClick={handleToggleFavorite}
+          >
+            <Icon name={card.favorite ? "favorite" : "unfavorite"} style={{ width: 14, height: 14 }} />
+          </button>
           <button
             className="draggable-grid__edit-btn"
             title="Bearbeiten"

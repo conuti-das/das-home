@@ -32,7 +32,7 @@ export function ViewRenderer({ onOpenPopup }: ViewRendererProps) {
   }
 
   if (activeView.type === "object_page") {
-    return <ObjectPageView view={activeView} callService={callService} />;
+    return <ObjectPageView view={activeView} callService={callService} onOpenPopup={onOpenPopup} />;
   }
 
   return <GridView view={activeView} callService={callService} onOpenPopup={onOpenPopup} />;

@@ -86,7 +86,8 @@
   }
 
   /* Wide variant for weather popup and similar */
-  .popup-modal__sheet.weather-popup-modal {
+  .popup-modal__sheet.weather-popup-modal,
+  .popup-modal__sheet.calendar-popup-modal {
     max-width: 640px;
   }
 }

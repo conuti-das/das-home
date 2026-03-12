@@ -21,6 +21,8 @@ interface DashboardStore {
   resizeCard: (sectionId: string, cardId: string, colSpan: number, rowSpan: number) => void;
   autoLayoutSection: (sectionId: string, columnCount: number) => void;
   updateCardWeight: (sectionId: string, cardId: string, weight: number) => void;
+  moveCardToSection: (fromSectionId: string, cardId: string, toSectionId: string) => void;
+  toggleFavorite: (sectionId: string, cardId: string) => void;
 }
 
 function findSection(dashboard: DashboardConfig, activeViewId: string, sectionId: string) {
@@ -29,13 +31,30 @@ function findSection(dashboard: DashboardConfig, activeViewId: string, sectionId
   return view.sections.find((s) => s.id === sectionId) ?? null;
 }
 
-/** Migrate cards: assign grid positions if missing */
+/** Convert snake_case API fields to camelCase for CardItem */
+function normalizeCard(card: CardItem): CardItem {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = card as any;
+  return {
+    ...card,
+    gridCol: card.gridCol ?? raw.grid_col,
+    gridRow: card.gridRow ?? raw.grid_row,
+    colSpan: card.colSpan ?? raw.col_span,
+    rowSpan: card.rowSpan ?? raw.row_span,
+    flexWeight: card.flexWeight ?? raw.flex_weight,
+    customLabel: card.customLabel ?? raw.custom_label,
+    customIcon: card.customIcon ?? raw.custom_icon,
+    customColor: card.customColor ?? raw.custom_color,
+  };
+}
+
+/** Migrate cards: normalize keys, assign grid positions if missing */
 function migrateCards(dashboard: DashboardConfig): DashboardConfig {
   const migrated = structuredClone(dashboard);
   for (const view of migrated.views) {
-    // Determine column count based on layout or default
-    const colCount = 4; // default, will be overridden by responsive CSS
+    const colCount = 4;
     for (const section of view.sections) {
+      section.items = section.items.map(normalizeCard);
       if (section.layout !== "strip") {
         section.items = autoAssignPositions(section.items, colCount);
       }
@@ -182,6 +201,38 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     const card = section.items.find((item) => item.id === cardId);
     if (!card) return;
     card.flexWeight = weight;
+    set({ dashboard: newDashboard });
+  },
+  toggleFavorite: (sectionId, cardId) => {
+    const { dashboard, activeViewId } = get();
+    if (!dashboard) return;
+    const newDashboard = structuredClone(dashboard);
+    const section = findSection(newDashboard, activeViewId, sectionId);
+    if (!section) return;
+    const card = section.items.find((item) => item.id === cardId);
+    if (!card) return;
+    card.favorite = !card.favorite;
+    set({ dashboard: newDashboard });
+  },
+  moveCardToSection: (fromSectionId, cardId, toSectionId) => {
+    const { dashboard, activeViewId } = get();
+    if (!dashboard || fromSectionId === toSectionId) return;
+    const newDashboard = structuredClone(dashboard);
+    const view = newDashboard.views.find((v) => v.id === activeViewId);
+    if (!view) return;
+    const fromSection = view.sections.find((s) => s.id === fromSectionId);
+    const toSection = view.sections.find((s) => s.id === toSectionId);
+    if (!fromSection || !toSection) return;
+    const cardIndex = fromSection.items.findIndex((item) => item.id === cardId);
+    if (cardIndex < 0) return;
+    const [card] = fromSection.items.splice(cardIndex, 1);
+    card.order = toSection.items.length;
+    card.gridCol = undefined;
+    card.gridRow = undefined;
+    toSection.items.push(card);
+    if (toSection.layout !== "strip") {
+      toSection.items = autoAssignPositions(toSection.items, 4);
+    }
     set({ dashboard: newDashboard });
   },
   autoLayoutSection: (sectionId, columnCount) => {

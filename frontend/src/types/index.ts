@@ -37,6 +37,7 @@ export interface CardItem {
   customLabel?: string;
   customIcon?: string;
   customColor?: string;
+  favorite?: boolean;
   gridCol?: number;
   gridRow?: number;
   colSpan?: number;

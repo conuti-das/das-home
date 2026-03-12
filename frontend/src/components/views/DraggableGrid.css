@@ -117,6 +117,14 @@
   background: rgba(235, 87, 87, 0.85);
 }
 
+.draggable-grid__edit-btn--favorite {
+  background: rgba(242, 201, 76, 0.3);
+}
+
+.draggable-grid__edit-btn--favorite:hover {
+  background: rgba(242, 201, 76, 0.5);
+}
+
 /* Resize handle */
 .draggable-grid__resize-handle {
   position: absolute;
