@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2
+
+### Added
+
+- "Set as homepage" button in Settings: registers DAS Home as default panel in HA via WebSocket API
+- Panel info endpoint to detect the add-on's ingress panel name
+
+### Hinzugefuegt
+
+- "Als Startseite setzen" Button in den Einstellungen: registriert DAS Home als Standard-Panel in HA ueber WebSocket API
+- Panel-Info-Endpoint zur Erkennung des Add-on Ingress Panel-Namens
+
 ## 0.2.1
 
 ### Added

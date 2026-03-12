@@ -23,6 +23,8 @@ export const api = {
   putDashboard: (dashboard: DashboardConfig) =>
     request("/dashboard", { method: "PUT", body: JSON.stringify(dashboard) }),
   getAuthStatus: () => request<{ configured: boolean; mode: string }>("/auth/status"),
+  getPanelInfo: () => request<{ is_addon: boolean; panel_name?: string; panel_url?: string; message?: string }>("/panel/info"),
+  setDefaultPanel: () => request<{ status: string; default_panel?: string; message?: string; panel_name?: string }>("/panel/set-default", { method: "POST" }),
   getCalendarEvents: (entityId: string, start: string, end: string) =>
     request<Array<{ summary: string; start: { dateTime?: string; date?: string }; end: { dateTime?: string; date?: string }; description?: string; location?: string }>>(
       `/calendar/events/${entityId}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`

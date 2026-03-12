@@ -19,6 +19,7 @@ import "@ui5/webcomponents-icons/dist/connected.js";
 import "@ui5/webcomponents-icons/dist/palette.js";
 import "@ui5/webcomponents-icons/dist/synchronize.js";
 import "@ui5/webcomponents-icons/dist/sys-help.js";
+import "@ui5/webcomponents-icons/dist/home.js";
 import { useConfigStore } from "@/stores/configStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
@@ -51,10 +52,13 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const [saving, setSaving] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [versionInfo, setVersionInfo] = useState<{ version: string; mode: string; releases_url: string } | null>(null);
+  const [settingDefault, setSettingDefault] = useState(false);
+  const [defaultPanelResult, setDefaultPanelResult] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       api.getHealth().then(setVersionInfo).catch(() => {});
+      setDefaultPanelResult(null);
     }
   }, [open]);
 
@@ -194,6 +198,56 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
             </div>
           </FlexBox>
         </Tab>
+        <Tab text="Startseite" icon="home">
+          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
+            <div>
+              <Label>DAS Home als Startseite</Label>
+              <div style={{ fontSize: 13, opacity: 0.6, marginTop: 4, marginBottom: 12 }}>
+                Setzt DAS Home als Standard-Startseite in Home Assistant.
+                Beim Oeffnen von HA wird dann direkt das Dashboard angezeigt.
+              </div>
+              {versionInfo?.mode === "addon" ? (
+                <>
+                  <Button
+                    design="Emphasized"
+                    onClick={async () => {
+                      setSettingDefault(true);
+                      setDefaultPanelResult(null);
+                      try {
+                        const result = await api.setDefaultPanel();
+                        if (result.status === "ok") {
+                          setDefaultPanelResult("Startseite gesetzt! Beim naechsten Oeffnen von HA wird DAS Home angezeigt.");
+                        } else {
+                          setDefaultPanelResult(
+                            "Hinweis: Die Einstellung wurde fuer den Supervisor-User gesetzt. " +
+                            "Fuer deinen eigenen User gehe zu: HA Profil → Dashboard → und waehle den Eintrag mit DAS Home."
+                          );
+                        }
+                      } catch {
+                        setDefaultPanelResult("Fehler beim Setzen der Startseite. Versuche es manuell in den HA-Profileinstellungen.");
+                      } finally {
+                        setSettingDefault(false);
+                      }
+                    }}
+                    disabled={settingDefault}
+                  >
+                    {settingDefault ? "Wird gesetzt..." : "Als Startseite setzen"}
+                  </Button>
+                  {defaultPanelResult && (
+                    <div style={{ fontSize: 13, marginTop: 12, padding: "10px 14px", background: "var(--sapBackgroundColor)", borderRadius: 8, lineHeight: 1.5 }}>
+                      {defaultPanelResult}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div style={{ fontSize: 13, opacity: 0.6 }}>
+                  Im Standalone-Modus: Setze die Browser-Startseite auf die DAS Home URL.
+                </div>
+              )}
+            </div>
+          </FlexBox>
+        </Tab>
+
         <Tab text="Version" icon="sys-help">
           <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

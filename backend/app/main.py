@@ -7,7 +7,7 @@ from pathlib import Path
 
 from app.settings import settings
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
 
 app = FastAPI(title="das-home", version=__version__)
@@ -24,6 +24,7 @@ from app.api.discovery_routes import router as discovery_router
 from app.api.hacs_routes import router as hacs_router
 from app.api.media_routes import router as media_router, geo_router
 from app.api.calendar_routes import router as calendar_router
+from app.api.panel_routes import router as panel_router
 from app.ws.proxy import router as ws_router
 
 # API routes
@@ -42,6 +43,7 @@ app.include_router(hacs_router)
 app.include_router(media_router)
 app.include_router(geo_router)
 app.include_router(calendar_router)
+app.include_router(panel_router)
 app.include_router(ws_router)
 
 # Serve frontend static files (added after frontend build)
