@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { BottomToolbar } from "@/components/layout/BottomToolbar";
 import { ViewRenderer } from "@/components/layout/ViewRenderer";
 import { ConnectionStatus } from "@/components/layout/ConnectionStatus";
+import { UpdateBanner } from "@/components/layout/UpdateBanner";
 // WeatherWidget removed - weather info is in status bar and cards
 import { SetupWizard } from "@/components/wizard/SetupWizard";
 import { WidgetWizard } from "@/components/wizard/WidgetWizard";
@@ -95,6 +96,7 @@ export default function App() {
         />
       )}
       <AppShell>
+        <UpdateBanner />
         <ConnectionStatus />
         <div style={{ flex: 1, overflow: "auto", paddingBottom: 80 }}>
           <ViewRenderer onOpenPopup={openPopup} />

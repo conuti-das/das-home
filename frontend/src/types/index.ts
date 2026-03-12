@@ -78,6 +78,7 @@ export interface ViewConfig {
 
 export interface DashboardConfig {
   version: number;
+  generated_with_version?: string;
   theme: string;
   accent_color: string;
   auto_theme: boolean;

@@ -352,8 +352,11 @@ async def suggest_dashboard():
                 sections=sections,
             ))
 
+    # Import version lazily to avoid circular import (main -> discovery_routes -> main)
+    from app.main import __version__
     dashboard = DashboardConfig(
         views=views,
+        generated_with_version=__version__,
         default_view="overview" if any(v.id == "overview" for v in views) else (views[0].id if views else ""),
     )
 

@@ -1,0 +1,61 @@
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(86, 204, 242, 0.08);
+  border-bottom: 1px solid rgba(86, 204, 242, 0.15);
+  flex-shrink: 0;
+}
+
+.update-banner__text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--dh-gray100);
+  line-height: 1.4;
+}
+
+.update-banner__text strong {
+  color: var(--dh-blue);
+}
+
+.update-banner__btn {
+  padding: 6px 16px;
+  border-radius: var(--dh-card-radius-sm);
+  border: none;
+  background: var(--dh-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--dh-transition-normal);
+}
+
+.update-banner__btn:hover {
+  opacity: 0.85;
+}
+
+.update-banner__btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.update-banner__dismiss {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity var(--dh-transition-normal);
+}
+
+.update-banner__dismiss:hover {
+  opacity: 1;
+  background: rgba(250, 251, 252, 0.06);
+}

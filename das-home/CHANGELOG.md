@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.1
+
+### Added
+
+- Update banner: shows notification when dashboard was generated with an older version, with one-click regeneration
+- Dashboard tracks `generated_with_version` to detect outdated configs after updates
+- No-cache headers for index.html to prevent stale content in HA Ingress iframe
+
+### Hinzugefuegt
+
+- Update-Banner: zeigt Hinweis wenn Dashboard mit aelterer Version erstellt wurde, mit Ein-Klick-Neugenerierung
+- Dashboard speichert `generated_with_version` um veraltete Konfigurationen nach Updates zu erkennen
+- No-Cache-Header fuer index.html verhindert veralteten Inhalt im HA Ingress-iframe
+
 ## 0.2.0
 
 ### Added

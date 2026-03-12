@@ -81,6 +81,7 @@ class ViewConfig(BaseModel):
 
 class DashboardConfig(BaseModel):
     version: int = 1
+    generated_with_version: str = ""
     theme: str = "sap_horizon_dark"
     accent_color: str = "#0070f3"
     auto_theme: bool = False

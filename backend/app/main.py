@@ -1,12 +1,13 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
 from app.settings import settings
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
 
 app = FastAPI(title="das-home", version=__version__)
@@ -57,4 +58,19 @@ for _candidate in _static_candidates:
         break
 
 if static_dir:
+    _index_html = static_dir / "index.html"
+
+    # Serve index.html with no-cache headers so HA Ingress always gets fresh content
+    @app.get("/", response_class=HTMLResponse)
+    async def serve_index(request: Request):
+        content = _index_html.read_text(encoding="utf-8")
+        return HTMLResponse(
+            content=content,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
