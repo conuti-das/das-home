@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { PopupModal } from "@/components/layout/PopupModal";
 import { getRegisteredTypes, getCardMetadata } from "@/components/cards/CardRegistry";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import { useEntitiesByDomain } from "@/hooks/useEntity";
 import { api } from "@/services/api";
 import { parseSizeString } from "@/utils/gridLayout";
 import type { CardItem } from "@/types";
@@ -28,16 +29,45 @@ const PRESET_COLORS = [
 ];
 
 export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }: CardEditPopupProps) {
-  const [tab, setTab] = useState<"type" | "size" | "weight" | "styling" | "entity">("type");
+  const [tab, setTab] = useState<"type" | "size" | "weight" | "styling" | "datasource" | "entity">("type");
   const [cardType, setCardType] = useState(card.type);
   const [cardSize, setCardSize] = useState(card.size);
   const [customLabel, setCustomLabel] = useState(card.customLabel ?? "");
   const [customIcon, setCustomIcon] = useState(card.customIcon ?? "");
   const [customColor, setCustomColor] = useState(card.customColor ?? "");
   const [flexWeight, setFlexWeight] = useState(card.flexWeight ?? 1);
+  const [cardConfig, setCardConfig] = useState<Record<string, unknown>>(card.config ?? {});
 
   const updateCardConfig = useDashboardStore((s) => s.updateCardConfig);
   const registeredTypes = useMemo(() => getRegisteredTypes(), []);
+
+  // For weather card: get all sensors to allow custom entity selection
+  const allSensors = useEntitiesByDomain("sensor");
+  const tempSensors = useMemo(() =>
+    allSensors.filter((e) =>
+      e.attributes?.device_class === "temperature" ||
+      e.attributes?.unit_of_measurement === "°C" ||
+      e.attributes?.unit_of_measurement === "°F"
+    ), [allSensors]);
+  const humiditySensors = useMemo(() =>
+    allSensors.filter((e) =>
+      e.attributes?.device_class === "humidity" ||
+      e.attributes?.unit_of_measurement === "%"
+    ), [allSensors]);
+  const pressureSensors = useMemo(() =>
+    allSensors.filter((e) =>
+      e.attributes?.device_class === "pressure" ||
+      e.attributes?.device_class === "atmospheric_pressure" ||
+      e.attributes?.unit_of_measurement === "hPa" ||
+      e.attributes?.unit_of_measurement === "mbar"
+    ), [allSensors]);
+  const windSensors = useMemo(() =>
+    allSensors.filter((e) =>
+      e.attributes?.device_class === "wind_speed" ||
+      e.entity_id.includes("wind")
+    ), [allSensors]);
+
+  const isWeatherCard = cardType === "weather";
 
   const handleSave = useCallback(() => {
     const { colSpan, rowSpan } = parseSizeString(cardSize);
@@ -49,6 +79,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       customLabel: customLabel || undefined,
       customIcon: customIcon || undefined,
       customColor: customColor || undefined,
+      config: cardConfig,
     };
     if (sectionLayout === "strip") {
       updates.flexWeight = flexWeight;
@@ -60,7 +91,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       api.putDashboard(current).catch(console.error);
     }
     onClose();
-  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, flexWeight, sectionLayout, updateCardConfig, onClose]);
+  }, [sectionId, card.id, cardType, cardSize, customLabel, customIcon, customColor, flexWeight, cardConfig, sectionLayout, updateCardConfig, onClose]);
 
   const isStrip = sectionLayout === "strip";
 
@@ -70,6 +101,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       ? [{ key: "weight" as const, label: "Gewichtung" }]
       : [{ key: "size" as const, label: "Groesse" }]),
     { key: "styling" as const, label: "Styling" },
+    ...(isWeatherCard ? [{ key: "datasource" as const, label: "Datenquellen" }] : []),
     { key: "entity" as const, label: "Entity" },
   ];
 
@@ -172,6 +204,83 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
                   onClick={() => setCustomColor(c.value)}
                 />
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Datasource tab (weather only) */}
+        {tab === "datasource" && isWeatherCard && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ fontSize: 12, opacity: 0.5, color: "var(--dh-gray100)" }}>
+              Waehle fuer jedes Feld eine eigene Entity. Leer = Standard (weather Entity).
+            </div>
+
+            {/* Temperature */}
+            <div>
+              <div className="cep__ds-label">Temperatur</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.tempEntity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, tempEntity: e.target.value || undefined })}
+              >
+                <option value="">Standard (weather.entity)</option>
+                {tempSensors.map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id} ({s.state}°)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Humidity */}
+            <div>
+              <div className="cep__ds-label">Luftfeuchtigkeit</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.humidityEntity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, humidityEntity: e.target.value || undefined })}
+              >
+                <option value="">Standard (weather.entity)</option>
+                {humiditySensors.map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id} ({s.state}%)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Pressure */}
+            <div>
+              <div className="cep__ds-label">Luftdruck</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.pressureEntity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, pressureEntity: e.target.value || undefined })}
+              >
+                <option value="">Nicht anzeigen</option>
+                {pressureSensors.map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id} ({s.state} hPa)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Wind */}
+            <div>
+              <div className="cep__ds-label">Windgeschwindigkeit</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.windEntity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, windEntity: e.target.value || undefined })}
+              >
+                <option value="">Nicht anzeigen</option>
+                {windSensors.map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id} ({s.state})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         )}
@@ -290,6 +399,24 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
         .sp__color-btn--active {
           border-color: var(--dh-gray100);
           box-shadow: 0 0 0 2px var(--dh-gray400), 0 0 0 4px var(--dh-gray100);
+        }
+        .cep__ds-label {
+          font-size: 12px;
+          opacity: 0.5;
+          color: var(--dh-gray100);
+          margin-bottom: 6px;
+          font-weight: 500;
+        }
+        .cep__ds-select {
+          width: 100%;
+          padding: 8px 10px;
+          border-radius: var(--dh-card-radius-sm);
+          border: var(--dh-surface-border);
+          background: var(--dh-gray400);
+          color: var(--dh-gray100);
+          font-size: 13px;
+          outline: none;
+          cursor: pointer;
         }
       `}</style>
     </PopupModal>

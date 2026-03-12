@@ -237,7 +237,7 @@ async def suggest_dashboard():
     if weather_items:
         overview_sections.append(Section(
             id="overview_weather",
-            title="Wetter",
+            title="",
             icon="weather-proofing",
             items=weather_items,
         ))
@@ -246,7 +246,7 @@ async def suggest_dashboard():
     card_counter += 1
     overview_sections.append(Section(
         id="overview_radar",
-        title="Radar",
+        title="",
         icon="map",
         items=[CardItem(
             id=f"c{card_counter}",
@@ -262,7 +262,7 @@ async def suggest_dashboard():
             card_counter += 1
             overview_sections.append(Section(
                 id="overview_trash",
-                title="Müllabfuhr",
+                title="",
                 icon="delete",
                 items=[CardItem(
                     id=f"c{card_counter}",

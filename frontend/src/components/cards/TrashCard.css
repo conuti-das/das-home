@@ -3,7 +3,7 @@
   border: var(--dh-surface-border);
   box-shadow: var(--dh-card-shadow);
   background: var(--dh-green-tint);
-  height: var(--dh-card-height-big);
+  min-height: var(--dh-card-height-big);
   padding: 16px 20px;
   display: flex;
   flex-direction: column;

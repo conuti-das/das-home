@@ -1,10 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
+import { Icon } from "@ui5/webcomponents-react";
 import { getRegisteredTypes } from "@/components/cards/CardRegistry";
 import { getDomainStyle } from "@/utils/domainColors";
 import { getBestWidget, getRecommendedWidgets } from "@/utils/widgetRecommendation";
 import type { CardMetadata } from "@/components/cards/CardRegistry";
 import type { EntityState } from "@/types";
 import type { EntityWidgetPair } from "./WidgetWizard";
+
+/** Domain priority for sorting: lower = shown first */
+const DOMAIN_PRIORITY: Record<string, number> = {
+  media_player: 1, light: 1, climate: 1, cover: 1, camera: 1, vacuum: 1, fan: 1, lock: 1,
+  scene: 2, script: 2, automation: 2, button: 2,
+  weather: 3, person: 3, calendar: 3, device_tracker: 3, update: 3,
+  switch: 4, input_boolean: 4,
+  sensor: 5, binary_sensor: 5,
+  number: 6, input_number: 6, select: 6, input_select: 6, timer: 6,
+};
 
 interface EntityWidgetPairingProps {
   selectedWidget: CardMetadata | null;
@@ -27,18 +38,27 @@ export function EntityWidgetPairing({
   // Initialize pairings from selected entities if empty
   useEffect(() => {
     if (pairings.length > 0 || selectedEntities.length === 0) return;
-    const initial: EntityWidgetPair[] = selectedEntities.map((entity) => {
-      const domain = entity.entity_id.split(".")[0];
-      const widgetType = selectedWidget?.type ?? getBestWidget(domain);
-      return {
-        entity,
-        widgetType,
-        size: selectedWidget?.defaultSize ?? "1x1",
-        customLabel: (entity.attributes?.friendly_name as string) || "",
-        customIcon: "",
-        customColor: "",
-      };
-    });
+    const initial: EntityWidgetPair[] = selectedEntities
+      .map((entity) => {
+        const domain = entity.entity_id.split(".")[0];
+        const widgetType = selectedWidget?.type ?? getBestWidget(domain);
+        return {
+          entity,
+          widgetType,
+          size: selectedWidget?.defaultSize ?? "1x1",
+          customLabel: (entity.attributes?.friendly_name as string) || "",
+          customIcon: "",
+          customColor: "",
+        };
+      })
+      .sort((a, b) => {
+        const da = a.entity.entity_id.split(".")[0];
+        const db = b.entity.entity_id.split(".")[0];
+        const pa = DOMAIN_PRIORITY[da] ?? 7;
+        const pb = DOMAIN_PRIORITY[db] ?? 7;
+        if (pa !== pb) return pa - pb;
+        return (a.customLabel || a.entity.entity_id).localeCompare(b.customLabel || b.entity.entity_id);
+      });
     onPairingsChange(initial);
   }, [selectedEntities, selectedWidget, pairings.length, onPairingsChange]);
 
@@ -46,6 +66,10 @@ export function EntityWidgetPairing({
     const updated = [...pairings];
     updated[index] = { ...updated[index], widgetType };
     onPairingsChange(updated);
+  };
+
+  const handleRemove = (index: number) => {
+    onPairingsChange(pairings.filter((_, i) => i !== index));
   };
 
   const handleSetAll = (widgetType: string) => {
@@ -75,8 +99,13 @@ export function EntityWidgetPairing({
 
   return (
     <div>
-      <div style={{ fontSize: 14, opacity: 0.6, color: "var(--dh-gray100)", marginBottom: 12 }}>
-        Ordne jeder Entity ein Widget zu
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <span style={{ fontSize: 14, opacity: 0.6, color: "var(--dh-gray100)" }}>
+          Ordne jeder Entity ein Widget zu
+        </span>
+        <span style={{ fontSize: 12, opacity: 0.4, color: "var(--dh-gray100)" }}>
+          {pairings.length} {pairings.length === 1 ? "Entity" : "Entities"}
+        </span>
       </div>
 
       {/* Search filter */}
@@ -152,6 +181,13 @@ export function EntityWidgetPairing({
                     ))}
                 </optgroup>
               </select>
+              <button
+                className="ewp__remove-btn"
+                onClick={() => handleRemove(index)}
+                title="Entfernen"
+              >
+                <Icon name="decline" style={{ width: 12, height: 12 }} />
+              </button>
             </div>
           );
         })}
@@ -162,9 +198,10 @@ export function EntityWidgetPairing({
         <button
           className="widget-wizard__btn widget-wizard__btn--primary"
           style={{ width: "100%" }}
+          disabled={pairings.length === 0}
           onClick={onNext}
         >
-          Weiter
+          {pairings.length === 0 ? "Keine Entities" : "Weiter"}
         </button>
       </div>
 
@@ -217,6 +254,26 @@ export function EntityWidgetPairing({
           outline: none;
           cursor: pointer;
           min-width: 100px;
+        }
+        .ewp__remove-btn {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: none;
+          background: transparent;
+          color: var(--dh-gray100);
+          opacity: 0.3;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+        .ewp__remove-btn:hover {
+          opacity: 1;
+          background: rgba(235, 87, 87, 0.2);
+          color: #eb5757;
         }
       `}</style>
     </div>

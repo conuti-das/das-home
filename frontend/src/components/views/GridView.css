@@ -65,17 +65,17 @@
 .grid-view__strip-card {
   min-width: 0;
   overflow: hidden;
-  height: 120px;
+}
+
+.grid-view__strip-card > * {
+  height: 100% !important;
+  box-sizing: border-box;
 }
 
 /* Strip goes horizontal on tablet+ */
 @media (min-width: 768px) {
   .grid-view__strip {
     flex-direction: row;
-    height: 120px;
-  }
-
-  .grid-view__strip-card {
-    height: auto;
+    align-items: stretch;
   }
 }

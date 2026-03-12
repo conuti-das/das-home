@@ -179,17 +179,17 @@
 
 .draggable-grid--strip .draggable-grid__item {
   min-width: 0;
-  height: 120px;
+}
+
+.draggable-grid--strip .draggable-grid__item > * {
+  height: 100% !important;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .draggable-grid--strip {
     flex-direction: row;
-    height: 120px;
-  }
-
-  .draggable-grid--strip .draggable-grid__item {
-    height: 100%;
+    align-items: stretch;
   }
 }
 

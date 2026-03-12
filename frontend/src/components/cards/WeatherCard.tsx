@@ -23,9 +23,21 @@ const CONDITION_TEXT: Record<string, string> = {
 
 export function WeatherCard({ card, onCardAction }: CardComponentProps) {
   const entity = useEntity(card.entity);
+  const tempEntity = useEntity((card.config?.tempEntity as string) || "");
+  const humidityEntity = useEntity((card.config?.humidityEntity as string) || "");
+  const pressureEntity = useEntity((card.config?.pressureEntity as string) || "");
+  const windEntity = useEntity((card.config?.windEntity as string) || "");
+
   const condition = entity?.state || "";
-  const temp = entity?.attributes?.temperature as number | undefined;
-  const humidity = entity?.attributes?.humidity as number | undefined;
+  // Use custom entities if configured, otherwise fall back to weather entity attributes
+  const temp = tempEntity
+    ? parseFloat(tempEntity.state)
+    : (entity?.attributes?.temperature as number | undefined);
+  const humidity = humidityEntity
+    ? parseFloat(humidityEntity.state)
+    : (entity?.attributes?.humidity as number | undefined);
+  const pressure = pressureEntity ? parseFloat(pressureEntity.state) : undefined;
+  const wind = windEntity ? parseFloat(windEntity.state) : undefined;
   const conditionText = CONDITION_TEXT[condition] || condition;
 
   return (
@@ -42,7 +54,7 @@ export function WeatherCard({ card, onCardAction }: CardComponentProps) {
           display: "flex",
           alignItems: "center",
           gap: 20,
-          height: 120,
+          minHeight: 120,
           overflow: "hidden",
           gridColumn: "span 2",
           cursor: "pointer",
@@ -60,8 +72,20 @@ export function WeatherCard({ card, onCardAction }: CardComponentProps) {
               </span>
             )}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 500, opacity: 0.7, marginTop: 6, color: "var(--dh-gray100)" }}>
-            {conditionText}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 6 }}>
+            <span style={{ fontSize: 15, fontWeight: 500, opacity: 0.7, color: "var(--dh-gray100)" }}>
+              {conditionText}
+            </span>
+            {pressure !== undefined && !isNaN(pressure) && (
+              <span style={{ fontSize: 12, opacity: 0.5, color: "var(--dh-gray100)" }}>
+                {Math.round(pressure)} hPa
+              </span>
+            )}
+            {wind !== undefined && !isNaN(wind) && (
+              <span style={{ fontSize: 12, opacity: 0.5, color: "var(--dh-gray100)" }}>
+                {Math.round(wind)} km/h
+              </span>
+            )}
           </div>
         </div>
       </div>

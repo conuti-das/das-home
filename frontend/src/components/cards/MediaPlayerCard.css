@@ -1,7 +1,7 @@
 .media-card {
   position: relative;
   display: flex;
-  height: 75px;
+  min-height: 75px;
   border-radius: var(--dh-card-radius);
   border: var(--dh-surface-border);
   box-shadow: var(--dh-card-shadow);
