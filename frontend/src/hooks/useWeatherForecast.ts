@@ -1,6 +1,7 @@
 // frontend/src/hooks/useWeatherForecast.ts
-import { useMemo } from "react";
-import { useEntity, useEntitiesByDomain } from "./useEntity";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useEntitiesByDomain } from "./useEntity";
+import { wsUrl } from "@/utils/basePath";
 
 export interface ForecastEntry {
   datetime: string;
@@ -21,42 +22,60 @@ interface WeatherForecastResult {
 }
 
 /**
- * Reads forecast data from weather entity attributes.
- * Uses the legacy forecast attribute (still available in most HA setups).
- * Splits entries into hourly (within 24h) and daily (beyond 24h) buckets.
+ * Fetches weather forecast data via the backend WS proxy.
+ * HA 2024.3+ removed the forecast attribute from weather entities,
+ * so we use the weather/subscribe_forecast WS command instead.
  */
 export function useWeatherForecast(): WeatherForecastResult {
   const weatherEntities = useEntitiesByDomain("weather");
   const entityId = weatherEntities[0]?.entity_id || "weather.forecast_home";
-  const entity = useEntity(entityId);
 
-  const forecast = (entity?.attributes?.forecast as ForecastEntry[]) || [];
+  const [hourlyData, setHourlyData] = useState<ForecastEntry[]>([]);
+  const [dailyData, setDailyData] = useState<ForecastEntry[]>([]);
+  const fetched = useRef(false);
 
-  const { hourlyForecast, dailyForecast } = useMemo(() => {
-    if (forecast.length === 0) return { hourlyForecast: [], dailyForecast: [] };
+  useEffect(() => {
+    if (fetched.current) return;
 
-    const now = Date.now();
-    const in24h = now + 24 * 60 * 60 * 1000;
+    let cancelled = false;
 
-    // If entries are spaced <= 3 hours apart, treat as hourly data
-    const firstTwo = forecast.slice(0, 2);
-    const isHourlyData = firstTwo.length === 2 &&
-      (new Date(firstTwo[1].datetime).getTime() - new Date(firstTwo[0].datetime).getTime()) <= 3 * 60 * 60 * 1000;
-
-    if (isHourlyData) {
-      // All hourly — split into near-term (hourly badges) and daily summary not available
-      return {
-        hourlyForecast: forecast.filter((e) => new Date(e.datetime).getTime() <= in24h),
-        dailyForecast: [],
+    function fetchForecast() {
+      const ws = new WebSocket(wsUrl("/ws"));
+      ws.onopen = () => {
+        ws.send(JSON.stringify({
+          type: "weather_forecast",
+          entity_id: entityId,
+          id: "forecast_req",
+        }));
       };
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "weather_forecast_result" && !cancelled) {
+          setHourlyData(msg.hourly || []);
+          setDailyData(msg.daily || []);
+          fetched.current = true;
+          ws.close();
+        }
+      };
+      ws.onerror = () => ws.close();
     }
 
-    // Otherwise treat as daily data
-    return {
-      hourlyForecast: [],
-      dailyForecast: forecast,
-    };
-  }, [forecast]);
+    fetchForecast();
+    // Re-fetch every 30 minutes
+    const interval = setInterval(() => {
+      fetched.current = false;
+      fetchForecast();
+    }, 30 * 60 * 1000);
 
-  return { hourlyForecast, dailyForecast, entityId };
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [entityId]);
+
+  const result = useMemo(() => {
+    return { hourlyForecast: hourlyData, dailyForecast: dailyData };
+  }, [hourlyData, dailyData]);
+
+  return { ...result, entityId };
 }

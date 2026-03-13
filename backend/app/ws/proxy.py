@@ -176,6 +176,43 @@ async def websocket_endpoint(ws: WebSocket):
                         logger.warning(f"get_states failed: {e}")
                         await ws.send_json({"type": "states_result", "result": []})
 
+            elif msg_type == "weather_forecast":
+                if _ha_connection:
+                    try:
+                        entity_id = data.get("entity_id", "weather.forecast_home")
+                        client_id = data.get("id")
+                        # Try both hourly and daily forecasts
+                        results = {}
+                        for forecast_type in ("hourly", "daily"):
+                            try:
+                                resp = await _ha_send(
+                                    "weather/subscribe_forecast",
+                                    entity_id=entity_id,
+                                    forecast_type=forecast_type,
+                                )
+                                forecast = resp.get("result", {}).get("forecast") or resp.get("event", {}).get("forecast") or []
+                                results[forecast_type] = forecast
+                            except Exception:
+                                results[forecast_type] = []
+                        response = {
+                            "type": "weather_forecast_result",
+                            "hourly": results.get("hourly", []),
+                            "daily": results.get("daily", []),
+                        }
+                        if client_id:
+                            response["id"] = client_id
+                        await ws.send_json(response)
+                    except Exception as e:
+                        logger.warning(f"weather_forecast failed: {e}")
+                        response = {
+                            "type": "weather_forecast_result",
+                            "hourly": [],
+                            "daily": [],
+                        }
+                        if data.get("id"):
+                            response["id"] = data["id"]
+                        await ws.send_json(response)
+
             elif msg_type == "ping":
                 await ws.send_json({"type": "pong"})
 
