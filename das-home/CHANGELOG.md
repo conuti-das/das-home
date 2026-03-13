@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.9
+
+### Changed
+
+- Update banner only appears when regeneration is actually beneficial (new card types/discovery), not for every version bump
+- Dismissing the banner persists — it won't reappear until a new regen-worthy release
+- "Aktualisieren" now merges new entities into existing dashboard instead of replacing it — preserves card arrangement, order, sizing, badges, and theme
+- Banner text clarified: "Deine Anordnung bleibt erhalten"
+
+### Geaendert
+
+- Update-Banner erscheint nur noch wenn Neugenerierung sinnvoll ist (neue Karten-Typen), nicht bei jedem Versions-Update
+- Wegklicken des Banners wird gespeichert — erscheint nicht erneut bis zum naechsten relevanten Release
+- "Aktualisieren" fuegt neue Entities ins bestehende Dashboard ein statt alles zurueckzusetzen — Anordnung, Reihenfolge, Badges und Theme bleiben erhalten
+- Banner-Text angepasst: "Deine Anordnung bleibt erhalten"
+
 ## 0.3.8
 
 ### Changed
