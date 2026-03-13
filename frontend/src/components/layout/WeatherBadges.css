@@ -1,0 +1,56 @@
+/* frontend/src/components/layout/WeatherBadges.css */
+.weather-badges {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.weather-badges__divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(250, 251, 252, 0.12);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.weather-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--dh-card-radius);
+  border: var(--dh-surface-border);
+  background: var(--dh-gray300);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--dh-transition-normal);
+}
+
+.weather-badge:active {
+  background: var(--dh-gray200);
+}
+
+.weather-badge__time {
+  font-size: 11px;
+  color: var(--dh-gray100);
+  opacity: 0.5;
+}
+
+.weather-badge__temp {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dh-gray100);
+}
+
+.weather-badge__temps {
+  display: flex;
+  gap: 3px;
+  align-items: baseline;
+}
+
+.weather-badge__temp-low {
+  font-size: 11px;
+  color: var(--dh-gray100);
+  opacity: 0.4;
+}
