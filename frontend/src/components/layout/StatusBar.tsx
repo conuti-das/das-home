@@ -112,13 +112,13 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
       <WeatherBadges onOpenPopup={onOpenPopup} />
 
       {/* Media players playing */}
-      {playingMedia.map((mp) => {
+      {playingMedia.length === 1 && (() => {
+        const mp = playingMedia[0];
         const title = (mp.attributes?.media_title as string) || "";
         const name = (mp.attributes?.friendly_name as string) || mp.entity_id.split(".")[1];
         const label = title ? `${name}: ${title}` : name;
         return (
           <div
-            key={mp.entity_id}
             className="status-chip status-chip--media"
             onClick={() => onOpenPopup?.("media-detail", { entityId: mp.entity_id })}
           >
@@ -128,7 +128,18 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
             <span className="status-chip__text">{label}</span>
           </div>
         );
-      })}
+      })()}
+      {playingMedia.length > 1 && (
+        <div
+          className="status-chip status-chip--media"
+          onClick={() => onOpenPopup?.("media-detail", { entityId: playingMedia[0].entity_id })}
+        >
+          <div className="status-chip__icon">
+            <Icon name="media-play" style={{ width: 16, height: 16, color: "var(--dh-blue)" }} />
+          </div>
+          <span className="status-chip__text">{playingMedia.length} spielen</span>
+        </div>
+      )}
 
       {/* Vacuum active */}
       {activeVacuum && (

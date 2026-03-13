@@ -55,6 +55,8 @@ export function WeatherCard({ card, onCardAction }: CardComponentProps) {
           alignItems: "center",
           gap: 20,
           minHeight: 120,
+          height: "100%",
+          boxSizing: "border-box",
           overflow: "hidden",
           cursor: "pointer",
         }}

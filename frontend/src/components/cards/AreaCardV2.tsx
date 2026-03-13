@@ -1,5 +1,6 @@
 // frontend/src/components/cards/AreaCardV2.tsx
 import { useMemo, useCallback } from "react";
+import { Icon } from "@ui5/webcomponents-react";
 import { useEntity } from "@/hooks/useEntity";
 import { useEntityStore } from "@/stores/entityStore";
 import { apiUrl } from "@/utils/basePath";
@@ -14,13 +15,13 @@ function isEntityOn(state: string | undefined, domain: string): boolean {
   return state === "on";
 }
 
-/** Get icon for special entity based on domain/entity_id */
-function getSpecialIcon(entityId: string): string {
-  if (entityId.includes("vacuum") || entityId.includes("saugrobot")) return "🤖";
-  if (entityId.includes("wasch") || entityId.includes("washing")) return "🫧";
-  if (entityId.includes("trockner") || entityId.includes("dryer")) return "👕";
-  if (entityId.includes("dishwasher") || entityId.includes("spuel")) return "🍽️";
-  return "⚡";
+/** Get UI5 icon name for special entity based on domain/entity_id */
+function getSpecialIconName(entityId: string): string {
+  if (entityId.includes("vacuum") || entityId.includes("saugrobot")) return "washing-machine";
+  if (entityId.includes("wasch") || entityId.includes("washing")) return "washing-machine";
+  if (entityId.includes("trockner") || entityId.includes("dryer")) return "temperature";
+  if (entityId.includes("dishwasher") || entityId.includes("spuel")) return "meal";
+  return "activate";
 }
 
 export function AreaCardV2({ card, callService, onCardAction }: CardComponentProps) {
@@ -37,17 +38,21 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
   const lightEntity = useEntity(config.light_entity as string);
   const specialEntity = useEntity(config.special_entity as string);
   const mediaEntity = useEntity(config.media_player_entity as string);
+  const cameraEntity = useEntity(config.camera_entity as string);
 
   // Background image
   const backgroundImage = useMemo(() => {
     if (bgSource === "custom" && bgUrl) return bgUrl;
+    if (bgSource === "camera" && config.camera_entity) {
+      return apiUrl(`/api/media/artwork?entity_id=${encodeURIComponent(config.camera_entity as string)}&t=${Math.floor(Date.now() / 30000)}`);
+    }
     if (bgSource === "media" && mediaEntity?.attributes?.entity_picture) {
       return apiUrl(`/api/media/artwork?entity_id=${encodeURIComponent(config.media_player_entity as string)}`);
     }
     if (bgSource === "media" && area?.picture) return area.picture; // fallback
     if (area?.picture) return area.picture;
     return undefined;
-  }, [bgSource, bgUrl, mediaEntity, area, config.media_player_entity]);
+  }, [bgSource, bgUrl, cameraEntity, mediaEntity, area, config.media_player_entity]);
 
   const hasImage = !!backgroundImage;
   const areaName = area?.name || areaId || "Bereich";
@@ -61,7 +66,7 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
 
   const specialDomain = (config.special_entity as string)?.split(".")[0] || "";
   const specialOn = isEntityOn(specialEntity?.state, specialDomain);
-  const specialIcon = config.special_entity ? getSpecialIcon(config.special_entity as string) : "⚡";
+  const specialIconName = config.special_entity ? getSpecialIconName(config.special_entity as string) : "electricity";
 
   const mediaPlaying = mediaEntity?.state === "playing";
   const mediaVolume = mediaEntity?.attributes?.volume_level as number | undefined;
@@ -111,7 +116,7 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
               onClick={handleLightToggle}
               title={lightOn ? "Licht aus" : "Licht an"}
             >
-              💡
+              <Icon name="lightbulb" style={{ width: 18, height: 18 }} />
             </button>
           )}
           {!!config.media_player_entity && (
@@ -120,7 +125,7 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
               onClick={(e) => { e.stopPropagation(); }}
               title="Media"
             >
-              🔊
+              <Icon name="media-play" style={{ width: 18, height: 18 }} />
             </button>
           )}
           {!!config.special_entity && (
@@ -129,7 +134,7 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
               onClick={(e) => { e.stopPropagation(); }}
               title={config.special_entity as string}
             >
-              {specialIcon}
+              <Icon name={specialIconName} style={{ width: 18, height: 18 }} />
             </button>
           )}
         </div>

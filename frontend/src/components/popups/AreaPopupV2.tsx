@@ -8,6 +8,13 @@ import { apiUrl } from "@/utils/basePath";
 import type { PopupProps } from "./PopupRegistry";
 import "./AreaPopupV2.css";
 
+/** Filter out sub-entities like WLED segments */
+function isMainLight(e: { entity_id: string; attributes: Record<string, unknown> }): boolean {
+  if (e.entity_id.includes("_segment_") || e.entity_id.includes("_channel_")) return false;
+  if (e.attributes?.entity_category === "config" || e.attributes?.entity_category === "diagnostic") return false;
+  return true;
+}
+
 type TabKey = "light" | "cover" | "climate";
 
 export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupProps) {
@@ -43,7 +50,7 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
   }, [configMediaEntity, mediaEntity, areaEntities]);
 
   // Filter entities by domain
-  const lights = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("light.")), [areaEntities]);
+  const lights = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("light.") && isMainLight(e)), [areaEntities]);
   const covers = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("cover.")), [areaEntities]);
   const climates = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("climate.")), [areaEntities]);
 
@@ -82,6 +89,13 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
     callService("media_player", isPlaying ? "media_pause" : "media_play", {}, { entity_id: areaMediaPlayer.entity_id });
   }, [callService, areaMediaPlayer]);
 
+  const handleVolumeChange = useCallback((delta: number) => {
+    if (!areaMediaPlayer) return;
+    const current = (areaMediaPlayer.attributes?.volume_level as number) ?? 0.5;
+    const next = Math.min(1, Math.max(0, current + delta));
+    callService("media_player", "volume_set", { volume_level: next }, { entity_id: areaMediaPlayer.entity_id });
+  }, [callService, areaMediaPlayer]);
+
   const handleCardAction = useCallback((popupId: string, actionProps?: Record<string, unknown>) => {
     onOpenPopup?.(popupId, actionProps);
   }, [onOpenPopup]);
@@ -90,6 +104,7 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
   const mediaArtist = areaMediaPlayer?.attributes?.media_artist as string | undefined;
   const mediaPlaying = areaMediaPlayer?.state === "playing";
   const mediaPicture = areaMediaPlayer?.attributes?.entity_picture as string | undefined;
+  const mediaVolume = areaMediaPlayer?.attributes?.volume_level as number | undefined;
 
   return (
     <PopupModal open title={areaName} icon="home" onClose={onClose}>
@@ -141,9 +156,16 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
             <div className="apv2__media-title">{mediaTitle || (areaMediaPlayer.attributes?.friendly_name as string) || "Media Player"}</div>
             <div className="apv2__media-artist">{mediaArtist || areaMediaPlayer.state}</div>
           </div>
-          <button className="apv2__media-play" onClick={handleMediaToggle}>
-            {mediaPlaying ? "⏸" : "▶"}
-          </button>
+          <div className="apv2__media-controls">
+            <button className="apv2__media-vol" onClick={() => handleVolumeChange(-0.05)}>−</button>
+            <button className="apv2__media-play" onClick={handleMediaToggle}>
+              {mediaPlaying ? "⏸" : "▶"}
+            </button>
+            <button className="apv2__media-vol" onClick={() => handleVolumeChange(0.05)}>+</button>
+            {mediaVolume !== undefined && (
+              <span className="apv2__media-vol-label">{Math.round(mediaVolume * 100)}%</span>
+            )}
+          </div>
         </div>
       )}
 

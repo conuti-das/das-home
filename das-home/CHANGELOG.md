@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.3.3
+
+### Added
+
+- Camera background source for Area Card V2: show live camera image as card background
+- Volume +/- buttons in area popup media player widget
+- Media player summary badge in status bar: shows "X spielen" when multiple players are active
+- UI5 outline icons in Area Card V2 buttons (lightbulb, media-play, activate) instead of emojis
+
+### Fixed
+
+- Weather cards now fill equal height in strip rows
+- Area popup light list no longer shows WLED segments and sub-entities
+
+### Hinzugefuegt
+
+- Kamera-Hintergrund fuer Bereichskarte V2: zeigt Live-Kamerabild als Kartenhintergrund
+- Lautstaerke +/- Buttons im Bereichs-Popup Media-Player-Widget
+- Media-Player Sammel-Badge in der Statusleiste: zeigt "X spielen" wenn mehrere Player aktiv sind
+- UI5 Outline-Icons in Bereichskarte V2 Buttons (Gluehbirne, Play, Aktivieren) statt Emojis
+
+### Behoben
+
+- Wetterkarten fuellen jetzt gleiche Hoehe in Strip-Zeilen
+- Bereichs-Popup Lichtliste zeigt keine WLED-Segmente und Sub-Entities mehr
+
 ## 0.3.2
 
 ### Fixed
