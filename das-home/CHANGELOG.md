@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.5
+
+### Fixed
+
+- Legacy badge config migration: existing dashboards with old string-based badge lists no longer crash on load
+- Discovery route now uses default BadgeConfig objects instead of plain strings
+
+### Behoben
+
+- Legacy-Badge-Config-Migration: bestehende Dashboards mit altem String-Format fuer Badges stuerzen nicht mehr ab
+- Discovery-Route nutzt jetzt Standard-BadgeConfig-Objekte statt einfacher Strings
+
 ## 0.3.4
 
 ### Added
