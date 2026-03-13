@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0
+
+### Added
+
+- Area Card V2: rich area card with temperature, light/media/special entity buttons, background image (area picture, custom URL, or media artwork)
+- Weather Badges: hourly and daily forecast badges in the status bar with animated weather icons
+- Weather Popup V2: detailed weather popup with current conditions, hourly scroll strip, and 3-day forecast cards
+- Area Popup V2: area detail popup with text overview, scene shortcuts, media player controls, and tabbed entity controls (Licht/Rollos/Klima)
+- Weather forecast hook (`useWeatherForecast`) for shared forecast data across components
+- Area V2 config fields in card editor (area, temperature sensor, light, special entity, media player, background source)
+
+### Hinzugefuegt
+
+- Bereich-Karte V2: reichhaltige Bereichskarte mit Temperatur, Licht/Media/Spezial-Buttons, Hintergrundbild (Bereichsbild, eigene URL oder Media-Artwork)
+- Wetter-Badges: stuendliche und taegliche Vorhersage-Badges in der Statusleiste mit animierten Wettersymbolen
+- Wetter-Popup V2: detailliertes Wetter-Popup mit aktuellen Bedingungen, stuendlicher Scroll-Leiste und 3-Tage-Vorhersage
+- Bereich-Popup V2: Bereich-Detail-Popup mit Textuebersicht, Szenen-Schnellzugriff, Media-Player-Steuerung und Tabs fuer Licht/Rollos/Klima
+- Wettervorhersage-Hook (`useWeatherForecast`) fuer gemeinsame Vorhersagedaten
+- Bereich-V2-Konfigurationsfelder im Karten-Editor (Bereich, Temperatursensor, Licht, Spezial-Entity, Media Player, Hintergrundquelle)
+
 ## 0.2.3
 
 ### Fixed
