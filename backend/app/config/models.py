@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ConnectionConfig(BaseModel):
@@ -81,6 +81,27 @@ class HeaderConfig(BaseModel):
         BadgeConfig(type="washing"),
         BadgeConfig(type="dryer"),
     ])
+
+    @field_validator("badges", mode="before")
+    @classmethod
+    def migrate_string_badges(cls, v: list) -> list:
+        """Migrate legacy string badges to BadgeConfig dicts."""
+        if not v:
+            return v
+        if isinstance(v[0], str):
+            # Old format: list of strings — return default badges
+            return [
+                {"type": "clock"},
+                {"type": "lights"},
+                {"type": "trash"},
+                {"type": "weather_hourly", "count": 3},
+                {"type": "weather_daily", "count": 3},
+                {"type": "media"},
+                {"type": "vacuum"},
+                {"type": "washing"},
+                {"type": "dryer"},
+            ]
+        return v
 
 
 class ViewConfig(BaseModel):

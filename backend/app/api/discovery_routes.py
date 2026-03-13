@@ -317,7 +317,7 @@ async def suggest_dashboard():
             name="Overview",
             icon="home",
             type="grid",
-            header=HeaderConfig(show_badges=True, badges=["lights", "temperature"]),
+            header=HeaderConfig(show_badges=True),
             sections=overview_sections,
         ))
 
