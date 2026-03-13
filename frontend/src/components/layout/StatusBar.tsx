@@ -92,9 +92,37 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
   // Find trash sensor
   const allSensors = useEntitiesByDomain("sensor");
   const trashSensor = allSensors.find(
-    (e) => e.entity_id.includes("waste") || e.entity_id.includes("trash") || e.entity_id.includes("muell") || e.entity_id.includes("abfall")
+    (e) => e.entity_id.includes("waste") || e.entity_id.includes("trash") ||
+           e.entity_id.includes("muell") || e.entity_id.includes("abfall") ||
+           e.entity_id.includes("restmull") || e.entity_id.includes("tonne") ||
+           e.entity_id.includes("mullabfuhr")
   );
-  const trashDays = trashSensor ? parseInt(trashSensor.state) : undefined;
+  const trashDays = useMemo(() => {
+    if (!trashSensor) return undefined;
+    const state = trashSensor.state;
+    // Try plain number first
+    const num = parseInt(state);
+    if (!isNaN(num) && String(num) === state.trim()) return num;
+    // Try extracting number from text like "Restmüll in 6 days"
+    const match = state.match(/(\d+)\s*(day|tag|d\b)/i);
+    if (match) return parseInt(match[1]);
+    // Try parsing as date (dd.mm.yyyy or yyyy-mm-dd)
+    let date: Date | null = null;
+    const dmy = state.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (dmy) {
+      date = new Date(parseInt(dmy[3]), parseInt(dmy[2]) - 1, parseInt(dmy[1]));
+    } else {
+      const parsed = new Date(state);
+      if (!isNaN(parsed.getTime())) date = parsed;
+    }
+    if (date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+      return Math.max(0, Math.round((date.getTime() - today.getTime()) / 86400000));
+    }
+    return undefined;
+  }, [trashSensor]);
 
   // Media players playing
   const mediaPlayers = useEntitiesByDomain("media_player");

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.6
+
+### Fixed
+
+- Trash badge now works with date-based sensors (dd.mm.yyyy), text states ("in X days"), and numeric states
+- Trash sensor detection expanded to match restmull, tonne, mullabfuhr entity IDs
+
+### Behoben
+
+- Muell-Badge funktioniert jetzt mit datumsbasierten Sensoren (dd.mm.yyyy), Text-States ("in X days") und numerischen States
+- Muell-Sensor-Erkennung erweitert fuer restmull, tonne, mullabfuhr Entity-IDs
+
 ## 0.3.5
 
 ### Fixed
