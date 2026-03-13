@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.7
+
+### Fixed
+
+- Trash badge now shows next pickup type name (e.g. "6 Restmüll" instead of "6d Müll")
+- Finds nearest pickup from all trash sensors (Restmüll, Papiertonne, Gelbe Tonne)
+
+### Behoben
+
+- Muell-Badge zeigt jetzt den Namen der naechsten Abholung (z.B. "6 Restmüll" statt "6d Müll")
+- Findet den naechsten Abholtermin aus allen Muell-Sensoren (Restmuell, Papiertonne, Gelbe Tonne)
+
 ## 0.3.6
 
 ### Fixed
