@@ -11,6 +11,13 @@
 - Weather forecast hook (`useWeatherForecast`) for shared forecast data across components
 - Area V2 config fields in card editor (area, temperature sensor, light, special entity, media player, background source)
 
+### Fixed
+
+- Card edit popup crash (black screen) caused by infinite render loop with React 19 useSyncExternalStore
+- Weather forecast data not loading: backend now properly handles HA subscription-based forecast API
+- Weather forecast race condition: waits for entity store before fetching forecast data
+- Equal card heights in grid rows
+
 ### Hinzugefuegt
 
 - Bereich-Karte V2: reichhaltige Bereichskarte mit Temperatur, Licht/Media/Spezial-Buttons, Hintergrundbild (Bereichsbild, eigene URL oder Media-Artwork)
@@ -19,6 +26,13 @@
 - Bereich-Popup V2: Bereich-Detail-Popup mit Textuebersicht, Szenen-Schnellzugriff, Media-Player-Steuerung und Tabs fuer Licht/Rollos/Klima
 - Wettervorhersage-Hook (`useWeatherForecast`) fuer gemeinsame Vorhersagedaten
 - Bereich-V2-Konfigurationsfelder im Karten-Editor (Bereich, Temperatursensor, Licht, Spezial-Entity, Media Player, Hintergrundquelle)
+
+### Behoben
+
+- Karten-Editor-Absturz (schwarzer Bildschirm) durch Endlos-Render-Schleife mit React 19 useSyncExternalStore
+- Wettervorhersagedaten wurden nicht geladen: Backend verarbeitet jetzt korrekt die HA Subscription-basierte Forecast-API
+- Wettervorhersage-Race-Condition: wartet auf Entity-Store bevor Vorhersagedaten abgerufen werden
+- Gleiche Kartenhoehen in Grid-Zeilen
 
 ## 0.2.3
 
