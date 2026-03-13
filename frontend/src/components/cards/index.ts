@@ -30,6 +30,7 @@ import { GroupCard } from "./GroupCard";
 import { RadarCard } from "./RadarCard";
 import { TrashCard } from "./TrashCard";
 import { AreaCard, AreaCardSmall } from "./AreaCard";
+import { AreaCardV2 } from "./AreaCardV2";
 import { VehicleCard } from "./VehicleCard";
 import { SonosGroupCard } from "./SonosGroupCard";
 
@@ -313,6 +314,14 @@ registerCard("area_small", AreaCardSmall, {
   displayName: "Bereich (klein)",
   description: "Kompakte Bereichsanzeige mit Status",
   category: "spezial",
+  compatibleDomains: [],
+  defaultSize: "1x1",
+  iconName: "home",
+});
+registerCard("area_v2", AreaCardV2, {
+  displayName: "Bereich (V2)",
+  description: "Bereichskarte mit Temperatur, Licht, Media und Spezial-Entity",
+  category: "komplex",
   compatibleDomains: [],
   defaultSize: "1x1",
   iconName: "home",
