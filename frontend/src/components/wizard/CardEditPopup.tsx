@@ -86,7 +86,8 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       e.entity_id.includes("trockner") || e.entity_id.includes("dryer") ||
       e.entity_id.includes("dishwasher") || e.entity_id.includes("spuel")
     ), [allSensors]);
-  const areas = useEntityStore((s) => Array.from(s.areas.values()));
+  const areasMap = useEntityStore((s) => s.areas);
+  const areas = useMemo(() => Array.from(areasMap.values()), [areasMap]);
 
   const handleSave = useCallback(() => {
     const { colSpan, rowSpan } = parseSizeString(cardSize);
