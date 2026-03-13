@@ -72,3 +72,23 @@
   background: rgba(86, 204, 242, 0.08);
   border-color: rgba(86, 204, 242, 0.15);
 }
+
+.status-bar__edit-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px dashed var(--dh-blue);
+  background: transparent;
+  color: var(--dh-blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: background 0.15s;
+}
+
+.status-bar__edit-btn:active {
+  background: rgba(86, 204, 242, 0.15);
+}

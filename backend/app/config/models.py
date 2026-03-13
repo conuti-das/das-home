@@ -63,9 +63,24 @@ class Section(BaseModel):
     subsections: list[SubSection] = Field(default_factory=list)
 
 
+class BadgeConfig(BaseModel):
+    type: str
+    enabled: bool = True
+    count: int | None = None
+
 class HeaderConfig(BaseModel):
     show_badges: bool = True
-    badges: list[str] = Field(default_factory=lambda: ["lights", "temperature", "active_devices"])
+    badges: list[BadgeConfig] = Field(default_factory=lambda: [
+        BadgeConfig(type="clock"),
+        BadgeConfig(type="lights"),
+        BadgeConfig(type="trash"),
+        BadgeConfig(type="weather_hourly", count=3),
+        BadgeConfig(type="weather_daily", count=3),
+        BadgeConfig(type="media"),
+        BadgeConfig(type="vacuum"),
+        BadgeConfig(type="washing"),
+        BadgeConfig(type="dryer"),
+    ])
 
 
 class ViewConfig(BaseModel):

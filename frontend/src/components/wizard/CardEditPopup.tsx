@@ -78,6 +78,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
   const isAreaV2Card = cardType === "area_v2";
   const allLights = useEntitiesByDomain("light");
   const allMediaPlayers = useEntitiesByDomain("media_player");
+  const allCameras = useEntitiesByDomain("camera");
   const allVacuums = useEntitiesByDomain("vacuum");
   const allSwitchesForSpecial = useEntitiesByDomain("switch");
   const specialSensors = useMemo(() =>
@@ -434,10 +435,30 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
                 onChange={(e) => setCardConfig({ ...cardConfig, backgroundSource: e.target.value })}
               >
                 <option value="area">Bereichs-Bild (HA)</option>
+                <option value="camera">Kamera</option>
                 <option value="custom">Eigene URL / Webcam</option>
                 <option value="media">Media Player Artwork</option>
               </select>
             </div>
+
+            {/* Camera entity (only for camera) */}
+            {(cardConfig.backgroundSource as string) === "camera" && (
+              <div>
+                <div className="cep__ds-label">Kamera</div>
+                <select
+                  className="cep__ds-select"
+                  value={(cardConfig.camera_entity as string) || ""}
+                  onChange={(e) => setCardConfig({ ...cardConfig, camera_entity: e.target.value || undefined })}
+                >
+                  <option value="">— Kamera waehlen —</option>
+                  {allCameras.map((cam) => (
+                    <option key={cam.entity_id} value={cam.entity_id}>
+                      {(cam.attributes?.friendly_name as string) || cam.entity_id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Background URL (only for custom) */}
             {(cardConfig.backgroundSource as string) === "custom" && (

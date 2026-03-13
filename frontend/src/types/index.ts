@@ -60,9 +60,15 @@ export interface Section {
   subsections: SubSection[];
 }
 
+export interface BadgeConfig {
+  type: string;
+  enabled: boolean;
+  count?: number;
+}
+
 export interface HeaderConfig {
   show_badges: boolean;
-  badges: string[];
+  badges: BadgeConfig[];
 }
 
 export interface ViewConfig {

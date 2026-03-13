@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.4
+
+### Added
+
+- Badge editor popup: configure StatusBar badges in edit mode (reorder, enable/disable, weather count)
+- Camera entity selector in Area Card V2 editor (background source "Kamera")
+- Configurable weather badge count (1-6 hourly, 1-5 daily)
+- All StatusBar badges now config-driven with persistent order and visibility
+
+### Hinzugefuegt
+
+- Badge-Editor-Popup: StatusBar-Badges im Edit-Modus konfigurieren (Reihenfolge, ein/ausschalten, Wetter-Anzahl)
+- Kamera-Entity-Auswahl im Bereichskarte V2 Editor (Hintergrund-Quelle "Kamera")
+- Konfigurierbare Wetter-Badge-Anzahl (1-6 stuendlich, 1-5 taeglich)
+- Alle StatusBar-Badges jetzt konfigurationsgesteuert mit persistenter Reihenfolge und Sichtbarkeit
+
 ## 0.3.3
 
 ### Added

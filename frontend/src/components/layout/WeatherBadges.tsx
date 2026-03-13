@@ -8,13 +8,17 @@ const DAY_NAMES = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
 interface WeatherBadgesProps {
   onOpenPopup?: (popupId: string, props?: Record<string, unknown>) => void;
+  hourlyCount?: number;
+  dailyCount?: number;
+  showHourly?: boolean;
+  showDaily?: boolean;
 }
 
-export function WeatherBadges({ onOpenPopup }: WeatherBadgesProps) {
+export function WeatherBadges({ onOpenPopup, hourlyCount = 3, dailyCount = 3, showHourly = true, showDaily = true }: WeatherBadgesProps) {
   const { hourlyForecast, dailyForecast, entityId } = useWeatherForecast();
 
-  const hourlyBadges = useMemo(() => hourlyForecast.slice(0, 3), [hourlyForecast]);
-  const dailyBadges = useMemo(() => dailyForecast.slice(0, 3), [dailyForecast]);
+  const hourlyBadges = useMemo(() => showHourly ? hourlyForecast.slice(0, hourlyCount) : [], [hourlyForecast, hourlyCount, showHourly]);
+  const dailyBadges = useMemo(() => showDaily ? dailyForecast.slice(0, dailyCount) : [], [dailyForecast, dailyCount, showDaily]);
 
   if (hourlyBadges.length === 0 && dailyBadges.length === 0) {
     return null;
