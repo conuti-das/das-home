@@ -21,11 +21,8 @@
 .grid-view__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--dh-grid-gap);
-}
-
-.grid-view__grid--positioned {
   grid-auto-rows: minmax(120px, auto);
+  gap: var(--dh-grid-gap);
 }
 
 /* Ensure cards stretch to fill grid cell height */

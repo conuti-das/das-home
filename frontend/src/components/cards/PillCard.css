@@ -21,7 +21,8 @@
 }
 
 .pill-card--small {
-  height: var(--dh-card-height-small);
+  min-height: var(--dh-card-height-small);
+  height: 100%;
   padding: 0 16px;
   flex-direction: row;
   align-items: center;
@@ -29,7 +30,8 @@
 }
 
 .pill-card--slider {
-  height: var(--dh-slider-height);
+  min-height: var(--dh-slider-height);
+  height: 100%;
   padding: 0;
 }
 

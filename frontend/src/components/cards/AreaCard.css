@@ -4,7 +4,8 @@
   border: var(--dh-surface-border);
   box-shadow: var(--dh-card-shadow);
   background: var(--dh-gray300);
-  height: 180px;
+  min-height: 120px;
+  height: 100%;
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
@@ -80,7 +81,8 @@
   border: var(--dh-surface-border);
   box-shadow: var(--dh-card-shadow);
   background: var(--dh-gray300);
-  height: var(--dh-card-height-small);
+  min-height: var(--dh-card-height-small);
+  height: 100%;
   padding: 0 16px;
   display: flex;
   align-items: center;

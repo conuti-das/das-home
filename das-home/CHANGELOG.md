@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+
+### Fixed
+
+- Equal card heights in grid rows: all cards in the same row now stretch to match
+
+### Behoben
+
+- Gleiche Kartenhoehen in Grid-Zeilen: alle Karten in einer Zeile haben jetzt dieselbe Hoehe
+
 ## 0.3.1
 
 ### Fixed
