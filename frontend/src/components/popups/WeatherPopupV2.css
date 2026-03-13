@@ -103,6 +103,12 @@
   margin-top: 4px;
 }
 
+.wpv2__day-templow {
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.4;
+}
+
 .wpv2__day-condition {
   font-size: 12px;
   color: var(--dh-gray100);

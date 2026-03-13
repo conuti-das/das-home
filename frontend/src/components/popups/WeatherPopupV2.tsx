@@ -38,8 +38,8 @@ export function WeatherPopupV2({ onClose, props }: PopupProps) {
   const windSpeed = entity?.attributes?.wind_speed as number | undefined;
   const conditionText = CONDITION_TEXT[condition] || condition;
 
-  const hourlyItems = hourlyForecast.slice(0, 5);
-  const dailyItems = dailyForecast.slice(0, 3);
+  const hourlyItems = hourlyForecast.slice(0, 12);
+  const dailyItems = dailyForecast.slice(0, 7);
 
   return (
     <PopupModal open title="Wetter" icon="weather-proofing" onClose={onClose} className="weather-popup-modal">
@@ -84,14 +84,18 @@ export function WeatherPopupV2({ onClose, props }: PopupProps) {
         <div className="wpv2__daily">
           {dailyItems.map((entry, i) => {
             const date = new Date(entry.datetime);
-            const dayName = i === 0 ? "Heute" : DAY_NAMES[date.getDay()];
+            const dayName = i === 0 ? "Heute" : i === 1 ? "Morgen" : DAY_NAMES[date.getDay()];
             const condText = CONDITION_TEXT[entry.condition] || entry.condition;
             const precip = entry.precipitation ? `${entry.precipitation}mm` : "0mm";
+            const tempLow = entry.templow !== undefined ? `${Math.round(entry.templow)}°` : "";
             return (
               <div key={i} className="wpv2__day-item">
                 <div>
                   <div className="wpv2__day-name">{dayName}</div>
-                  <div className="wpv2__day-temp">{Math.round(entry.temperature)}°</div>
+                  <div className="wpv2__day-temp">
+                    {Math.round(entry.temperature)}°
+                    {tempLow && <span className="wpv2__day-templow"> / {tempLow}</span>}
+                  </div>
                   <div className="wpv2__day-condition">{condText} · {precip}</div>
                 </div>
                 <WeatherIcon condition={entry.condition} size={42} />

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.8
+
+### Changed
+
+- Weather popup now shows 12 hours and 7 days forecast (was 5h / 3d)
+- Daily forecast shows high/low temperatures (e.g. "14° / 6°")
+- Daily forecast labels: "Heute", "Morgen", then weekday names
+- Grid gap between cards increased from 8px to 12px for better visual spacing
+
+### Geaendert
+
+- Wetter-Popup zeigt jetzt 12 Stunden und 7 Tage Vorhersage (vorher 5h / 3d)
+- Tagesvorhersage zeigt Hoch/Tief-Temperaturen (z.B. "14° / 6°")
+- Tagesvorhersage-Labels: "Heute", "Morgen", dann Wochentage
+- Abstand zwischen Karten von 8px auf 12px erhoeht fuer bessere Uebersicht
+
 ## 0.3.7
 
 ### Fixed
