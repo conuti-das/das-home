@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Card edit popup crash (black screen) caused by infinite render loop with React 19 useSyncExternalStore
+- Weather forecast data not loading: backend now properly handles HA subscription-based forecast API
+- Weather forecast race condition: waits for entity store before fetching forecast data
+
+### Behoben
+
+- Karten-Editor-Absturz (schwarzer Bildschirm) durch Endlos-Render-Schleife mit React 19 useSyncExternalStore
+- Wettervorhersagedaten wurden nicht geladen: Backend verarbeitet jetzt korrekt die HA Subscription-basierte Forecast-API
+- Wettervorhersage-Race-Condition: wartet auf Entity-Store bevor Vorhersagedaten abgerufen werden
+
 ## 0.3.0
 
 ### Added
@@ -13,9 +27,6 @@
 
 ### Fixed
 
-- Card edit popup crash (black screen) caused by infinite render loop with React 19 useSyncExternalStore
-- Weather forecast data not loading: backend now properly handles HA subscription-based forecast API
-- Weather forecast race condition: waits for entity store before fetching forecast data
 - Equal card heights in grid rows
 
 ### Hinzugefuegt
@@ -29,9 +40,6 @@
 
 ### Behoben
 
-- Karten-Editor-Absturz (schwarzer Bildschirm) durch Endlos-Render-Schleife mit React 19 useSyncExternalStore
-- Wettervorhersagedaten wurden nicht geladen: Backend verarbeitet jetzt korrekt die HA Subscription-basierte Forecast-API
-- Wettervorhersage-Race-Condition: wartet auf Entity-Store bevor Vorhersagedaten abgerufen werden
 - Gleiche Kartenhoehen in Grid-Zeilen
 
 ## 0.2.3
