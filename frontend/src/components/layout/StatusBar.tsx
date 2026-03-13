@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntitiesByDomain } from "@/hooks/useEntity";
+import { WeatherBadges } from "./WeatherBadges";
 import "./StatusBar.css";
 
 interface StatusBarProps {
@@ -106,6 +107,9 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
           <span className="status-chip__text">{lightsOn} an</span>
         </div>
       )}
+
+      {/* Weather forecast badges */}
+      <WeatherBadges onOpenPopup={onOpenPopup} />
 
       {/* Media players playing */}
       {playingMedia.map((mp) => {
