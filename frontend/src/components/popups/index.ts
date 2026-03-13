@@ -1,5 +1,5 @@
 import { registerPopup } from "./PopupRegistry";
-import { WeatherPopup } from "./WeatherPopup";
+import { WeatherPopupV2 } from "./WeatherPopupV2";
 import { TrashPopup } from "./TrashPopup";
 import { AreaPopup } from "./AreaPopup";
 import { LightsPopup } from "./LightsPopup";
@@ -9,7 +9,7 @@ import { VehiclePopup } from "./VehiclePopup";
 import { SonosGroupPopup } from "./SonosGroupPopup";
 import { CalendarPopup } from "./CalendarPopup";
 
-registerPopup("weather", WeatherPopup);
+registerPopup("weather", WeatherPopupV2);
 registerPopup("trash", TrashPopup);
 registerPopup("calendar", CalendarPopup);
 registerPopup("area", AreaPopup);
