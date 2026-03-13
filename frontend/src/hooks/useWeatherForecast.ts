@@ -28,14 +28,15 @@ interface WeatherForecastResult {
  */
 export function useWeatherForecast(): WeatherForecastResult {
   const weatherEntities = useEntitiesByDomain("weather");
-  const entityId = weatherEntities[0]?.entity_id || "weather.forecast_home";
+  const entityId = weatherEntities[0]?.entity_id || "";
 
   const [hourlyData, setHourlyData] = useState<ForecastEntry[]>([]);
   const [dailyData, setDailyData] = useState<ForecastEntry[]>([]);
   const fetched = useRef(false);
 
   useEffect(() => {
-    if (fetched.current) return;
+    // Don't fetch until we have a real entity ID from the store
+    if (!entityId || fetched.current) return;
 
     let cancelled = false;
 
@@ -51,9 +52,14 @@ export function useWeatherForecast(): WeatherForecastResult {
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === "weather_forecast_result" && !cancelled) {
-          setHourlyData(msg.hourly || []);
-          setDailyData(msg.daily || []);
-          fetched.current = true;
+          const hourly = msg.hourly || [];
+          const daily = msg.daily || [];
+          setHourlyData(hourly);
+          setDailyData(daily);
+          // Only mark as fetched if we got actual data
+          if (hourly.length > 0 || daily.length > 0) {
+            fetched.current = true;
+          }
           ws.close();
         }
       };

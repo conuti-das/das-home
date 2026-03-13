@@ -16,6 +16,7 @@ _ha_listen_task = None
 _subscribed = False
 _connect_lock: asyncio.Lock | None = None
 _pending: dict[int, asyncio.Future] = {}
+_pending_queues: dict[int, asyncio.Queue] = {}
 _msg_counter = 0
 
 
@@ -66,6 +67,42 @@ async def _ha_send(msg_type: str, **kwargs) -> dict:
         _pending.pop(msg_id, None)
 
 
+async def _ha_subscribe_once(msg_type: str, **kwargs) -> dict:
+    """Subscribe to HA, wait for the first event, then unsubscribe.
+
+    HA subscription commands (like weather/subscribe_forecast) return:
+      1. {"id": N, "type": "result", "success": true, "result": null}
+      2. {"id": N, "type": "event", "event": {"type": "...", "forecast": [...]}}
+    This function captures both and returns the event message.
+    """
+    if _ha_connection is None:
+        raise ConnectionError("Not connected to HA")
+
+    msg_id = _next_id()
+    q: asyncio.Queue = asyncio.Queue()
+    _pending_queues[msg_id] = q
+
+    payload = {"id": msg_id, "type": msg_type, **kwargs}
+    await _ha_connection.send(json.dumps(payload))
+
+    try:
+        # 1) Wait for the result ack
+        result_msg = await asyncio.wait_for(q.get(), timeout=10.0)
+        if not result_msg.get("success", True):
+            raise ConnectionError(f"HA subscribe failed: {result_msg}")
+
+        # 2) Wait for the first event containing actual data
+        event_msg = await asyncio.wait_for(q.get(), timeout=10.0)
+        return event_msg
+    finally:
+        _pending_queues.pop(msg_id, None)
+        # Unsubscribe to clean up the HA subscription
+        try:
+            await _ha_send("unsubscribe_events", subscription=msg_id)
+        except Exception:
+            pass
+
+
 async def _ensure_ha_connection():
     global _ha_connection, _ha_listen_task, _subscribed
 
@@ -113,6 +150,11 @@ async def _listen_ha():
             msg = json.loads(raw)
             msg_id = msg.get("id")
 
+            # Route to subscription queues (multi-message)
+            if msg_id and msg_id in _pending_queues:
+                await _pending_queues[msg_id].put(msg)
+                continue
+
             # Resolve pending request-response futures
             if msg_id and msg_id in _pending:
                 _pending[msg_id].set_result(msg)
@@ -138,6 +180,7 @@ async def _listen_ha():
             if not fut.done():
                 fut.cancel()
         _pending.clear()
+        _pending_queues.clear()
 
 
 @router.websocket("/ws")
@@ -181,18 +224,24 @@ async def websocket_endpoint(ws: WebSocket):
                     try:
                         entity_id = data.get("entity_id", "weather.forecast_home")
                         client_id = data.get("id")
-                        # Try both hourly and daily forecasts
                         results = {}
                         for forecast_type in ("hourly", "daily"):
                             try:
-                                resp = await _ha_send(
+                                event_msg = await _ha_subscribe_once(
                                     "weather/subscribe_forecast",
                                     entity_id=entity_id,
                                     forecast_type=forecast_type,
                                 )
-                                forecast = resp.get("result", {}).get("forecast") or resp.get("event", {}).get("forecast") or []
+                                # Event format: {"type":"event","event":{"type":"forecast","forecast":[...]}}
+                                forecast = (
+                                    event_msg.get("event", {}).get("forecast")
+                                    or event_msg.get("result", {}).get("forecast")
+                                    or []
+                                )
                                 results[forecast_type] = forecast
-                            except Exception:
+                                logger.info(f"Weather {forecast_type}: got {len(forecast)} entries")
+                            except Exception as e:
+                                logger.warning(f"weather/{forecast_type} failed: {e}")
                                 results[forecast_type] = []
                         response = {
                             "type": "weather_forecast_result",
