@@ -89,40 +89,51 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
   const allLights = useEntitiesByDomain("light");
   const lightsOn = allLights.filter((e) => e.state === "on" && isMainLight(e)).length;
 
-  // Find trash sensor
+  // Find next trash pickup from all trash sensors
   const allSensors = useEntitiesByDomain("sensor");
-  const trashSensor = allSensors.find(
-    (e) => e.entity_id.includes("waste") || e.entity_id.includes("trash") ||
-           e.entity_id.includes("muell") || e.entity_id.includes("abfall") ||
-           e.entity_id.includes("restmull") || e.entity_id.includes("tonne") ||
-           e.entity_id.includes("mullabfuhr")
-  );
-  const trashDays = useMemo(() => {
-    if (!trashSensor) return undefined;
-    const state = trashSensor.state;
-    // Try plain number first
-    const num = parseInt(state);
-    if (!isNaN(num) && String(num) === state.trim()) return num;
-    // Try extracting number from text like "Restmüll in 6 days"
-    const match = state.match(/(\d+)\s*(day|tag|d\b)/i);
-    if (match) return parseInt(match[1]);
-    // Try parsing as date (dd.mm.yyyy or yyyy-mm-dd)
-    let date: Date | null = null;
-    const dmy = state.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
-    if (dmy) {
-      date = new Date(parseInt(dmy[3]), parseInt(dmy[2]) - 1, parseInt(dmy[1]));
-    } else {
-      const parsed = new Date(state);
-      if (!isNaN(parsed.getTime())) date = parsed;
+  const trashInfo = useMemo(() => {
+    const isTrashSensor = (e: { entity_id: string }) =>
+      e.entity_id.includes("waste") || e.entity_id.includes("trash") ||
+      e.entity_id.includes("muell") || e.entity_id.includes("abfall") ||
+      e.entity_id.includes("restmull") || e.entity_id.includes("tonne");
+    const trashSensors = allSensors.filter((e) => isTrashSensor(e) && !e.entity_id.includes("mullabfuhr"));
+
+    function parseDays(state: string): number | undefined {
+      const num = parseInt(state);
+      if (!isNaN(num) && String(num) === state.trim()) return num;
+      const match = state.match(/(\d+)\s*(day|tag|d\b)/i);
+      if (match) return parseInt(match[1]);
+      let date: Date | null = null;
+      const dmy = state.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+      if (dmy) {
+        date = new Date(parseInt(dmy[3]), parseInt(dmy[2]) - 1, parseInt(dmy[1]));
+      } else {
+        const parsed = new Date(state);
+        if (!isNaN(parsed.getTime())) date = parsed;
+      }
+      if (date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+        return Math.max(0, Math.round((date.getTime() - today.getTime()) / 86400000));
+      }
+      return undefined;
     }
-    if (date) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      date.setHours(0, 0, 0, 0);
-      return Math.max(0, Math.round((date.getTime() - today.getTime()) / 86400000));
+
+    let best: { days: number; name: string; entity: typeof trashSensors[0] } | undefined;
+    for (const sensor of trashSensors) {
+      const days = parseDays(sensor.state);
+      if (days === undefined) continue;
+      if (!best || days < best.days) {
+        const name = (sensor.attributes?.friendly_name as string) || sensor.entity_id.split(".")[1];
+        best = { days, name, entity: sensor };
+      }
     }
-    return undefined;
-  }, [trashSensor]);
+    return best;
+  }, [allSensors]);
+  const trashSensor = trashInfo?.entity;
+  const trashDays = trashInfo?.days;
+  const trashName = trashInfo?.name ?? "Müll";
 
   // Media players playing
   const mediaPlayers = useEntitiesByDomain("media_player");
@@ -170,7 +181,7 @@ export function StatusBar({ onTrashClick, onLightsClick, onOpenPopup }: StatusBa
               <Icon name="delete" style={{ width: 18, height: 18, color: trashDays <= 1 ? "var(--dh-red)" : trashDays <= 3 ? "var(--dh-yellow)" : "var(--dh-green)" }} />
             </div>
             <span className="status-chip__text">
-              {trashDays === 0 ? "Heute" : trashDays === 1 ? "Morgen" : `${trashDays}d`} Müll
+              {trashDays === 0 ? "Heute" : trashDays === 1 ? "Morgen" : trashDays} {trashName}
             </span>
           </div>
         );
