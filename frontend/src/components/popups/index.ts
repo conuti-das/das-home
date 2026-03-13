@@ -8,11 +8,13 @@ import { MediaPlayerPopup } from "./MediaPlayerPopup";
 import { VehiclePopup } from "./VehiclePopup";
 import { SonosGroupPopup } from "./SonosGroupPopup";
 import { CalendarPopup } from "./CalendarPopup";
+import { AreaPopupV2 } from "./AreaPopupV2";
 
 registerPopup("weather", WeatherPopupV2);
 registerPopup("trash", TrashPopup);
 registerPopup("calendar", CalendarPopup);
 registerPopup("area", AreaPopup);
+registerPopup("area-v2", AreaPopupV2);
 registerPopup("lights", LightsPopup);
 registerPopup("light-detail", LightDetailPopup);
 registerPopup("media-detail", MediaPlayerPopup);
