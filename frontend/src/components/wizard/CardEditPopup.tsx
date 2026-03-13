@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { PopupModal } from "@/components/layout/PopupModal";
 import { getRegisteredTypes, getCardMetadata, getCardComponent } from "@/components/cards/CardRegistry";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import { useEntityStore } from "@/stores/entityStore";
 import { useEntitiesByDomain } from "@/hooks/useEntity";
 import { api } from "@/services/api";
 import { parseSizeString } from "@/utils/gridLayout";
@@ -74,6 +75,18 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
     ), [allSensors]);
 
   const isWeatherCard = cardType === "weather";
+  const isAreaV2Card = cardType === "area_v2";
+  const allLights = useEntitiesByDomain("light");
+  const allMediaPlayers = useEntitiesByDomain("media_player");
+  const allVacuums = useEntitiesByDomain("vacuum");
+  const allSwitchesForSpecial = useEntitiesByDomain("switch");
+  const specialSensors = useMemo(() =>
+    allSensors.filter((e) =>
+      e.entity_id.includes("wasch") || e.entity_id.includes("washing") ||
+      e.entity_id.includes("trockner") || e.entity_id.includes("dryer") ||
+      e.entity_id.includes("dishwasher") || e.entity_id.includes("spuel")
+    ), [allSensors]);
+  const areas = useEntityStore((s) => Array.from(s.areas.values()));
 
   const handleSave = useCallback(() => {
     const { colSpan, rowSpan } = parseSizeString(cardSize);
@@ -112,7 +125,7 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
       : [{ key: "size" as const, label: "Groesse" }]),
     { key: "section" as const, label: "Sektion" },
     { key: "styling" as const, label: "Styling" },
-    ...(isWeatherCard ? [{ key: "datasource" as const, label: "Datenquellen" }] : []),
+    ...((isWeatherCard || isAreaV2Card) ? [{ key: "datasource" as const, label: "Datenquellen" }] : []),
     { key: "entity" as const, label: "Entity" },
   ];
 
@@ -322,6 +335,121 @@ export function CardEditPopup({ open, onClose, sectionId, card, sectionLayout }:
                 ))}
               </select>
             </div>
+          </div>
+        )}
+
+        {/* Datasource tab (area_v2) */}
+        {tab === "datasource" && isAreaV2Card && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Area selection */}
+            <div>
+              <div className="cep__ds-label">Bereich</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.area_id as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, area_id: e.target.value || undefined })}
+              >
+                <option value="">Bereich waehlen...</option>
+                {areas.map((a) => (
+                  <option key={a.area_id} value={a.area_id}>{a.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Temperature entity */}
+            <div>
+              <div className="cep__ds-label">Temperatur-Sensor</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.temperature_entity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, temperature_entity: e.target.value || undefined })}
+              >
+                <option value="">Keiner</option>
+                {tempSensors.map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id} ({s.state}°)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Light entity */}
+            <div>
+              <div className="cep__ds-label">Licht / Lichtgruppe</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.light_entity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, light_entity: e.target.value || undefined })}
+              >
+                <option value="">Keines</option>
+                {allLights.map((l) => (
+                  <option key={l.entity_id} value={l.entity_id}>
+                    {(l.attributes?.friendly_name as string) || l.entity_id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Special entity */}
+            <div>
+              <div className="cep__ds-label">Spezial-Entity (Saugroboter, Waschmaschine, ...)</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.special_entity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, special_entity: e.target.value || undefined })}
+              >
+                <option value="">Keines</option>
+                {[...allVacuums, ...allSwitchesForSpecial, ...specialSensors].map((s) => (
+                  <option key={s.entity_id} value={s.entity_id}>
+                    {(s.attributes?.friendly_name as string) || s.entity_id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Media player entity */}
+            <div>
+              <div className="cep__ds-label">Media Player</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.media_player_entity as string) || ""}
+                onChange={(e) => setCardConfig({ ...cardConfig, media_player_entity: e.target.value || undefined })}
+              >
+                <option value="">Keiner</option>
+                {allMediaPlayers.map((mp) => (
+                  <option key={mp.entity_id} value={mp.entity_id}>
+                    {(mp.attributes?.friendly_name as string) || mp.entity_id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Background source */}
+            <div>
+              <div className="cep__ds-label">Hintergrund</div>
+              <select
+                className="cep__ds-select"
+                value={(cardConfig.backgroundSource as string) || "area"}
+                onChange={(e) => setCardConfig({ ...cardConfig, backgroundSource: e.target.value })}
+              >
+                <option value="area">Bereichs-Bild (HA)</option>
+                <option value="custom">Eigene URL / Webcam</option>
+                <option value="media">Media Player Artwork</option>
+              </select>
+            </div>
+
+            {/* Background URL (only for custom) */}
+            {(cardConfig.backgroundSource as string) === "custom" && (
+              <div>
+                <div className="cep__ds-label">Bild-URL</div>
+                <input
+                  className="widget-wizard__input"
+                  value={(cardConfig.backgroundUrl as string) || ""}
+                  onChange={(e) => setCardConfig({ ...cardConfig, backgroundUrl: e.target.value || undefined })}
+                  placeholder="https://... oder /local/..."
+                />
+              </div>
+            )}
           </div>
         )}
 
