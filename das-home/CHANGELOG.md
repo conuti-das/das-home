@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.10
+
+### Fixed
+
+- Light slider in popup no longer intercepts vertical scroll — sliding only activates on horizontal finger movement
+
+### Behoben
+
+- Helligkeitsregler im Lichter-Popup unterbricht nicht mehr das vertikale Scrollen — Slider reagiert nur noch auf horizontale Fingerbewegung
+
 ## 0.3.9
 
 ### Changed
