@@ -30,3 +30,64 @@ export const api = {
       `/calendar/events/${entityId}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
     ),
 };
+
+// ---------- Insights (Home Operations Briefing) ----------
+
+export interface InsightsKPI {
+  value: number | null;
+  unit: string;
+  available: boolean;
+  entity_id: string | null;
+  trend_7d: number[];
+  yoy_7d: number[] | null;
+  anomaly_flag: boolean;
+  reason?: "no_entity_found" | "no_data" | "error";
+}
+
+export interface InsightsAnomaly {
+  entity_id: string;
+  friendly_name: string;
+  description: string;
+  severity: "low" | "medium" | "high";
+  detected_at: string;
+}
+
+export interface InsightsTrendPoint {
+  date: string;
+  value: number;
+  yoy_value: number | null;
+}
+
+export interface InsightsResponse {
+  generated_at: string;
+  cache_age_seconds: number;
+  kpis: {
+    energy_cost_today: InsightsKPI;
+    occupancy_hours_today: InsightsKPI;
+    device_uptime_pct: InsightsKPI;
+    anomaly_count: InsightsKPI;
+  };
+  anomalies: InsightsAnomaly[];
+  trends: { energy_daily_7d: InsightsTrendPoint[] };
+  missing_kpis: string[];
+}
+
+export interface InsightsOverrides {
+  energyEntity?: string;
+  occupancyEntity?: string;
+  uptimeEntities?: string[];
+}
+
+export async function fetchInsights(overrides?: InsightsOverrides): Promise<InsightsResponse> {
+  const params = new URLSearchParams();
+  if (overrides?.energyEntity) params.set("energy_entity", overrides.energyEntity);
+  if (overrides?.occupancyEntity) params.set("occupancy_entity", overrides.occupancyEntity);
+  if (overrides?.uptimeEntities?.length) params.set("uptime_entities", overrides.uptimeEntities.join(","));
+  const qs = params.toString();
+  const url = apiUrl(`/api/insights${qs ? `?${qs}` : ""}`);
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`Insights fetch failed: ${resp.status} ${resp.statusText}`);
+  }
+  return resp.json();
+}
