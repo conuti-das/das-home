@@ -17,6 +17,8 @@ cd backend && python -m pytest tests/ -v
 cd frontend && pnpm dev      # Dev server on :3000 (proxies /api to :5050)
 cd frontend && pnpm build    # Production build
 cd frontend && npx tsc --noEmit  # Type check
+cd frontend && pnpm test     # Vitest unit tests
+cd frontend && pnpm e2e      # Playwright end-to-end tests
 
 # Docker
 docker-compose up -d          # Full stack on :5050
@@ -24,8 +26,8 @@ docker-compose up -d          # Full stack on :5050
 
 ## Project Structure
 
-- `backend/` - FastAPI server (app/main.py, api/, config/, ws/)
-- `frontend/` - React + Vite + UI5 (src/components/, stores/, hooks/, services/)
+- `backend/` - FastAPI server (app/main.py, api/, config/, ws/, services/)
+- `frontend/` - React + Vite + UI5 (src/components/, stores/, hooks/, services/, test/, e2e/)
 - `das-home/` - Home Assistant add-on manifest (config.yaml, CHANGELOG.md, translations/)
 - `data/` - Persisted YAML config (gitignored)
 
