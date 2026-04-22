@@ -5,9 +5,28 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
+import yaml
+
 from app.settings import settings
 
-__version__ = "0.3.9"
+
+def _read_version_from_config() -> str:
+    """Read version from das-home/config.yaml (HA add-on manifest).
+
+    Falls back to 'unknown' if the file can't be read — single source of truth
+    is ``das-home/config.yaml`` per project release workflow.
+    """
+    repo_root = Path(__file__).resolve().parents[2]
+    addon_config = repo_root / "das-home" / "config.yaml"
+    try:
+        with open(addon_config, encoding="utf-8") as f:
+            cfg = yaml.safe_load(f) or {}
+        return cfg.get("version", "unknown")
+    except Exception:
+        return "unknown"
+
+
+__version__ = _read_version_from_config()
 RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
 
 app = FastAPI(title="das-home", version=__version__)
