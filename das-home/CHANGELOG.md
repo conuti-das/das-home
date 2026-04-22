@@ -28,6 +28,20 @@
 - `historyStore` umbenannt in `undoStore`, um Verwechslung mit Home Assistant Entity-Historie zu vermeiden
 - Tremor React Charting-Library als Laufzeit-Dependency hinzugefuegt (lazy-geladen — wird nur geladen wenn die Briefing-Karte verwendet wird)
 
+### Merged
+
+- Includes the v0.3.10 light slider scroll fix (popup slider no longer intercepts vertical scroll)
+
+## 0.3.10
+
+### Fixed
+
+- Light slider in popup no longer intercepts vertical scroll — sliding only activates on horizontal finger movement
+
+### Behoben
+
+- Helligkeitsregler im Lichter-Popup unterbricht nicht mehr das vertikale Scrollen — Slider reagiert nur noch auf horizontale Fingerbewegung
+
 ## 0.3.9
 
 ### Changed

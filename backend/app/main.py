@@ -9,7 +9,6 @@ import yaml
 
 from app.settings import settings
 
-
 def _read_version_from_config() -> str:
     """Read version from das-home/config.yaml (HA add-on manifest).
 

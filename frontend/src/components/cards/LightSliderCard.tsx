@@ -45,26 +45,62 @@ export function LightSliderCard({ card, callService, onCardAction }: CardCompone
   const handleTrackPointerDown = useCallback((e: React.PointerEvent) => {
     const el = trackRef.current;
     if (!el) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    isDraggingRef.current = true;
 
-    const pct = pctFromEvent(e.clientX);
-    setOptimisticPct(pct);
-    sendBrightness(pct);
+    const isTouch = e.pointerType === "touch";
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let dragStarted = false;
+    let aborted = false;
+
+    // Mouse: capture immediately (no scroll conflict on desktop)
+    if (!isTouch) {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      isDraggingRef.current = true;
+      dragStarted = true;
+      const pct = pctFromEvent(startX);
+      setOptimisticPct(pct);
+      sendBrightness(pct);
+    }
 
     const onMove = (ev: PointerEvent) => {
+      if (aborted) return;
+
+      if (!dragStarted) {
+        const dx = Math.abs(ev.clientX - startX);
+        const dy = Math.abs(ev.clientY - startY);
+        // Vertical scroll intent → abort
+        if (dy > dx + 3) {
+          aborted = true;
+          document.removeEventListener("pointermove", onMove);
+          document.removeEventListener("pointerup", onUp);
+          return;
+        }
+        // Not enough movement yet to decide
+        if (dx < 6) return;
+        // Horizontal drag confirmed → capture now
+        dragStarted = true;
+        isDraggingRef.current = true;
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        const pct = pctFromEvent(startX);
+        setOptimisticPct(pct);
+        sendBrightness(pct);
+      }
+
       const p = pctFromEvent(ev.clientX);
       setOptimisticPct(p);
       sendBrightness(p);
     };
+
     const onUp = (ev: PointerEvent) => {
       isDraggingRef.current = false;
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      if (aborted) return;
       const p = pctFromEvent(ev.clientX);
       setOptimisticPct(p);
       sendBrightness(p, true); // force final value
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
     };
+
     document.addEventListener("pointermove", onMove);
     document.addEventListener("pointerup", onUp);
   }, [pctFromEvent, sendBrightness]);

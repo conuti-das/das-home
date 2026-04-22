@@ -13,7 +13,7 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .light-slider__fill {
