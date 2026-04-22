@@ -286,11 +286,22 @@ def test_overrides_are_applied(client, monkeypatch):
 
 
 def test_health_endpoint_returns_version_from_config_yaml(client):
-    """Regression test for the version-DRY change: /api/health must still
-    return the version string read from das-home/config.yaml, not a stale
-    hardcoded literal."""
+    """Regression test for the version-DRY change: /api/health must return
+    the version string read from das-home/config.yaml, not a stale hardcoded
+    literal. Read expected value from the same source so the test survives
+    version bumps."""
+    from pathlib import Path
+
+    import yaml
+
+    repo_root = Path(__file__).resolve().parents[2]
+    with open(repo_root / "das-home" / "config.yaml") as f:
+        expected_version = yaml.safe_load(f)["version"]
+
     resp = client.get("/api/health")
     assert resp.status_code == 200
     data = resp.json()
     assert data["status"] == "ok"
-    assert data["version"] == "0.3.9"
+    assert data["version"] == expected_version
+    # Sanity: the version string should be non-empty and not "unknown"
+    assert expected_version and expected_version != "unknown"
