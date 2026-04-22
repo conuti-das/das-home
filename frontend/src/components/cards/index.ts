@@ -1,4 +1,5 @@
-import { registerCard } from "./CardRegistry";
+import { lazy, Suspense, createElement } from "react";
+import { registerCard, type CardComponentProps } from "./CardRegistry";
 import { SwitchCard } from "./SwitchCard";
 import { SensorCard } from "./SensorCard";
 import { LightCard } from "./LightCard";
@@ -341,6 +342,38 @@ registerCard("sonos_group", SonosGroupCard, {
   compatibleDomains: ["media_player"],
   defaultSize: "1x1",
   iconName: "media-play",
+});
+
+// Home Operations Briefing — lazy-loaded so Tremor is not in the main bundle
+const HomeOpsBriefingLazy = lazy(() => import("./HomeOpsBriefing"));
+
+function HomeOpsBriefingCard(props: CardComponentProps) {
+  return createElement(
+    Suspense,
+    {
+      fallback: createElement(
+        "div",
+        {
+          style: {
+            padding: 20,
+            opacity: 0.6,
+            fontSize: 13,
+          },
+        },
+        "Home Operations Briefing wird geladen...",
+      ),
+    },
+    createElement(HomeOpsBriefingLazy, props),
+  );
+}
+
+registerCard("home_ops_briefing", HomeOpsBriefingCard, {
+  displayName: "Home Operations Briefing",
+  description: "Enterprise-KPI-Dashboard: Energie, Anwesenheit, Uptime, Anomalien",
+  category: "komplex",
+  compatibleDomains: [],
+  defaultSize: "2x2",
+  iconName: "business-objects-experience",
 });
 
 export { BaseCard } from "./BaseCard";
