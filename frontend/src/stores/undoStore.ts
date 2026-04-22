@@ -3,7 +3,7 @@ import type { DashboardConfig } from "@/types";
 
 const MAX_HISTORY = 50;
 
-interface HistoryStore {
+interface UndoStore {
   past: DashboardConfig[];
   future: DashboardConfig[];
   pushState: (state: DashboardConfig) => void;
@@ -14,7 +14,7 @@ interface HistoryStore {
   clear: () => void;
 }
 
-export const useHistoryStore = create<HistoryStore>((set, get) => ({
+export const useUndoStore = create<UndoStore>((set, get) => ({
   past: [],
   future: [],
 

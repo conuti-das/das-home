@@ -1,0 +1,353 @@
+/* Home Operations Briefing — UI5-themed Tremor dashboard card. */
+
+.hob-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--dh-card-radius, 12px);
+  border: var(--dh-surface-border, 1px solid rgba(0, 0, 0, 0.08));
+  box-shadow: var(--dh-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.08));
+  background: var(--sapBaseColor, #fff);
+  color: var(--dh-gray100, #1a1a1a);
+  font-family: var(--sapFontFamily, "72", "72full", Arial, Helvetica, sans-serif);
+}
+
+.hob-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--dh-gray300, rgba(0, 0, 0, 0.08));
+}
+
+.hob-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sapHighlightColor, #0854a0);
+}
+
+.hob-card__stale {
+  font-size: 12px;
+  padding: 3px 10px;
+  background: var(--sapWarning_BackgroundColor, #fff4d6);
+  color: var(--sapWarning_TextColor, #663d00);
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* KPI grid */
+.hob-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.hob-kpi-tile {
+  position: relative;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--dh-gray300, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--dh-gray300, rgba(0, 0, 0, 0.06));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 110px;
+}
+
+.hob-kpi-tile--anomaly {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+.hob-kpi-tile--empty {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.02),
+    rgba(0, 0, 0, 0.02) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hob-kpi-tile__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hob-kpi-tile__label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hob-kpi-tile__anomaly-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.hob-kpi-tile__value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.hob-kpi-tile__metric {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--sapHighlightColor, #0854a0);
+}
+
+.hob-kpi-tile__unit {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.hob-kpi-tile__spark {
+  height: 32px;
+  margin-top: auto;
+}
+
+.hob-kpi-tile__empty-text {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.hob-kpi-tile__cta {
+  background: transparent;
+  border: none;
+  color: var(--sapHighlightColor, #0854a0);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.hob-kpi-tile__cta:hover {
+  text-decoration: underline;
+}
+
+/* Section */
+.hob-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hob-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+.hob-section__subtitle {
+  opacity: 0.55;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Trend chart */
+.hob-trend-chart {
+  height: 180px;
+  width: 100%;
+}
+
+.hob-trend-chart .hob-line-chart,
+.hob-trend-chart .hob-line-chart > div {
+  height: 100%;
+}
+
+.hob-trend-empty {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 13px;
+}
+
+/* Anomalies */
+.hob-anomaly-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #15803d;
+  font-weight: 500;
+}
+
+.hob-anomaly-empty__icon {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hob-anomaly-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hob-anomaly-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--dh-gray300, rgba(0, 0, 0, 0.03));
+  border-radius: 6px;
+  align-items: flex-start;
+}
+
+.hob-anomaly-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.hob-anomaly-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.hob-anomaly-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.hob-anomaly-desc {
+  font-size: 12px;
+  opacity: 0.7;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.hob-anomaly-more__btn {
+  background: transparent;
+  border: 1px dashed var(--dh-gray300, rgba(0, 0, 0, 0.15));
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.7;
+  width: 100%;
+  text-align: center;
+}
+
+.hob-anomaly-more__btn:hover {
+  opacity: 1;
+}
+
+/* Error + empty states */
+.hob-card--error,
+.hob-card--empty {
+  min-height: 180px;
+  justify-content: center;
+}
+
+.hob-error-body,
+.hob-empty-body {
+  text-align: center;
+  padding: 16px;
+}
+
+.hob-error-msg,
+.hob-empty-msg {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.hob-error-detail,
+.hob-empty-detail {
+  font-size: 13px;
+  opacity: 0.65;
+  margin-bottom: 12px;
+}
+
+.hob-btn {
+  background: transparent;
+  border: 1px solid var(--sapHighlightColor, #0854a0);
+  color: var(--sapHighlightColor, #0854a0);
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.hob-btn--primary {
+  background: var(--sapHighlightColor, #0854a0);
+  color: white;
+}
+
+.hob-btn--primary:hover {
+  opacity: 0.92;
+}
+
+/* Loading skeletons */
+.hob-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--dh-gray300, rgba(0, 0, 0, 0.06)) 0%,
+    var(--dh-gray300, rgba(0, 0, 0, 0.1)) 50%,
+    var(--dh-gray300, rgba(0, 0, 0, 0.06)) 100%
+  );
+  background-size: 200% 100%;
+  animation: hob-shimmer 1.5s linear infinite;
+  border-radius: 6px;
+}
+
+.hob-skeleton--header {
+  height: 24px;
+  width: 40%;
+}
+
+.hob-skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.hob-skeleton--tile {
+  height: 96px;
+}
+
+.hob-skeleton--chart {
+  height: 180px;
+}
+
+@keyframes hob-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
