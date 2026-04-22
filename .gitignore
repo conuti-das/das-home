@@ -40,6 +40,11 @@ console-debug*.log
 # Playwright MCP logs
 .playwright-mcp/
 
+# Playwright test artifacts
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+
 # Claude Code config (local only)
 .claude/
 CLAUDE.md
