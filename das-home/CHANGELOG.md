@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- Home Operations Briefing card: new card type `home_ops_briefing` with 4 KPI tiles (energy cost today, occupancy hours, device uptime, anomaly count), 7-day trend chart with year-over-year overlay, and daily anomalies list
+- `/api/insights` endpoint with HA `recorder/statistics_during_period` integration, 5-minute TTL cache, and auto-discovery of relevant sensors by `device_class`
+- Day-of-week anomaly detection for climate sensors, energy/power sensors, and occupancy/motion/door/window binary sensors
+- Frontend test infrastructure: Vitest + @testing-library/react for unit tests, Playwright for end-to-end coverage (`pnpm test`, `pnpm e2e`)
+- Version string now read from `das-home/config.yaml` at startup — backend no longer needs a second manual version sync
+
+### Changed
+
+- `historyStore` renamed to `undoStore` to avoid confusion with Home Assistant entity history work
+- Tremor React charting library added as a runtime dependency (lazy-loaded — only pulled in when the Briefing card is used)
+
+### Hinzugefuegt
+
+- Home Operations Briefing Karte: neuer Kartentyp `home_ops_briefing` mit 4 KPI-Kacheln (Energiekosten heute, Anwesenheitsstunden, Geraete-Verfuegbarkeit, Anomalie-Anzahl), 7-Tage-Trend-Chart mit Vorjahresvergleich und taeglicher Anomalie-Liste
+- `/api/insights` Endpoint mit HA `recorder/statistics_during_period` Integration, 5-Minuten TTL-Cache und automatischer Sensor-Erkennung ueber `device_class`
+- Wochentags-basierte Anomalie-Erkennung fuer Klimasensoren, Energie-/Leistungssensoren sowie Anwesenheits-/Bewegungs-/Tuer-/Fenster-Sensoren
+- Frontend-Test-Infrastruktur: Vitest + @testing-library/react fuer Unit-Tests, Playwright fuer End-to-End-Tests (`pnpm test`, `pnpm e2e`)
+- Versions-String wird beim Start aus `das-home/config.yaml` gelesen — Backend benoetigt keine zweite manuelle Versions-Synchronisation mehr
+
+### Geaendert
+
+- `historyStore` umbenannt in `undoStore`, um Verwechslung mit Home Assistant Entity-Historie zu vermeiden
+- Tremor React Charting-Library als Laufzeit-Dependency hinzugefuegt (lazy-geladen — wird nur geladen wenn die Briefing-Karte verwendet wird)
+
 ## 0.3.9
 
 ### Changed
