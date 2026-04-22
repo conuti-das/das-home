@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useHistoryStore } from "@/stores/historyStore";
+import { useUndoStore } from "@/stores/undoStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 
 export function useKeyboardShortcuts() {
-  const undo = useHistoryStore((s) => s.undo);
-  const redo = useHistoryStore((s) => s.redo);
+  const undo = useUndoStore((s) => s.undo);
+  const redo = useUndoStore((s) => s.redo);
   const setDashboard = useDashboardStore((s) => s.setDashboard);
   const editMode = useDashboardStore((s) => s.editMode);
 
