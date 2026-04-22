@@ -44,6 +44,7 @@ from app.api.hacs_routes import router as hacs_router
 from app.api.media_routes import router as media_router, geo_router
 from app.api.calendar_routes import router as calendar_router
 from app.api.panel_routes import router as panel_router
+from app.api.insights_routes import router as insights_router
 from app.ws.proxy import router as ws_router
 
 # API routes
@@ -63,6 +64,7 @@ app.include_router(media_router)
 app.include_router(geo_router)
 app.include_router(calendar_router)
 app.include_router(panel_router)
+app.include_router(insights_router)
 app.include_router(ws_router)
 
 # Serve frontend static files (added after frontend build)
