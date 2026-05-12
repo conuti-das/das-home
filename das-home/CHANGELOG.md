@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.2
+
+### Added
+
+- AreaCardV2 now auto-discovers entities from the configured `area_id` when explicit per-slot configs are missing. Picks the first matching `sensor.*temperature*`, `light.*`, `media_player.*`, and special device (vacuum / washer / dryer / dishwasher) in the area. Explicit configs still win as overrides.
+
+### Changed
+
+- Grid gap increased from 12px to 16px (`--dh-grid-gap`) for clearer visual separation between cards on dark backgrounds.
+- Minimum grid row height raised from 120px to 140px (`grid-auto-rows`). Reduces height-mismatch between rich cards (group lights with settings gear) and simple cards (single light toggles) in the same section.
+
+### Hinzugefuegt
+
+- AreaCardV2 erkennt jetzt Entities automatisch ueber die `area_id`, wenn die expliziten Pro-Slot-Configs fehlen. Waehlt die erste passende `sensor.*temperature*`, `light.*`, `media_player.*` und Spezial-Geraet (Saugroboter / Waschmaschine / Trockner / Spuelmaschine) der Area. Explizite Configs gewinnen weiterhin als Override.
+
+### Geaendert
+
+- Grid-Abstand von 12px auf 16px erhoeht (`--dh-grid-gap`) fuer bessere visuelle Trennung zwischen Karten auf dunklem Hintergrund.
+- Minimale Grid-Zeilen-Hoehe von 120px auf 140px erhoeht (`grid-auto-rows`). Reduziert Hoehen-Mismatch zwischen reichhaltigen Karten (Gruppen-Lichter mit Settings-Zahnrad) und einfachen Karten (einzelne Licht-Toggles) in derselben Sektion.
+
 ## 0.4.1
 
 ### Fixed

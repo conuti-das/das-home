@@ -254,7 +254,7 @@ export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGr
       const gap = parseFloat(style.gap) || 12;
       const totalW = el.clientWidth;
       const cellW = (totalW - (cols - 1) * gap) / cols;
-      const rowH = 120; // matches grid-auto-rows minmax
+      const rowH = 140; // matches grid-auto-rows minmax
       setGridMetrics({ cols, cellW, rowH, gap });
     };
 
