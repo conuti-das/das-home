@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1
+
+### Fixed
+
+- Card wizard now supports adding cards that don't require entity assignment (`home_ops_briefing`, `iframe`, `markdown`, `radar`, `area`, `area_small`, `area_v2`, `hacs`). Previously the "Zuordnung" step rendered blank with no "Next" button because no pairings were initialized for cards with empty `compatibleDomains`. Wizard now shows a clear "no entity required" panel with a working Weiter button for these card types.
+
+### Behoben
+
+- Karten-Wizard unterstuetzt jetzt das Hinzufuegen von Karten, die keine Entity-Zuordnung benoetigen (`home_ops_briefing`, `iframe`, `markdown`, `radar`, `area`, `area_small`, `area_v2`, `hacs`). Bisher war der "Zuordnung"-Step leer ohne "Weiter"-Button, weil fuer Karten mit leerer `compatibleDomains`-Liste keine Pairings erzeugt wurden. Wizard zeigt jetzt einen klaren "Keine Entity-Zuordnung noetig"-Panel mit funktionierendem Weiter-Button fuer diese Kartentypen.
+
 ## 0.4.0
 
 ### Added

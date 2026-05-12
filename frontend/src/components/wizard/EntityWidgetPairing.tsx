@@ -62,6 +62,32 @@ export function EntityWidgetPairing({
     onPairingsChange(initial);
   }, [selectedEntities, selectedWidget, pairings.length, onPairingsChange]);
 
+  // Entity-less widget path: cards with compatibleDomains=[] (e.g. home_ops_briefing,
+  // iframe, markdown, radar, area*, hacs) need no user-assigned entity. Without this,
+  // the wizard stalls on the Zuordnung step because no pairings get initialized and
+  // the body renders nothing.
+  useEffect(() => {
+    if (pairings.length > 0) return;
+    if (selectedEntities.length > 0) return;
+    if (!selectedWidget) return;
+    if (selectedWidget.compatibleDomains.length > 0) return;
+    const synthetic: EntityWidgetPair = {
+      entity: {
+        entity_id: "",
+        state: "",
+        attributes: { friendly_name: selectedWidget.displayName },
+        last_changed: "",
+        last_updated: "",
+      } as EntityState,
+      widgetType: selectedWidget.type,
+      size: selectedWidget.defaultSize ?? "2x2",
+      customLabel: selectedWidget.displayName,
+      customIcon: "",
+      customColor: "",
+    };
+    onPairingsChange([synthetic]);
+  }, [pairings.length, selectedEntities, selectedWidget, onPairingsChange]);
+
   const handleWidgetChange = (index: number, widgetType: string) => {
     const updated = [...pairings];
     updated[index] = { ...updated[index], widgetType };
@@ -77,6 +103,65 @@ export function EntityWidgetPairing({
   };
 
   if (pairings.length === 0) return null;
+
+  // Entity-less widget: synthetic pairing has empty entity_id. Render a clean
+  // "no entity needed" panel with a working Weiter button instead of the empty
+  // entity-list UI.
+  const isEntityLess =
+    selectedWidget !== null &&
+    selectedWidget.compatibleDomains.length === 0 &&
+    pairings.length === 1 &&
+    pairings[0].entity.entity_id === "";
+
+  if (isEntityLess && selectedWidget) {
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
+            padding: "32px 24px",
+            borderRadius: "var(--dh-card-radius)",
+            background: "var(--dh-gray300)",
+            border: "var(--dh-surface-border)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: "var(--dh-card-radius-sm)",
+              background: "rgba(86, 204, 242, 0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon name={selectedWidget.iconName} style={{ width: 24, height: 24, color: "var(--dh-blue)" }} />
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "var(--dh-gray100)" }}>
+            {selectedWidget.displayName}
+          </div>
+          <div style={{ fontSize: 13, opacity: 0.6, color: "var(--dh-gray100)", maxWidth: 360, lineHeight: 1.5 }}>
+            Diese Karte benötigt keine Entity-Zuordnung. Konfiguration erfolgt nach
+            dem Hinzufügen über den Karten-Editor.
+          </div>
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <button
+            className="widget-wizard__btn widget-wizard__btn--primary"
+            style={{ width: "100%" }}
+            onClick={onNext}
+          >
+            Weiter
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // If coming from widget gallery, show recommended widget types
   const allWidgetForBatch = selectedWidget
