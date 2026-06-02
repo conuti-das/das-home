@@ -13,6 +13,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
 import { CardEditPopup } from "@/components/wizard/CardEditPopup";
 import { getCardSpan, getCardPosition } from "@/utils/gridLayout";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { CardItem, Section } from "@/types";
 import "./DraggableGrid.css";
 
@@ -36,6 +37,7 @@ function DraggableCard({
   onOpenPopup,
   gridMetrics,
   isStrip,
+  isMobile,
 }: {
   card: CardItem;
   sectionId: string;
@@ -43,6 +45,7 @@ function DraggableCard({
   onOpenPopup?: DraggableGridProps["onOpenPopup"];
   gridMetrics: GridMetrics;
   isStrip?: boolean;
+  isMobile?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: card.id });
   const [showEdit, setShowEdit] = useState(false);
@@ -68,6 +71,11 @@ function DraggableCard({
         transition: isDragging ? undefined : "box-shadow 0.2s ease",
         height: "100%",
         minWidth: 0,
+      }
+    : isMobile
+    ? {
+        // Mobile: single-column auto-flow. No explicit grid placement, no drag transform.
+        transition: "box-shadow 0.2s ease",
       }
     : {
         gridColumn: pos ? `${pos.gridCol} / span ${displaySpan.colSpan}` : undefined,
@@ -152,8 +160,8 @@ function DraggableCard({
         style={style}
         className={`draggable-grid__item ${isHidden ? "draggable-grid__item--hidden" : ""} ${isDragging ? "draggable-grid__item--dragging" : ""}`}
       >
-        {/* Drag handle area */}
-        <div className="draggable-grid__drag-zone" {...attributes} {...listeners} />
+        {/* Drag handle area (disabled on mobile — drag fights vertical scroll) */}
+        {!isMobile && <div className="draggable-grid__drag-zone" {...attributes} {...listeners} />}
 
         <CardComp card={card} callService={callService} onCardAction={onOpenPopup} />
 
@@ -193,22 +201,24 @@ function DraggableCard({
           <div className="draggable-grid__hidden-badge">Ausgeblendet</div>
         )}
 
-        {/* Resize handle */}
-        <div
-          className="draggable-grid__resize-handle"
-          onPointerDown={handleResizePointerDown}
-          onPointerMove={handleResizePointerMove}
-          onPointerUp={handleResizePointerUp}
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12">
-            <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="10" y1="6" x2="6" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="10" y1="10" x2="10" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </div>
+        {/* Resize handle (hidden on mobile — single column, nothing to resize) */}
+        {!isMobile && (
+          <div
+            className="draggable-grid__resize-handle"
+            onPointerDown={handleResizePointerDown}
+            onPointerMove={handleResizePointerMove}
+            onPointerUp={handleResizePointerUp}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12">
+              <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="10" y1="6" x2="6" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="10" y1="10" x2="10" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
+        )}
 
-        {/* Size indicator */}
-        {isStrip ? (
+        {/* Size indicator (hidden on mobile) */}
+        {!isMobile && (isStrip ? (
           <div className="draggable-grid__weight-badge">
             {card.flexWeight || 1}x
           </div>
@@ -216,7 +226,7 @@ function DraggableCard({
           <div className="draggable-grid__size-badge">
             {displaySpan.colSpan}x{displaySpan.rowSpan}
           </div>
-        )}
+        ))}
       </div>
 
       {showEdit && (
@@ -236,6 +246,7 @@ export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGr
   const gridRef = useRef<HTMLDivElement>(null);
   const [gridMetrics, setGridMetrics] = useState<GridMetrics>({ cols: 4, cellW: 200, rowH: 120, gap: 12 });
   const moveCard = useDashboardStore((s) => s.moveCard);
+  const isMobile = useMediaQuery("(max-width: 599px)");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -296,6 +307,15 @@ export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGr
   );
 
   const isStrip = section.layout === "strip";
+  // Mobile (non-strip): render-local stack order — favorites first, hidden last.
+  // Never mutates section.items, so desktop layout / store order stays intact.
+  const renderItems = (isMobile && !isStrip)
+    ? [...section.items].sort((a, b) => {
+        const fav = (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
+        if (fav !== 0) return fav;
+        return (a.visible === false ? 1 : 0) - (b.visible === false ? 1 : 0);
+      })
+    : section.items;
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
@@ -304,7 +324,7 @@ export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGr
         className={`draggable-grid ${isStrip ? "draggable-grid--strip" : "draggable-grid--edit"}`}
       >
         {!isStrip && <div className="draggable-grid__overlay" />}
-        {section.items.map((card) => (
+        {renderItems.map((card) => (
           <DraggableCard
             key={card.id}
             card={card}
@@ -313,6 +333,7 @@ export function DraggableGrid({ section, callService, onOpenPopup }: DraggableGr
             onOpenPopup={onOpenPopup}
             gridMetrics={gridMetrics}
             isStrip={isStrip}
+            isMobile={isMobile}
           />
         ))}
         {isStrip && (

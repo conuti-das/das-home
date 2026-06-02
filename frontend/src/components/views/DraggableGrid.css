@@ -176,6 +176,15 @@
   }
 }
 
+/* Phone: single column, content-height rows. The component stops emitting
+   explicit grid placement and hides drag/resize affordances on mobile. */
+@media (max-width: 599px) {
+  .draggable-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+}
+
 /* Strip mode */
 .draggable-grid--strip {
   display: flex;

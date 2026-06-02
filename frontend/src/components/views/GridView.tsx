@@ -3,6 +3,7 @@ import { StatusBar } from "@/components/layout/StatusBar";
 import { DraggableGrid } from "@/components/views/DraggableGrid";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { getCardSpan, getCardPosition } from "@/utils/gridLayout";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { ViewConfig } from "@/types";
 import "./GridView.css";
 
@@ -17,6 +18,7 @@ const SMALL_CARD_TYPES = new Set(["switch", "input_boolean", "button", "automati
 export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
   const isOverview = view.id === "overview";
   const editMode = useDashboardStore((s) => s.editMode);
+  const isMobile = useMediaQuery("(max-width: 599px)");
 
   return (
     <div className="grid-view">
@@ -93,18 +95,23 @@ export function GridView({ view, callService, onOpenPopup }: GridViewProps) {
         }
 
         const hasPositions = visibleItems.some((c) => c.gridCol != null && c.gridRow != null);
+        // Mobile: stack in a single column, favorites first, ignoring saved grid
+        // positions (sort is render-local — never mutates the store / desktop order).
+        const orderedItems = isMobile
+          ? [...visibleItems].sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+          : visibleItems;
 
         return (
           <div key={section.id} className="grid-view__section">
             <div className="grid-view__section-title">{section.title}</div>
             <div className={`grid-view__grid ${allSmall ? "grid-view__grid--single-col" : ""} ${hasPositions ? "grid-view__grid--positioned" : ""}`}>
-              {visibleItems.map((card) => {
+              {orderedItems.map((card) => {
                 const CardComp = getCardComponent(card.type);
                 if (!CardComp) return null;
 
                 const pos = getCardPosition(card);
                 const span = getCardSpan(card);
-                const gridStyle = pos ? {
+                const gridStyle = (pos && !isMobile) ? {
                   gridColumn: `${pos.gridCol} / span ${span.colSpan}`,
                   gridRow: `${pos.gridRow} / span ${span.rowSpan}`,
                 } : undefined;

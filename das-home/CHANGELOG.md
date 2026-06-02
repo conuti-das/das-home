@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.0
+
+### Added
+
+- Mobile single-column layout: on phones (under 600px) the dashboard stacks every card into one full-width column instead of a cramped two-column grid. Works in both the normal view and edit mode, with favorite cards sorted to the top. Saved desktop grid positions are ignored on mobile and left untouched, so the desktop layout is unaffected. A new `useMediaQuery` hook drives the breakpoint.
+
+### Changed
+
+- On phones, per-card drag, resize, and the size badge are hidden (they conflict with vertical scrolling and are meaningless in a single column). The favorite / edit / hide / delete controls stay available.
+
+### Hinzugefuegt
+
+- Mobile einspaltige Ansicht: Auf Smartphones (unter 600px) stapelt das Dashboard jede Karte in einer vollbreiten Spalte statt eines gequetschten Zwei-Spalten-Rasters. Funktioniert im Normal- und im Bearbeitungsmodus, Favoriten-Karten werden nach oben sortiert. Gespeicherte Desktop-Rasterpositionen werden auf Mobilgeraeten ignoriert und bleiben unveraendert, das Desktop-Layout ist nicht betroffen. Ein neuer `useMediaQuery`-Hook steuert den Breakpoint.
+
+### Geaendert
+
+- Auf Smartphones sind Karten-Drag, -Resize und das Groessen-Badge ausgeblendet (sie stoeren das vertikale Scrollen und ergeben in einer Einzelspalte keinen Sinn). Die Favorit-/Bearbeiten-/Ausblenden-/Loeschen-Steuerung bleibt verfuegbar.
+
 ## 0.4.2
 
 ### Added

@@ -88,3 +88,12 @@
     min-height: 140px;
   }
 }
+
+/* Phone: single column, content-height rows (overrides the 2-col base).
+   GridView.tsx drops explicit grid placement on mobile so cards auto-flow. */
+@media (max-width: 599px) {
+  .grid-view__grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+}
