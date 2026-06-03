@@ -1,8 +1,18 @@
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntityStore } from "@/stores/entityStore";
 import { useEntitiesByArea } from "@/hooks/useEntity";
+import { numericState } from "@/utils/formatEntityState";
 import { CardErrorBoundary } from "./CardErrorBoundary";
 import type { CardComponentProps } from "./CardRegistry";
+import type { EntityState } from "@/types";
+
+/** Find an area sensor by device_class, falling back to an entity_id name match. */
+function findAreaSensor(entities: EntityState[], deviceClass: string, nameMatch: string): EntityState | undefined {
+  return (
+    entities.find((e) => e.entity_id.startsWith("sensor.") && e.attributes?.device_class === deviceClass) ||
+    entities.find((e) => e.entity_id.startsWith("sensor.") && e.entity_id.includes(nameMatch))
+  );
+}
 import "./AreaCard.css";
 
 const AREA_ICONS: Record<string, string> = {
@@ -13,9 +23,9 @@ const AREA_ICONS: Record<string, string> = {
   kitchen: "meal",
   kueche: "meal",
   küche: "meal",
-  bathroom: "shower",
-  badezimmer: "shower",
-  bad: "shower",
+  bathroom: "blur",
+  badezimmer: "blur",
+  bad: "blur",
   office: "laptop",
   buero: "laptop",
   büro: "laptop",
@@ -68,10 +78,8 @@ export function AreaCard({ card, callService, onCardAction }: CardComponentProps
   const area = useEntityStore((s) => s.areas.get(areaId));
   const entities = useEntitiesByArea(areaId);
 
-  const tempSensor = entities.find(
-    (e) => e.entity_id.startsWith("sensor.") && e.entity_id.includes("temperature")
-  );
-  const temp = tempSensor?.state;
+  const tempSensor = findAreaSensor(entities, "temperature", "temperature");
+  const temp = numericState(tempSensor);
 
   const lights = entities.filter((e) => e.entity_id.startsWith("light."));
   const lightsOn = lights.filter((e) => e.state === "on").length;
@@ -87,7 +95,7 @@ export function AreaCard({ card, callService, onCardAction }: CardComponentProps
       <div className="area-card--big" onClick={handleClick}>
         <div className="area-card__header">
           <span className="area-card__name">{area?.name || areaId}</span>
-          {temp && <span className="area-card__temp--big">{temp}°</span>}
+          {temp !== undefined && <span className="area-card__temp--big">{temp.toFixed(1)}°</span>}
         </div>
         {/* Device chips */}
         <div className="area-card__chips">
@@ -126,14 +134,10 @@ export function AreaCardSmall({ card, onCardAction }: CardComponentProps) {
   const area = useEntityStore((s) => s.areas.get(areaId));
   const entities = useEntitiesByArea(areaId);
 
-  const tempSensor = entities.find(
-    (e) => e.entity_id.startsWith("sensor.") && e.entity_id.includes("temperature")
-  );
-  const humiditySensor = entities.find(
-    (e) => e.entity_id.startsWith("sensor.") && e.entity_id.includes("humidity")
-  );
-  const temp = tempSensor?.state;
-  const humidity = humiditySensor?.state;
+  const tempSensor = findAreaSensor(entities, "temperature", "temperature");
+  const humiditySensor = findAreaSensor(entities, "humidity", "humidity");
+  const temp = numericState(tempSensor);
+  const humidity = numericState(humiditySensor);
   const areaColor = getAreaColor(areaId);
   const areaIcon = getAreaIcon(areaId);
 
@@ -145,9 +149,9 @@ export function AreaCardSmall({ card, onCardAction }: CardComponentProps) {
         </div>
         <span className="area-card__name--small">{area?.name || areaId}</span>
         <span className="area-card__stats">
-          {temp ? `${temp}°` : ""}
-          {temp && humidity ? " " : ""}
-          {humidity ? `${humidity}%` : ""}
+          {temp !== undefined ? `${temp.toFixed(1)}°` : ""}
+          {temp !== undefined && humidity !== undefined ? " " : ""}
+          {humidity !== undefined ? `${humidity.toFixed(0)}%` : ""}
         </span>
       </div>
     </CardErrorBoundary>

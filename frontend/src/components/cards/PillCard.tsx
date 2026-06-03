@@ -18,6 +18,8 @@ interface PillCardProps {
   onClick?: () => void;
   children?: ReactNode;
   cardType: string;
+  /** Dim the card to signal an unavailable/offline entity. */
+  muted?: boolean;
 }
 
 export function PillCard({
@@ -33,6 +35,7 @@ export function PillCard({
   onClick,
   children,
   cardType,
+  muted = false,
 }: PillCardProps) {
   const editMode = useDashboardStore((s) => s.editMode);
   const style = getDomainStyle(entityId);
@@ -47,7 +50,7 @@ export function PillCard({
       <CardErrorBoundary cardType={cardType}>
         <div
           className="pill-card pill-card--small"
-          style={{ background: bg, color: textColor }}
+          style={{ background: bg, color: textColor, opacity: muted ? 0.55 : undefined }}
           onClick={onClick}
         >
           {icon && (
@@ -72,7 +75,7 @@ export function PillCard({
     <CardErrorBoundary cardType={cardType}>
       <div
         className="pill-card pill-card--big"
-        style={{ background: bg, color: textColor }}
+        style={{ background: bg, color: textColor, opacity: muted ? 0.55 : undefined }}
         onClick={onClick}
       >
         <div className="pill-card__top">

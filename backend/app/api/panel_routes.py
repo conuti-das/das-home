@@ -27,7 +27,7 @@ async def _ha_ws_command(msg_type: str, **kwargs) -> dict:
     if not token:
         raise HTTPException(status_code=400, detail="No HA token configured")
 
-    ws = await websockets.connect(ws_url)
+    ws = await websockets.connect(ws_url, max_size=None)
     try:
         auth_msg = json.loads(await ws.recv())
         if auth_msg.get("type") == "auth_required":

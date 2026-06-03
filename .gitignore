@@ -63,3 +63,4 @@ data/design-ref/
 .worktrees/
 .security-key
 logs/security/
+.gstack/

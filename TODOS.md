@@ -1,3 +1,59 @@
+# TODOS
+
+## Backlog
+
+### Card-/UX-Verbesserungen (Review 2026-06-02, HA-Anwender-Mehrwert)
+- [ ] Einheitliche Detail-Popups (more-info) mit Verlaufskurve für alle Cards (Tap-on-body) <!-- priority:high -->
+- [ ] area_small: Status-Fallback (Lichter-an-Zähler, Geräteanzahl) wenn keine Klimadaten — Card wirkt sonst leer <!-- priority:medium -->
+- [ ] Light: Card-Größe an Render-Pfad koppeln (dimmbar → mind. 2x1, sonst Slider gequetscht) <!-- priority:medium -->
+- [ ] AreaCardV2 special-button: echte Aktion je Domain (vacuum.start/return etc.) statt funktionslos <!-- priority:medium -->
+- [ ] Trash: Badge-Quelle (StatusBar) und Popup-Quelle konsolidieren — zeigen unterschiedliche Tonnen <!-- priority:medium -->
+- [ ] TrashCard: robustes State-Parsing (Tage / Datum / device_class:timestamp / unavailable) <!-- priority:medium -->
+- [ ] CoverCard: Positions-Slider (0–100 %) + Lamellen-Tilt statt nur Auf/Stop/Zu <!-- priority:medium -->
+- [ ] MediaPlayerCard: Lautstärke-Slider + Quellen-/Gruppen-Auswahl inline <!-- priority:low -->
+- [ ] Zentrale weatherConditions-Map (DRY — ersetzt 4 duplizierte CONDITION_TEXT-Maps) <!-- priority:medium -->
+- [ ] Backend discovery: stabile, kollisionsfreie Card-IDs (slug aus entity_id statt positions-basiertem c{n}) <!-- priority:medium -->
+- [ ] Card-Smoke-Tests: unavailable/unknown/NaN-Rendering für alle Cards (Vitest) <!-- priority:medium -->
+
+### Bestehend
+- [ ] Test-Backfill: Backend Routes
+- [ ] Test-Backfill: Frontend Cards
+- [ ] Lovelace-native Distribution (das-home-insights)
+- [ ] Weitere E2E-Tests: HA-down + Config-override
+
+## In Progress
+
+
+## Done
+
+### Review-Session 2026-06-02 — verifizierte Bug-Fixes
+- [x] `/api/discovery` 500 (+9 s) → `max_size=None` bei `websockets.connect` (4 Dateien); 1148 Entities, 200 OK
+- [x] AreaCardV2 „NaN°" → `numericState()` statt parseFloat-Truthiness-Check
+- [x] React Key-Kollision (c134–c137 doppelt) → deterministische ID-Dedup in `migrateCards`
+- [x] SensorCard „unavailable°C/%/kr/kWh" → zentraler `formatStateValue` (kein Unit-Anhang bei unavailable)
+- [x] SensorCard rohe ISO-Timestamps → `device_class`-basierte Datumsformatierung
+- [x] media_player/special unavailable → `entityFriendlyName` (kein roher `entity_id` mehr)
+- [x] UI5-Icon „shower" (ungültig) → „blur"
+- [x] `/api/media/artwork` 500 (Kamera) → graceful 404 bei Upstream-Fehler
+- [x] ClimateCard unavailable → „—" statt rohem State; `current_temperature` finite-geprüft
+- [x] AreaCard temp/humidity → NaN-Schutz via `numericState`
+- [x] AreaCardV2 Area-Name kleingeschrieben → `titleize`-Fallback (z. B. „Wohnzimmer")
+- [x] AreaCardV2 toter Media-Button → mit `handleMediaToggle` verdrahtet
+- [x] Wetter „Bewolkt" → „Bewölkt" (i18n, 3 Dateien)
+- [x] Neuer Helfer `frontend/src/utils/formatEntityState.ts` + 12 Unit-Tests (grün)
+
+### Review-Session 2026-06-02 — verifizierte Verbesserungen
+- [x] device_class-basierte Sensor-Auswahl in AreaCardV2/AreaCard (liefert Temp/Feuchte statt Fehlgriff)
+- [x] ClimateCard Detail-Popup (Ist-/Soll-Temp ±, HVAC-Modi) — Card öffnete vorher nichts
+- [x] unavailable-Karten visuell gedimmt (opacity 0.55) via PillCard `muted`
+- [x] Sensor-Sparkline (24h-Verlauf): neuer `/api/history`-Endpoint + `useSensorHistory`-Hook + `Sparkline`-SVG in SensorCard (live verifiziert, 41 Punkte)
+
+---
+
+# Legacy Notes
+
+_Long-Form-Backlog vor der Migration. Hier liegen die Details zu den oben aufgelisteten Backlog-Tasks._
+
 # Backlog / Deferred Work
 
 Projekt-weites Backlog von Arbeit die bewusst verschoben wurde. Pro Eintrag: **What / Why / Pros / Cons / Context / Depends-on**.

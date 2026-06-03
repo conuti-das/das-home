@@ -77,3 +77,19 @@ docker-compose up -d          # Full stack on :5050
 ```
 
 Details: siehe `.claude/docs/changelog-guide.md`
+
+## Task Management
+
+Dieses Projekt nutzt eine `TODOS.md` im Repo-Root für persistente Tasks (sichtbar in Superprods Multi-Project Board).
+
+**Format** (verbindlich für AI-Agents):
+- Sections in dieser Reihenfolge: `## Backlog`, `## In Progress`, `## Done`
+- Tasks als Markdown-Checkboxen: `- [ ] Task description` (offen), `- [x] Task description` (erledigt)
+- Optional inline Metadata: `- [ ] Refactor auth flow <!-- priority:high -->`
+- Beim Starten einer Task: vom Backlog nach "In Progress" verschieben
+- Beim Erledigen: nach "Done" mit `[x]`
+
+**Regeln:**
+- Eine Task = eine Zeile. Sub-Tasks als verschachtelte Liste OK aber selten nötig.
+- Beim Pushen einer neuen Feature-Idee → in Backlog, nicht direkt in Progress.
+- Maximum 3 "In Progress"-Tasks gleichzeitig (WIP-Limit).

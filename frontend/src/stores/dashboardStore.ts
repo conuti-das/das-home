@@ -48,13 +48,25 @@ function normalizeCard(card: CardItem): CardItem {
   };
 }
 
-/** Migrate cards: normalize keys, assign grid positions if missing */
+/** Migrate cards: normalize keys, de-duplicate IDs, assign grid positions if missing */
 function migrateCards(dashboard: DashboardConfig): DashboardConfig {
   const migrated = structuredClone(dashboard);
+  // Legacy discovery merges produced position-based `c{n}` IDs that collide across
+  // runs (e.g. two `c134` in one section) → React "two children with the same key".
+  // Reassign collisions deterministically so keys are unique and persist cleanly.
+  const seenIds = new Set<string>();
+  let dedupCounter = 0;
   for (const view of migrated.views) {
     const colCount = 4;
     for (const section of view.sections) {
-      section.items = section.items.map(normalizeCard);
+      section.items = section.items.map((card) => {
+        const normalized = normalizeCard(card);
+        if (seenIds.has(normalized.id)) {
+          normalized.id = `${normalized.id}_dup${++dedupCounter}`;
+        }
+        seenIds.add(normalized.id);
+        return normalized;
+      });
       if (section.layout !== "strip") {
         section.items = autoAssignPositions(section.items, colCount);
       }

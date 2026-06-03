@@ -4,6 +4,7 @@ import { Icon } from "@ui5/webcomponents-react";
 import { useEntity, useEntitiesByArea } from "@/hooks/useEntity";
 import { useEntityStore } from "@/stores/entityStore";
 import { apiUrl } from "@/utils/basePath";
+import { numericState, titleize, entityFriendlyName } from "@/utils/formatEntityState";
 import type { CardComponentProps } from "./CardRegistry";
 import type { EntityState } from "@/types";
 import "./AreaCardV2.css";
@@ -14,12 +15,20 @@ function pickEntityForSlot(
   slot: "temperature" | "light" | "media" | "special",
 ): string | undefined {
   if (slot === "temperature") {
-    const t = entities.find(
-      (e) =>
-        e.entity_id.startsWith("sensor.") &&
-        (e.entity_id.includes("temperature") || e.entity_id.includes("temp")),
+    const sensors = entities.filter((e) => e.entity_id.startsWith("sensor."));
+    // Prefer a real temperature sensor with a usable numeric reading; only then
+    // fall back to a name match. Avoids picking an unavailable or mislabeled
+    // sensor (the source of the old "NaN°" / "0.0°" readings).
+    const byClass = sensors.find(
+      (e) => e.attributes?.device_class === "temperature" && numericState(e) !== undefined,
     );
-    return t?.entity_id;
+    if (byClass) return byClass.entity_id;
+    const byName = sensors.find(
+      (e) =>
+        (e.entity_id.includes("temperature") || e.entity_id.includes("temp")) &&
+        numericState(e) !== undefined,
+    );
+    return byName?.entity_id;
   }
   if (slot === "light") {
     return entities.find((e) => e.entity_id.startsWith("light."))?.entity_id;
@@ -109,10 +118,11 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
   }, [bgSource, bgUrl, cameraEntity, mediaEntity, area, resolvedMediaEntity, config.camera_entity]);
 
   const hasImage = !!backgroundImage;
-  const areaName = area?.name || areaId || "Bereich";
+  const areaName = area?.name || titleize(areaId ?? "") || "Bereich";
 
-  // Temperature
-  const tempValue = tempEntity?.state ? parseFloat(tempEntity.state) : undefined;
+  // Temperature — numericState returns undefined for unavailable/unknown/non-numeric
+  // states, so a picked sensor that is offline no longer renders as "NaN°".
+  const tempValue = numericState(tempEntity);
 
   // Entity states
   const lightDomain = resolvedLightEntity?.split(".")[0] || "light";
@@ -176,17 +186,17 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
           {!!resolvedMediaEntity && (
             <button
               className={`acv2__btn ${mediaPlaying ? "acv2__btn--media-on" : "acv2__btn--media-off"}`}
-              onClick={(e) => { e.stopPropagation(); }}
-              title="Media"
+              onClick={handleMediaToggle}
+              title={mediaPlaying ? "Pause" : "Wiedergabe"}
             >
-              <Icon name="media-play" style={{ width: 18, height: 18 }} />
+              <Icon name={mediaPlaying ? "media-pause" : "media-play"} style={{ width: 18, height: 18 }} />
             </button>
           )}
           {!!resolvedSpecialEntity && (
             <button
               className={`acv2__btn ${specialOn ? "acv2__btn--special-on" : "acv2__btn--special-off"}`}
               onClick={(e) => { e.stopPropagation(); }}
-              title={resolvedSpecialEntity}
+              title={entityFriendlyName(resolvedSpecialEntity, specialEntity)}
             >
               <Icon name={specialIconName} style={{ width: 18, height: 18 }} />
             </button>

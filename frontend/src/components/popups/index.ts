@@ -10,6 +10,7 @@ import { SonosGroupPopup } from "./SonosGroupPopup";
 import { CalendarPopup } from "./CalendarPopup";
 import { AreaPopupV2 } from "./AreaPopupV2";
 import { BadgeEditorPopup } from "./BadgeEditorPopup";
+import { ClimateDetailPopup } from "./ClimateDetailPopup";
 
 registerPopup("weather", WeatherPopupV2);
 registerPopup("trash", TrashPopup);
@@ -22,6 +23,7 @@ registerPopup("media-detail", MediaPlayerPopup);
 registerPopup("vehicle-detail", VehiclePopup);
 registerPopup("sonos-group", SonosGroupPopup);
 registerPopup("badge-editor", BadgeEditorPopup);
+registerPopup("climate-detail", ClimateDetailPopup);
 
 export { getPopupComponent } from "./PopupRegistry";
 export type { PopupProps } from "./PopupRegistry";

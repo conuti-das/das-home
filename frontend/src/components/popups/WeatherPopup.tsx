@@ -8,8 +8,8 @@ import "./WeatherPopup.css";
 const CONDITION_TEXT: Record<string, string> = {
   sunny: "Sonnig",
   "clear-night": "Klare Nacht",
-  cloudy: "Bewolkt",
-  partlycloudy: "Teilw. bewolkt",
+  cloudy: "Bewölkt",
+  partlycloudy: "Teilw. bewölkt",
   rainy: "Regen",
   pouring: "Starkregen",
   snowy: "Schnee",
@@ -20,7 +20,7 @@ const CONDITION_TEXT: Record<string, string> = {
   windy: "Windig",
   "windy-variant": "Windig",
   hail: "Hagel",
-  exceptional: "Ungewoehnlich",
+  exceptional: "Ungewöhnlich",
 };
 
 const DAY_NAMES = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];

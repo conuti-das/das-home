@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.6.0
+
+### Added
+
+- Sensor sparklines: numeric sensor cards now show a 24-hour history mini-graph under the value, backed by a new `/api/history` endpoint (HA `history_during_period`, 5-minute cache). Inspired by the popular mini-graph-card.
+- Climate detail popup: tapping a climate card now opens a control popup with current/target temperature (± stepping) and HVAC mode buttons, instead of doing nothing.
+- device_class-based sensor selection in area cards: temperature/humidity slots prefer a real `device_class` match with a numeric reading before falling back to an entity_id name match, avoiding wrong or unavailable sensors.
+
+### Fixed
+
+- `/api/discovery` returned 500 after a ~9s hang on large HA instances; the WebSocket proxy now uses `max_size=None`, so large state payloads (1148 entities) load correctly.
+- AreaCardV2 showed "NaN°" for temperature; now uses a proper numeric-state check.
+- Duplicate React keys (cards sharing an id) caused cards to be dropped or duplicated; card IDs are now deduplicated deterministically on load.
+- Sensor cards appended units to unavailable values ("unavailable°C"); a central state formatter now suppresses the unit when offline.
+- Sensor cards rendered raw ISO timestamps; these are now formatted by device_class.
+- Media player and special cards showed the raw `entity_id` when offline; they now use the friendly name.
+- Invalid UI5 icon "shower" replaced with "blur".
+- `/api/media/artwork` returned 500 on camera upstream errors; now degrades to a graceful 404.
+- Climate card showed the raw "unavailable" state; now shows "—".
+- German weather conditions had missing umlauts ("Bewolkt" → "Bewölkt").
+
+### Changed
+
+- Unavailable/offline cards are now visually dimmed so offline entities are recognizable at a glance.
+
+### Hinzugefuegt
+
+- Sensor-Sparklines: Numerische Sensor-Karten zeigen jetzt einen 24-Stunden-Verlauf als Mini-Graph unter dem Wert, gespeist von einem neuen `/api/history`-Endpoint (HA `history_during_period`, 5-Minuten-Cache). Inspiriert von der beliebten mini-graph-card.
+- Klima-Detail-Popup: Ein Tipp auf eine Klima-Karte oeffnet jetzt ein Steuerungs-Popup mit Ist-/Soll-Temperatur (± Schritte) und HVAC-Modus-Buttons, statt nichts zu tun.
+- device_class-basierte Sensor-Auswahl in Bereichs-Karten: Temperatur-/Feuchte-Slots bevorzugen einen echten `device_class`-Treffer mit numerischem Wert, bevor sie auf eine entity_id-Namenssuche zurueckfallen. Vermeidet falsche oder nicht verfuegbare Sensoren.
+
+### Behoben
+
+- `/api/discovery` lieferte nach ~9s Haengen einen 500-Fehler auf grossen HA-Instanzen; der WebSocket-Proxy nutzt jetzt `max_size=None`, sodass grosse State-Payloads (1148 Entities) korrekt laden.
+- AreaCardV2 zeigte "NaN°" fuer die Temperatur; nutzt jetzt eine korrekte numerische State-Pruefung.
+- Doppelte React-Keys (Karten mit gleicher ID) fuehrten zu verschwundenen oder duplizierten Karten; Karten-IDs werden jetzt beim Laden deterministisch dedupliziert.
+- Sensor-Karten haengten Einheiten an nicht verfuegbare Werte an ("unavailable°C"); ein zentraler State-Formatter unterdrueckt die Einheit jetzt im Offline-Zustand.
+- Sensor-Karten zeigten rohe ISO-Zeitstempel; diese werden jetzt nach device_class formatiert.
+- Media-Player- und Spezial-Karten zeigten im Offline-Zustand die rohe `entity_id`; jetzt den Anzeigenamen.
+- Ungueltiges UI5-Icon "shower" durch "blur" ersetzt.
+- `/api/media/artwork` lieferte bei Kamera-Upstream-Fehlern einen 500; degradiert jetzt zu einem sauberen 404.
+- Klima-Karte zeigte den rohen "unavailable"-Status; zeigt jetzt "—".
+- Deutsche Wetter-Bedingungen hatten fehlende Umlaute ("Bewolkt" → "Bewölkt").
+
+### Geaendert
+
+- Nicht verfuegbare/Offline-Karten werden jetzt visuell gedimmt, sodass Offline-Entities auf einen Blick erkennbar sind.
+
 ## 0.5.0
 
 ### Added

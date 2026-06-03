@@ -1,31 +1,32 @@
 import { PillCard } from "./PillCard";
 import { useEntity } from "@/hooks/useEntity";
+import { entityFriendlyName, isUnavailable, NO_VALUE } from "@/utils/formatEntityState";
 import type { CardComponentProps } from "./CardRegistry";
 
-export function ClimateCard({ card, callService }: CardComponentProps) {
+export function ClimateCard({ card, onCardAction }: CardComponentProps) {
   const entity = useEntity(card.entity);
-  const name = (entity?.attributes?.friendly_name as string) || card.entity;
-  const currentTemp = entity?.attributes?.current_temperature as number | undefined;
+  const name = entityFriendlyName(card.entity, entity);
+  const rawTemp = entity?.attributes?.current_temperature;
+  const currentTemp = typeof rawTemp === "number" && Number.isFinite(rawTemp) ? rawTemp : undefined;
   const hvacMode = entity?.state || "off";
-  const isActive = hvacMode !== "off" && hvacMode !== "unavailable";
+  const available = !isUnavailable(entity?.state);
+  const isActive = available && hvacMode !== "off";
 
-  const toggle = () => {
-    callService("climate", "set_hvac_mode",
-      { hvac_mode: isActive ? "off" : "heat" },
-      { entity_id: card.entity }
-    );
-  };
+  // Prefer the measured temperature; otherwise show the HVAC mode (off/heat/\u2026),
+  // and a placeholder rather than the raw "unavailable" string when offline.
+  const value = currentTemp != null ? `${currentTemp}` : available ? hvacMode : NO_VALUE;
 
   return (
     <PillCard
       entityId={card.entity}
       label={name}
-      value={currentTemp != null ? `${currentTemp}` : hvacMode}
+      value={value}
       symbol={currentTemp != null ? "\u00B0" : undefined}
       icon="temperature"
       isOn={isActive}
-      onClick={toggle}
+      onClick={() => onCardAction?.("climate-detail", { entityId: card.entity })}
       cardType="climate"
+      muted={!available}
     />
   );
 }

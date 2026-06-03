@@ -9,7 +9,7 @@ interface WeatherWidgetProps {
 const CONDITION_SHORT: Record<string, string> = {
   sunny: "Sonnig",
   "clear-night": "Klar",
-  cloudy: "Bewolkt",
+  cloudy: "Bewölkt",
   partlycloudy: "Teilw. bew.",
   rainy: "Regen",
   pouring: "Starkregen",

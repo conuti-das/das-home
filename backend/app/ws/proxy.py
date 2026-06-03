@@ -118,7 +118,8 @@ async def _ensure_ha_connection():
         ha_url = await _get_ha_url()
         token = await _get_ha_token()
 
-        ws = await websockets.connect(ha_url)
+        # max_size=None: large HA state/registry frames can exceed the 1 MiB default.
+        ws = await websockets.connect(ha_url, max_size=None)
 
         auth_msg = json.loads(await ws.recv())
         if auth_msg.get("type") == "auth_required":

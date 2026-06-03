@@ -58,7 +58,12 @@ async def get_artwork(entity_id: str = Query(..., description="Media player enti
                 follow_redirects=True,
             )
             if img_resp.status_code != 200:
-                raise HTTPException(status_code=img_resp.status_code, detail="Failed to fetch artwork")
+                # Upstream (HA camera_proxy / media artwork) failed. Artwork is
+                # optional decoration, so return a clean 404 instead of bubbling a
+                # 500 — the client re-requests the background image, and a hard
+                # error would flood the logs and the browser network panel.
+                logger.warning("Artwork upstream returned %s for %s", img_resp.status_code, entity_id)
+                raise HTTPException(status_code=404, detail="Artwork unavailable")
 
             content_type = img_resp.headers.get("content-type", "image/jpeg")
             return Response(
@@ -91,7 +96,7 @@ async def browse_media(
     ws_url = base_url.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
 
     try:
-        async with websockets.connect(ws_url) as ws:
+        async with websockets.connect(ws_url, max_size=None) as ws:
             # Wait for auth_required
             msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=5))
 

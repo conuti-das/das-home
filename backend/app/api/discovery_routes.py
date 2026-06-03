@@ -53,7 +53,9 @@ async def _connect_ha() -> _HaSession:
         raise HTTPException(status_code=400, detail="No HA token configured")
 
     logger.info("Connecting to HA WebSocket at %s (addon=%s, token_len=%d)", ws_url, settings.is_addon, len(token))
-    ws = await websockets.connect(ws_url)
+    # max_size=None: get_states / entity_registry dumps on large HA instances
+    # exceed the websockets 1 MiB default frame limit (→ 1009 ConnectionClosed).
+    ws = await websockets.connect(ws_url, max_size=None)
     auth_msg = json.loads(await ws.recv())
     if auth_msg.get("type") == "auth_required":
         await ws.send(json.dumps({"type": "auth", "access_token": token}))

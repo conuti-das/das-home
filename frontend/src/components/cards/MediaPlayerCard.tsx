@@ -1,13 +1,14 @@
 import { Icon } from "@ui5/webcomponents-react";
 import { useEntity } from "@/hooks/useEntity";
 import { apiUrl } from "@/utils/basePath";
+import { entityFriendlyName } from "@/utils/formatEntityState";
 import type { CardComponentProps } from "./CardRegistry";
 import "./MediaPlayerCard.css";
 
 export function MediaPlayerCard({ card, callService, onCardAction }: CardComponentProps) {
   const entity = useEntity(card.entity);
   const attrs = entity?.attributes || {};
-  const name = (attrs.friendly_name as string) || card.entity;
+  const name = entityFriendlyName(card.entity, entity);
   const state = entity?.state || "off";
   const mediaTitle = (attrs.media_title as string) || "";
   const mediaArtist = (attrs.media_artist as string) || "";
