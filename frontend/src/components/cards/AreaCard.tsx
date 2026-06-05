@@ -86,7 +86,7 @@ export function AreaCard({ card, callService, onCardAction }: CardComponentProps
   const domains = [...new Set(entities.map((e) => e.entity_id.split(".")[0]))];
 
   const handleClick = () => {
-    onCardAction?.("area", { areaId });
+    onCardAction?.("area", { areaId, cardId: card.id });
   };
 
 
@@ -143,7 +143,7 @@ export function AreaCardSmall({ card, onCardAction }: CardComponentProps) {
 
   return (
     <CardErrorBoundary cardType="area_small">
-      <div className="area-card--small" onClick={() => onCardAction?.("area", { areaId })}>
+      <div className="area-card--small" onClick={() => onCardAction?.("area", { areaId, cardId: card.id })}>
         <div className="area-card__icon-circle" style={{ background: areaColor + "26" }}>
           <Icon name={areaIcon} style={{ color: areaColor, width: "var(--dh-icon-size)", height: "var(--dh-icon-size)" }} />
         </div>

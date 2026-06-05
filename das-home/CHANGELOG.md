@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.7.0
+
+### Added
+
+- das-home can now be embedded as a Home Assistant Webpage dashboard (e.g. set as your default start page). A new CSP `frame-ancestors` middleware allows iframing from local HA and Nabu Casa remote, replacing the `X-Frame-Options` that would have blocked it.
+- Sidebar entry now hidden from non-admin users by default (`panel_admin: false`), so guests only see the dashboard tile and not the add-on settings.
+- Room popups (AreaPopupV2) now show a mixed list of lights and switches as compact 58px control "pills" via the new `ControlTile` component — lights get an amber brightness slider with %, switches and `input_boolean` get an iOS-style toggle. Unavailable entities are dimmed.
+- Entity picker editor (`EntityPickerList`) inside the room popup lets you hide auto-discovered controls and add foreign-area entities. Choices persist per card (`hidden` / `extra` lists in card config).
+- New `resolveAreaEntities` utility centralises how a room card derives its lights/switches/sensors from area assignments and overrides, with full test coverage.
+
+### Fixed
+
+- Tapping a light tile now toggles via the matching domain service (`light.turn_on/off`, `switch.turn_on/off`, `input_boolean.toggle`) instead of guessing.
+
+### Hinzugefuegt
+
+- das-home laesst sich jetzt als Home-Assistant-Webseiten-Dashboard einbetten (z. B. als Standard-Startseite). Eine neue CSP-`frame-ancestors`-Middleware erlaubt das iFrame-Einbetten aus lokalem HA und Nabu Casa Remote — ersetzt das vorherige `X-Frame-Options`, das das blockiert haette.
+- Seitenleisten-Eintrag ist fuer Nicht-Admins jetzt standardmaessig ausgeblendet (`panel_admin: false`), sodass Gaeste nur die Dashboard-Kachel sehen und nicht die Add-on-Einstellungen.
+- Raum-Popups (AreaPopupV2) zeigen jetzt eine gemischte Liste aus Lampen und Schaltern als kompakte 58-px-„Pill"-Steuerungen ueber die neue `ControlTile`-Komponente — Lampen bekommen einen amberfarbenen Helligkeits-Slider mit %, Schalter und `input_boolean` einen iOS-Toggle. Nicht verfuegbare Entities werden gedimmt.
+- Entity-Picker-Editor (`EntityPickerList`) im Raum-Popup erlaubt es, automatisch erkannte Steuerungen auszublenden und raumfremde Entities hinzuzufuegen. Auswahl wird pro Karte persistiert (`hidden` / `extra` in der Karten-Config).
+- Neues `resolveAreaEntities`-Util buendelt zentral, wie eine Raum-Karte ihre Lampen/Schalter/Sensoren aus Bereichszuordnungen und Overrides ableitet — mit voller Testabdeckung.
+
+### Behoben
+
+- Ein Tipp auf eine Lampen-Kachel toggelt jetzt ueber den passenden Domain-Service (`light.turn_on/off`, `switch.turn_on/off`, `input_boolean.toggle`) statt zu raten.
+
 ## 0.6.0
 
 ### Added

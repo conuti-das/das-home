@@ -14,6 +14,7 @@ interface DashboardStore {
   addCardToSection: (sectionId: string, card: { id: string; type: string; entity: string; size: string; config: Record<string, unknown> }) => void;
   removeCard: (sectionId: string, cardId: string) => void;
   updateCardConfig: (sectionId: string, cardId: string, updates: Partial<CardItem>) => void;
+  updateCardConfigById: (cardId: string, configPatch: Record<string, unknown>) => void;
   toggleCardVisibility: (sectionId: string, cardId: string) => void;
   duplicateCard: (sectionId: string, cardId: string) => void;
   addMultipleCards: (sectionId: string, cards: Array<{ id: string; type: string; entity: string; size: string; config: Record<string, unknown>; customLabel?: string; customIcon?: string; customColor?: string }>) => void;
@@ -136,6 +137,22 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     if (!card) return;
     Object.assign(card, updates);
     set({ dashboard: newDashboard });
+  },
+  updateCardConfigById: (cardId, configPatch) => {
+    const { dashboard } = get();
+    if (!dashboard) return;
+    const newDashboard = structuredClone(dashboard);
+    // Card ids are globally unique (dedup migration) → search all views/sections.
+    for (const view of newDashboard.views) {
+      for (const section of view.sections) {
+        const card = section.items.find((item) => item.id === cardId);
+        if (card) {
+          card.config = { ...card.config, ...configPatch };
+          set({ dashboard: newDashboard });
+          return;
+        }
+      }
+    }
   },
   toggleCardVisibility: (sectionId, cardId) => {
     const { dashboard, activeViewId } = get();

@@ -207,6 +207,38 @@
   opacity: 1;
 }
 
+/* Section label with inline edit/done link (mirrors mockup .seclabel) */
+.apv2__sec-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 2px 10px;
+}
+
+.apv2__sec-label-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dh-gray100);
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.apv2__sec-edit {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--dh-blue);
+  opacity: 0.9;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: opacity 0.2s;
+}
+
+.apv2__sec-edit:hover {
+  opacity: 1;
+}
+
 /* Entity list */
 .apv2__entity-list {
   display: flex;

@@ -137,8 +137,8 @@ export function AreaCardV2({ card, callService, onCardAction }: CardComponentPro
 
   // Click handlers
   const handleClick = useCallback(() => {
-    onCardAction?.("area-v2", { areaId, ...config });
-  }, [onCardAction, areaId, config]);
+    onCardAction?.("area-v2", { areaId, cardId: card.id, ...config });
+  }, [onCardAction, areaId, card.id, config]);
 
   const handleMediaToggle = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();

@@ -1,9 +1,13 @@
 // frontend/src/components/popups/AreaPopupV2.tsx
 import { useState, useMemo, useCallback } from "react";
 import { PopupModal } from "@/components/layout/PopupModal";
-import { LightSliderCard } from "@/components/cards/LightSliderCard";
+import { ControlTile } from "@/components/cards/ControlTile";
+import { EntityPickerList } from "@/components/popups/EntityPickerList";
 import { useEntity, useEntitiesByDomain, useEntitiesByArea } from "@/hooks/useEntity";
 import { useEntityStore } from "@/stores/entityStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
+import { api } from "@/services/api";
+import { resolveAreaEntities } from "@/utils/resolveAreaEntities";
 import { apiUrl } from "@/utils/basePath";
 import type { PopupProps } from "./PopupRegistry";
 import "./AreaPopupV2.css";
@@ -19,9 +23,21 @@ type TabKey = "light" | "cover" | "climate";
 
 export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupProps) {
   const areaId = props?.areaId as string | undefined;
+  const cardId = props?.cardId as string | undefined;
   const area = useEntityStore((s) => areaId ? s.areas.get(areaId) : undefined);
   const areaEntities = useEntitiesByArea(areaId || "");
   const entityAreaMap = useEntityStore((s) => s.entityAreaMap);
+  const allEntitiesMap = useEntityStore((s) => s.entities);
+
+  // Curated visibility config (persisted per area-card in card.config).
+  const popupHidden = useMemo(
+    () => (Array.isArray(props?.popup_hidden_entities) ? (props.popup_hidden_entities as string[]) : []),
+    [props],
+  );
+  const popupExtra = useMemo(
+    () => (Array.isArray(props?.popup_extra_entities) ? (props.popup_extra_entities as string[]) : []),
+    [props],
+  );
 
   // Temperature entity from card config or area entities
   const configTempEntity = props?.temperature_entity as string | undefined;
@@ -50,9 +66,54 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
   }, [configMediaEntity, mediaEntity, areaEntities]);
 
   // Filter entities by domain
-  const lights = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("light.") && isMainLight(e)), [areaEntities]);
   const covers = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("cover.")), [areaEntities]);
   const climates = useMemo(() => areaEntities.filter((e) => e.entity_id.startsWith("climate.")), [areaEntities]);
+
+  // Editor state for the curated light & switch list. Seeded from the persisted
+  // card config (passed via props) and kept in sync locally so edits show
+  // immediately without re-opening the popup.
+  const [editMode, setEditMode] = useState(false);
+  const [hidden, setHidden] = useState<string[]>(popupHidden);
+  const [extra, setExtra] = useState<string[]>(popupExtra);
+
+  // Mixed, ordered visible list (room lights + room switches − hidden + extras).
+  const visible = useMemo(
+    () => resolveAreaEntities(areaEntities, { popup_hidden_entities: hidden, popup_extra_entities: extra }, allEntitiesMap),
+    [areaEntities, hidden, extra, allEntitiesMap],
+  );
+
+  // Room light/switch candidates for the editor (auto-visible set, main-only).
+  const roomControls = useMemo(
+    () => areaEntities.filter(
+      (e) => (e.entity_id.startsWith("light.") || e.entity_id.startsWith("switch.")) && isMainLight(e),
+    ),
+    [areaEntities],
+  );
+
+  // All instance light/switch entities (for the "add foreign entity" search).
+  const allLights = useEntitiesByDomain("light");
+  const allSwitches = useEntitiesByDomain("switch");
+  const allCandidates = useMemo(
+    () => [...allLights, ...allSwitches].filter(isMainLight),
+    [allLights, allSwitches],
+  );
+
+  const persistCuration = useCallback(
+    (next: { hidden: string[]; extra: string[] }) => {
+      setHidden(next.hidden);
+      setExtra(next.extra);
+      if (!cardId) return;
+      useDashboardStore.getState().updateCardConfigById(cardId, {
+        popup_hidden_entities: next.hidden,
+        popup_extra_entities: next.extra,
+      });
+      const current = useDashboardStore.getState().dashboard;
+      if (current) api.putDashboard(current).catch(console.error);
+    },
+    [cardId],
+  );
+
+  const hasControls = visible.length > 0 || roomControls.length > 0;
 
   // Scenes in this area
   const allScenes = useEntitiesByDomain("scene");
@@ -64,11 +125,11 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
   // Tab state
   const availableTabs = useMemo(() => {
     const tabs: { key: TabKey; label: string; icon: string }[] = [];
-    if (lights.length > 0) tabs.push({ key: "light", label: "Licht", icon: "💡" });
+    if (hasControls) tabs.push({ key: "light", label: "Licht & Schalter", icon: "💡" });
     if (covers.length > 0) tabs.push({ key: "cover", label: "Rollos", icon: "🪟" });
     if (climates.length > 0) tabs.push({ key: "climate", label: "Klima", icon: "❄️" });
     return tabs;
-  }, [lights, covers, climates]);
+  }, [hasControls, covers, climates]);
 
   const [activeTab, setActiveTab] = useState<TabKey>("light");
 
@@ -184,17 +245,49 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
         </div>
       )}
 
-      {/* Entity controls */}
-      <div className="apv2__entity-list">
-        {activeTab === "light" && lights.map((light) => (
-          <LightSliderCard
-            key={light.entity_id}
-            card={{ id: light.entity_id, type: "light", entity: light.entity_id, size: "1x1", config: {} }}
-            callService={callService}
-            onCardAction={handleCardAction}
-          />
-        ))}
+      {/* Light & switch tab: section label with edit toggle, then either the
+          mixed ControlTile list or the editor (EntityPickerList). */}
+      {activeTab === "light" && hasControls && (
+        <>
+          <div className="apv2__sec-label">
+            <span className="apv2__sec-label-text">
+              {editMode ? "Sichtbar im Popup wählen" : "Licht & Schalter"}
+            </span>
+            {cardId && (
+              <button
+                type="button"
+                className="apv2__sec-edit"
+                onClick={() => setEditMode((v) => !v)}
+              >
+                {editMode ? "Fertig" : "⚙ Bearbeiten"}
+              </button>
+            )}
+          </div>
+          {editMode ? (
+            <EntityPickerList
+              roomEntities={roomControls}
+              allCandidates={allCandidates}
+              hidden={hidden}
+              extra={extra}
+              onChange={persistCuration}
+            />
+          ) : (
+            <div className="apv2__entity-list">
+              {visible.map((entity) => (
+                <ControlTile
+                  key={entity.entity_id}
+                  entityId={entity.entity_id}
+                  callService={callService}
+                  onCardAction={handleCardAction}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
 
+      {/* Cover / climate controls */}
+      <div className="apv2__entity-list">
         {activeTab === "cover" && covers.map((cover) => {
           const name = (cover.attributes?.friendly_name as string) || cover.entity_id.split(".")[1];
           const isOpen = cover.state === "open";

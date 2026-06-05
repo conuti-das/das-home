@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
 from pathlib import Path
 
 import yaml
@@ -29,6 +30,31 @@ __version__ = _read_version_from_config()
 RELEASES_URL = "https://github.com/conuti-das/das-home/releases"
 
 app = FastAPI(title="das-home", version=__version__)
+
+# Allow embedding the das-home UI inside a Home Assistant "Webpage" dashboard
+# (local HA + Nabu Casa remote). We deliberately use a CSP `frame-ancestors`
+# directive instead of `X-Frame-Options` — the latter would block the iframe
+# embedding that lets das-home be used as a default HA dashboard/start page.
+_FRAME_ANCESTORS = (
+    "frame-ancestors 'self' "
+    "https://*.home-assistant.io "
+    "https://*.ui.nabu.casa "
+    "http://homeassistant.local:8123"
+)
+
+
+@app.middleware("http")
+async def add_frame_embedding_headers(request: Request, call_next) -> Response:
+    """Set a permissive ``frame-ancestors`` CSP on every response.
+
+    Runs around the route/static handlers (registered before CORSMiddleware so
+    CORS stays the outermost layer). Stamps the header on every response —
+    including static files and ``serve_index`` — without setting
+    ``X-Frame-Options``, which would prevent iframe embedding in HA.
+    """
+    response = await call_next(request)
+    response.headers["Content-Security-Policy"] = _FRAME_ANCESTORS
+    return response
 
 app.add_middleware(
     CORSMiddleware,
