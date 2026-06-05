@@ -5,6 +5,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { useEntitiesByArea, useEntitiesByDomain } from "@/hooks/useEntity";
 import { api } from "@/services/api";
 import { resolveAreaEntities } from "@/utils/resolveAreaEntities";
+import { numericState } from "@/utils/formatEntityState";
 import { PopupModal } from "@/components/layout/PopupModal";
 import { ControlTile } from "@/components/cards/ControlTile";
 import { EntityPickerList } from "@/components/popups/EntityPickerList";
@@ -44,6 +45,10 @@ export function AreaPopup({ onClose, callService, onOpenPopup, props }: PopupPro
   const humiditySensor = entities.find(
     (e) => e.entity_id.startsWith("sensor.") && e.entity_id.includes("humidity")
   );
+  // numericState → undefined for unavailable/unknown, so offline sensors are
+  // simply omitted instead of rendering "unavailable°".
+  const tempVal = numericState(tempSensor);
+  const humidityVal = numericState(humiditySensor);
 
   // Editor state for the curated light & switch list (seeded from card config).
   const [editMode, setEditMode] = useState(false);
@@ -96,18 +101,18 @@ export function AreaPopup({ onClose, callService, onOpenPopup, props }: PopupPro
   return (
     <PopupModal open title={area?.name || areaId} icon="building" onClose={onClose}>
       {/* Temperature/Humidity header */}
-      {(tempSensor || humiditySensor) && (
+      {(tempVal !== undefined || humidityVal !== undefined) && (
         <div style={{ display: "flex", gap: 12, padding: "0 4px 16px 4px" }}>
-          {tempSensor && (
+          {tempVal !== undefined && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <Icon name="temperature" style={{ width: 16, height: 16, color: "var(--dh-green)" }} />
-              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--dh-gray100)" }}>{tempSensor.state}°</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--dh-gray100)" }}>{tempVal.toFixed(1)}°</span>
             </div>
           )}
-          {humiditySensor && (
+          {humidityVal !== undefined && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <Icon name="blur" style={{ width: 16, height: 16, color: "var(--dh-blue)" }} />
-              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--dh-gray100)" }}>{humiditySensor.state}%</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--dh-gray100)" }}>{humidityVal.toFixed(0)}%</span>
             </div>
           )}
         </div>

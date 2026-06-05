@@ -8,6 +8,7 @@ import { useEntityStore } from "@/stores/entityStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
 import { resolveAreaEntities } from "@/utils/resolveAreaEntities";
+import { numericState } from "@/utils/formatEntityState";
 import { apiUrl } from "@/utils/basePath";
 import type { PopupProps } from "./PopupRegistry";
 import "./AreaPopupV2.css";
@@ -133,9 +134,10 @@ export function AreaPopupV2({ onClose, callService, onOpenPopup, props }: PopupP
 
   const [activeTab, setActiveTab] = useState<TabKey>("light");
 
-  // Text overview
-  const tempValue = areaTempSensor?.state ? parseFloat(areaTempSensor.state) : undefined;
-  const humidityValue = humiditySensor?.state ? parseFloat(humiditySensor.state) : undefined;
+  // Text overview — numericState returns undefined for unavailable/unknown/
+  // non-numeric states, so an offline sensor no longer renders as "NaN°".
+  const tempValue = numericState(areaTempSensor);
+  const humidityValue = numericState(humiditySensor);
 
   const areaName = area?.name || areaId || "Bereich";
 

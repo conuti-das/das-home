@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1
+
+### Fixed
+
+- Room popup overview no longer shows "NaN°" when the area's temperature sensor is unavailable. Both AreaPopupV2 and AreaPopup now use `numericState` and simply omit an offline sensor instead of rendering `NaN`/"unavailable°".
+
+### Behoben
+
+- Die Übersicht im Raum-Popup zeigt kein "NaN°" mehr, wenn der Temperatursensor des Bereichs nicht verfügbar ist. AreaPopupV2 und AreaPopup nutzen jetzt `numericState` und lassen einen Offline-Sensor einfach weg, statt `NaN`/"unverfügbar°" anzuzeigen.
+
 ## 0.7.0
 
 ### Added
