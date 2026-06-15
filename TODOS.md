@@ -143,3 +143,14 @@ Projekt-weites Backlog von Arbeit die bewusst verschoben wurde. Pro Eintrag: **W
 **Context:** Playwright-Setup wird für den Add-Card-E2E im HomeOpsBriefing-PR eingerichtet. Diese zwei folgen dann der gleichen Struktur.
 
 **Depends on:** Playwright-Setup aus HomeOpsBriefing-PR.
+
+## Erkenntnisse / Context
+
+- Stack: React 19 + TypeScript + UI5 Web Components (Frontend) + Python FastAPI (Backend). HA-Add-on verpackt, Ingress-fähig via `basePath.ts`.
+- Alle 40 Implementierungs-Tasks (Phase 1–11) abgeschlossen. 24 native Cards, HACS-Bridge, Auto-Discovery, Wizard-System.
+- Version in ZWEI Stellen: `das-home/config.yaml` UND `backend/app/main.py`. CHANGELOG bilingual (EN zuerst, dann DE).
+- FastAPI gepinnt auf `>=0.115.6,<1.0.0`. Pydantic v2 `ConfigDict`. Vite `base: "./"` für relative Pfade unter HA Ingress.
+- HA-Token in `.env` (gitignored). Backend: `cd backend && python -m uvicorn app.main:app --port 5050 --reload`.
+- Uvicorn `--reload` unter Windows unzuverlässig — Backend nach Python-Änderungen manuell neu starten.
+- `useEntitiesByArea` braucht noch Device-Area-Mapping (TODO im Code).
+- Aktuell offene Spec: Wetter-Card-Popup-Erweiterung (`. auto-claude/specs/002-...`).
