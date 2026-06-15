@@ -1,0 +1,218 @@
+<h2>Bereichskarte — Kartendesign</h2>
+<p class="subtitle">Passt das Layout zu deiner Vorstellung? 1×1 Karte im Grid.</p>
+
+<style>
+  .area-card {
+    width: 220px;
+    height: 220px;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .area-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.5) 100%);
+    z-index: 1;
+  }
+  .area-card > * { position: relative; z-index: 2; }
+
+  .area-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    padding: 12px 14px 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .card-middle {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 10px;
+  }
+
+  .entity-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .entity-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  .entity-btn.active {
+    background: rgba(250, 204, 21, 0.85);
+    color: #1a1a1a;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+  }
+  .entity-btn.inactive {
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+  }
+  .entity-btn.temp {
+    background: rgba(96, 165, 250, 0.3);
+    color: #93c5fd;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .media-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px 10px;
+  }
+  .play-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .play-btn.playing {
+    background: rgba(34, 197, 94, 0.6);
+  }
+  .volume-slider {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    position: relative;
+    max-width: 100px;
+  }
+  .volume-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+    border-radius: 2px;
+  }
+  .volume-knob {
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: -3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .demo-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .demo-label {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    margin-top: 8px;
+  }
+  .demo-container {
+    text-align: center;
+  }
+</style>
+
+<div class="demo-row">
+  <!-- Card 1: Wohnzimmer with media playing, light on -->
+  <div class="demo-container">
+    <div class="area-card" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%23234%22 width=%22400%22 height=%22400%22/><circle cx=%22200%22 cy=%22180%22 r=%22120%22 fill=%22%23345%22 opacity=%220.5%22/><rect x=%2250%22 y=%22250%22 width=%22300%22 height=%22100%22 rx=%228%22 fill=%22%23456%22 opacity=%220.3%22/></svg>');">
+      <div class="area-name">Wohnzimmer</div>
+      <div class="card-middle">
+        <div class="entity-buttons">
+          <button class="entity-btn temp">21°</button>
+          <button class="entity-btn active" title="Licht an">💡</button>
+          <button class="entity-btn inactive" title="Saugroboter">🤖</button>
+        </div>
+      </div>
+      <div class="media-controls">
+        <button class="play-btn playing">⏸</button>
+        <div class="volume-slider">
+          <div class="volume-fill" style="width: 65%;"></div>
+          <div class="volume-knob" style="left: calc(65% - 5px);"></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-label">Licht an, Musik läuft, 21°C</div>
+  </div>
+
+  <!-- Card 2: Schlafzimmer, alles aus -->
+  <div class="demo-container">
+    <div class="area-card" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%23223%22 width=%22400%22 height=%22400%22/><rect x=%22100%22 y=%22150%22 width=%22200%22 height=%22120%22 rx=%2210%22 fill=%22%23334%22 opacity=%220.4%22/><circle cx=%22300%22 cy=%22100%22 r=%2240%22 fill=%22%23445%22 opacity=%220.2%22/></svg>');">
+      <div class="area-name">Schlafzimmer</div>
+      <div class="card-middle">
+        <div class="entity-buttons">
+          <button class="entity-btn temp">18°</button>
+          <button class="entity-btn inactive">💡</button>
+          <button class="entity-btn inactive">🧹</button>
+        </div>
+      </div>
+      <!-- No media controls - no media player assigned -->
+    </div>
+    <div class="demo-label">Alles aus, kein Media Player</div>
+  </div>
+
+  <!-- Card 3: Küche, Waschmaschine läuft -->
+  <div class="demo-container">
+    <div class="area-card" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%23332%22 width=%22400%22 height=%22400%22/><rect x=%2280%22 y=%22180%22 width=%22240%22 height=%2280%22 rx=%226%22 fill=%22%23443%22 opacity=%220.3%22/><rect x=%22150%22 y=%2280%22 width=%22100%22 height=%22160%22 rx=%226%22 fill=%22%23554%22 opacity=%220.2%22/></svg>');">
+      <div class="area-name">Küche</div>
+      <div class="card-middle">
+        <div class="entity-buttons">
+          <button class="entity-btn temp">22°</button>
+          <button class="entity-btn active">💡</button>
+          <button class="entity-btn active" style="background: rgba(96,165,250,0.7); color: white; box-shadow: 0 0 12px rgba(96,165,250,0.4);">🫧</button>
+        </div>
+      </div>
+      <div class="media-controls">
+        <button class="play-btn">▶</button>
+        <div class="volume-slider">
+          <div class="volume-fill" style="width: 0%;"></div>
+          <div class="volume-knob" style="left: -5px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-label">Licht an, Waschmaschine läuft</div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card" data-choice="yes" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>✓ Ja, passt so</h3>
+      <p>Layout stimmt: Name oben links, 3 Buttons rechts, Media-Controls unten links</p>
+    </div>
+  </div>
+  <div class="card" data-choice="changes" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>↻ Fast, aber Änderungen nötig</h3>
+      <p>Sag mir im Terminal was anders sein soll</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 16px;">Beachte: Hintergrundbilder kommen von HA (Area-Bild), eigenem Upload, Webcam, oder Media-Player-Artwork.</p>

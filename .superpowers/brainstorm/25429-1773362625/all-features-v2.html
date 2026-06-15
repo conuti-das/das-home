@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Preview v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; }
+  h1 { font-size: 20px; color: #fff; margin-bottom: 8px; text-align: center; }
+  .section-title { font-size: 16px; color: #888; margin: 32px 0 16px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+  .section-title span { color: #60a5fa; }
+
+  /* ===================== ANIMATED WEATHER ICONS ===================== */
+  .wi { display: inline-block; width: 28px; height: 28px; position: relative; }
+  .wi-large { width: 56px; height: 56px; }
+  .wi-popup { width: 38px; height: 38px; }
+
+  /* Sun */
+  .wi-sun circle.sun-body { fill: #F2C94C; }
+  .wi-sun .sun-rays { animation: spin-slow 12s linear infinite; transform-origin: center; }
+  .wi-sun line { stroke: #F2C94C; stroke-width: 1.5; stroke-linecap: round; }
+
+  /* Moon */
+  .wi-moon .moon-body { fill: #C4C9D4; }
+  .wi-moon .moon-shadow { fill: #1a1a1a; }
+
+  /* Cloud */
+  .wi-cloud ellipse, .wi-cloud circle { fill: #B0BEC5; }
+  .wi-cloud .cloud-group { animation: drift 4s ease-in-out infinite; }
+
+  /* Rain */
+  .wi-rain line { stroke: #56CCF2; stroke-width: 1.2; stroke-linecap: round; }
+  .wi-rain .drop1 { animation: drop 1s ease-in infinite; }
+  .wi-rain .drop2 { animation: drop 1s ease-in 0.3s infinite; }
+  .wi-rain .drop3 { animation: drop 1s ease-in 0.6s infinite; }
+
+  /* Snow */
+  .wi-snow circle.flake { fill: white; }
+  .wi-snow .flake1 { animation: flake 2s ease-in infinite; }
+  .wi-snow .flake2 { animation: flake 2s ease-in 0.6s infinite; }
+  .wi-snow .flake3 { animation: flake 2s ease-in 1.2s infinite; }
+
+  /* Stars */
+  .wi-stars circle { fill: #C4C9D4; animation: twinkle 2s ease-in-out infinite; }
+  .wi-stars circle:nth-child(2) { animation-delay: 0.7s; }
+  .wi-stars circle:nth-child(3) { animation-delay: 1.4s; }
+
+  @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes drift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+  @keyframes drop { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(6px); } }
+  @keyframes flake { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 100% { opacity: 0; transform: translateY(8px) rotate(90deg); } }
+  @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* ===================== HEADER / WEATHER BADGES ===================== */
+  .header-bar {
+    background: var(--dh-gray300, #2a2a2a);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .header-bar::-webkit-scrollbar { display: none; }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .status-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chip-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+
+  .header-divider { width: 1px; height: 32px; background: #333; flex-shrink: 0; }
+
+  .weather-badges {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .weather-badge {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 4px 8px;
+    text-align: center;
+    min-width: 52px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+  .weather-badge:hover { background: rgba(255,255,255,0.1); }
+  .badge-time { font-size: 9px; color: #888; }
+  .badge-temp { font-size: 12px; font-weight: 700; color: #fff; }
+  .badge-extra { font-size: 8px; color: #555; }
+  .badge-separator { width: 1px; height: 32px; background: #444; flex-shrink: 0; }
+  .badge-day .badge-temps { display: flex; gap: 3px; justify-content: center; align-items: baseline; }
+  .badge-day .temp-high { font-size: 12px; font-weight: 700; color: #fff; }
+  .badge-day .temp-low { font-size: 10px; color: #666; }
+
+  /* ===================== WEATHER POPUP ===================== */
+  .popup-overlay {
+    background: #1e1e1e;
+    border-radius: 20px;
+    max-width: 380px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+  }
+  .popup-header-left { display: flex; align-items: center; gap: 12px; }
+  .popup-icon {
+    width: 40px; height: 40px;
+    background: #333; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .popup-title { font-size: 18px; font-weight: 600; }
+  .popup-close {
+    width: 32px; height: 32px; background: #333; border-radius: 50%;
+    border: none; color: #999; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .weather-current {
+    background: #2a2a2a; border-radius: 16px;
+    padding: 20px; margin: 0 16px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .current-temp { font-size: 48px; font-weight: 700; line-height: 1; }
+  .current-feels { font-size: 14px; color: #888; margin-top: 4px; }
+  .current-condition { font-size: 13px; color: #aaa; margin-top: 8px; }
+
+  .forecast-hourly {
+    display: flex; gap: 4px; padding: 0 16px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .forecast-hourly::-webkit-scrollbar { display: none; }
+  .hour-item {
+    background: #2a2a2a; border-radius: 12px;
+    padding: 10px 8px; text-align: center;
+    min-width: 60px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .hour-time { font-size: 11px; color: #888; }
+  .hour-temp { font-size: 15px; font-weight: 700; }
+  .hour-extra { font-size: 9px; color: #666; line-height: 1.3; }
+
+  .forecast-daily { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .day-item {
+    background: #2a2a2a; border-radius: 16px;
+    padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .day-name { font-size: 14px; font-weight: 600; }
+  .day-temp { font-size: 28px; font-weight: 700; margin-top: 4px; }
+  .day-condition { font-size: 12px; color: #888; margin-top: 4px; }
+
+  /* ===================== AREA POPUP ===================== */
+  .area-popup {
+    background: #1e1e1e; border-radius: 20px;
+    max-width: 380px; margin: 0 auto; overflow: hidden;
+  }
+  .area-popup-icon {
+    width: 40px; height: 40px; background: #f59e0b; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .text-overview {
+    background: #2a2a2a; border-radius: 16px;
+    padding: 16px 20px; margin: 0 16px 16px;
+    font-size: 14px; line-height: 1.6; color: #ccc;
+  }
+  .highlight {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #333; border-radius: 20px;
+    padding: 2px 10px; font-weight: 600; color: #fff; font-size: 13px;
+  }
+  .highlight.warm { border: 1px solid #f59e0b; }
+  .highlight.good { border: 1px solid #22c55e; }
+  .highlight.info { border: 1px solid #60a5fa; }
+
+  /* Scenes - hidden scrollbar */
+  .scenes-row {
+    display: flex; gap: 8px; padding: 0 16px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .scenes-row::-webkit-scrollbar { display: none; }
+  .scene-btn {
+    background: #2a2a2a; border-radius: 16px;
+    padding: 12px 16px; text-align: center;
+    min-width: 80px; flex-shrink: 0;
+    cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
+  }
+  .scene-btn:hover { border-color: #444; background: #333; }
+  .scene-icon { font-size: 24px; margin-bottom: 6px; }
+  .scene-name { font-size: 11px; color: #aaa; }
+
+  /* Media in area popup */
+  .media-section {
+    background: #2a2a2a; border-radius: 16px;
+    padding: 14px 16px; margin: 0 16px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .media-art {
+    width: 48px; height: 48px; border-radius: 8px;
+    background: linear-gradient(135deg, #4a1a6a, #2a1a4a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .media-info { flex: 1; }
+  .media-title { font-size: 13px; font-weight: 600; }
+  .media-artist { font-size: 11px; color: #888; }
+  .media-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: #22c55e; color: white; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Category tabs */
+  .category-tabs { display: flex; gap: 8px; padding: 0 16px 12px; }
+  .cat-tab {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    border: 1px solid #333; color: #888; background: transparent;
+  }
+  .cat-tab.active { background: #fef3c7; color: #92400e; border-color: #fef3c7; font-weight: 600; }
+
+  /* ===== LIGHT SLIDER CARDS (matching LightSliderCard.tsx) ===== */
+  .light-slider-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .light-slider {
+    height: 75px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    cursor: pointer;
+  }
+  .light-slider-track {
+    flex: 6;
+    position: relative;
+    background: #2a2a2a;
+    border-radius: 8px 0 0 8px;
+    overflow: hidden;
+  }
+  .light-slider-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px 0 0 8px;
+    transition: width 0.1s ease;
+  }
+  .light-slider-fill.on {
+    background: linear-gradient(90deg, rgba(242,201,76,0.4), rgba(242,201,76,0.7));
+  }
+  .light-slider-fill.off {
+    width: 0 !important;
+  }
+  .light-slider-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 100%;
+  }
+  .light-slider-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .light-slider-icon.on { background: rgba(242,201,76,0.3); color: #F2C94C; }
+  .light-slider-icon.off { background: rgba(255,255,255,0.08); color: #666; }
+  .light-slider-info { flex: 1; }
+  .light-slider-name { font-size: 13px; font-weight: 500; }
+  .light-slider-value { font-size: 11px; color: #888; margin-top: 2px; }
+  .light-slider-controls {
+    flex: 1;
+    background: #222;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .slider-toggle {
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer;
+  }
+  .slider-toggle.on {
+    background: radial-gradient(circle, #F2C94C, #D4A843);
+    color: #1a1a1a;
+  }
+  .slider-toggle.off {
+    background: rgba(255,255,255,0.08);
+    color: #666;
+  }
+
+  /* Thumb indicator */
+  .light-slider-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    z-index: 3;
+  }
+
+  /* Layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+  .click-hint { font-size: 10px; color: #555; text-align: center; margin-top: 6px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>Feature Preview v2</h1>
+
+<!-- ==================== FEATURE 1: HEADER WEATHER BADGES ==================== -->
+<div class="section-title"><span>Feature 1:</span> Wetter-Badges im Header (kompakte Höhe)</div>
+
+<div class="header-bar">
+  <!-- Existing status chips -->
+  <div class="status-chip">
+    <div class="chip-icon" style="color:#888;">🕐</div>
+    <span>20:45</span>
+  </div>
+  <div class="status-chip">
+    <div class="chip-icon" style="color:#F2C94C;">💡</div>
+    <span>3 an</span>
+  </div>
+
+  <div class="header-divider"></div>
+
+  <!-- Nächste 3 Stunden -->
+  <div class="weather-badges">
+    <div class="weather-badge">
+      <div class="badge-time">21:00</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="22" rx="10" ry="7" fill="#B0BEC5"/><circle cx="14" cy="20" r="6" fill="#B0BEC5"/><circle cx="26" cy="20" r="5" fill="#B0BEC5"/></g></g>
+        <g class="wi-moon"><circle cx="30" cy="10" r="5" class="moon-body" fill="#C4C9D4"/><circle cx="33" cy="8" r="4" class="moon-shadow" fill="#1a1a1a"/></g>
+      </svg>
+      <div class="badge-temp">-5.1°</div>
+    </div>
+    <div class="weather-badge">
+      <div class="badge-time">22:00</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="20" rx="12" ry="8" fill="#B0BEC5"/><circle cx="12" cy="18" r="7" fill="#B0BEC5"/><circle cx="28" cy="18" r="6" fill="#B0BEC5"/></g></g>
+      </svg>
+      <div class="badge-temp">-5.8°</div>
+    </div>
+    <div class="weather-badge">
+      <div class="badge-time">23:00</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="16" rx="10" ry="6" fill="#B0BEC5"/><circle cx="14" cy="14" r="5" fill="#B0BEC5"/><circle cx="26" cy="14" r="4" fill="#B0BEC5"/></g></g>
+        <g class="wi-rain"><line class="drop1" x1="14" y1="24" x2="12" y2="30" /><line class="drop2" x1="20" y1="24" x2="18" y2="30" /><line class="drop3" x1="26" y1="24" x2="24" y2="30" /></g>
+      </svg>
+      <div class="badge-temp">-6.9°</div>
+    </div>
+  </div>
+
+  <div class="badge-separator"></div>
+
+  <!-- Nächste 3 Tage -->
+  <div class="weather-badges">
+    <div class="weather-badge badge-day">
+      <div class="badge-time">Sa</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-sun"><g class="sun-rays"><line x1="20" y1="3" x2="20" y2="7"/><line x1="20" y1="33" x2="20" y2="37"/><line x1="7" y1="20" x2="3" y2="20"/><line x1="33" y1="20" x2="37" y2="20"/></g><circle cx="20" cy="20" r="6" class="sun-body"/></g>
+        <g class="wi-cloud" style="transform:translate(4px,4px)scale(0.6)"><g class="cloud-group"><ellipse cx="22" cy="22" rx="10" ry="7" fill="#B0BEC5"/><circle cx="16" cy="20" r="6" fill="#B0BEC5"/></g></g>
+      </svg>
+      <div class="badge-temps">
+        <span class="temp-high">-2°</span>
+        <span class="temp-low">-8°</span>
+      </div>
+    </div>
+    <div class="weather-badge badge-day">
+      <div class="badge-time">So</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-sun"><g class="sun-rays"><line x1="20" y1="5" x2="20" y2="9"/><line x1="20" y1="31" x2="20" y2="35"/><line x1="9" y1="20" x2="5" y2="20"/><line x1="31" y1="20" x2="35" y2="20"/></g><circle cx="20" cy="20" r="7" class="sun-body"/></g>
+      </svg>
+      <div class="badge-temps">
+        <span class="temp-high">1°</span>
+        <span class="temp-low">-5°</span>
+      </div>
+    </div>
+    <div class="weather-badge badge-day">
+      <div class="badge-time">Mo</div>
+      <svg class="wi" viewBox="0 0 40 40">
+        <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="16" rx="10" ry="6" fill="#B0BEC5"/><circle cx="14" cy="14" r="5" fill="#B0BEC5"/><circle cx="26" cy="14" r="4" fill="#B0BEC5"/></g></g>
+        <g class="wi-rain"><line class="drop1" x1="14" y1="24" x2="12" y2="30" /><line class="drop2" x1="20" y1="24" x2="18" y2="30" /><line class="drop3" x1="26" y1="24" x2="24" y2="30" /></g>
+      </svg>
+      <div class="badge-temps">
+        <span class="temp-high">3°</span>
+        <span class="temp-low">-1°</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="click-hint">→ Klick auf Badge oder Wetter-Karte öffnet Wetter-Popup</div>
+
+<!-- ==================== FEATURE 2 & 3: POPUPS ==================== -->
+<div class="two-col">
+
+  <!-- WEATHER POPUP -->
+  <div>
+    <div class="section-title"><span>Feature 2:</span> Wetter-Popup</div>
+    <div class="popup-overlay">
+      <div class="popup-header">
+        <div class="popup-header-left">
+          <div class="popup-icon">
+            <svg class="wi wi-popup" viewBox="0 0 40 40">
+              <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="22" rx="10" ry="7" fill="#B0BEC5"/><circle cx="14" cy="20" r="6" fill="#B0BEC5"/><circle cx="26" cy="20" r="5" fill="#B0BEC5"/></g></g>
+              <g class="wi-moon"><circle cx="30" cy="10" r="5" fill="#C4C9D4"/><circle cx="33" cy="8" r="4" fill="#1e1e1e"/></g>
+            </svg>
+          </div>
+          <div class="popup-title">Wetter</div>
+        </div>
+        <button class="popup-close">✕</button>
+      </div>
+
+      <div class="weather-current">
+        <div>
+          <div class="current-temp">-5°</div>
+          <div class="current-feels">Gefühlt -9.6°</div>
+          <div class="current-condition">Bewölkt · 2.5m/s · 0mm</div>
+        </div>
+        <svg class="wi wi-large" viewBox="0 0 40 40">
+          <g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="22" rx="12" ry="8" fill="#B0BEC5"/><circle cx="12" cy="19" r="7" fill="#B0BEC5"/><circle cx="28" cy="19" r="6" fill="#B0BEC5"/></g></g>
+          <g class="wi-moon"><circle cx="32" cy="8" r="6" fill="#C4C9D4"/><circle cx="35" cy="6" r="5" fill="#2a2a2a"/></g>
+        </svg>
+      </div>
+
+      <div class="forecast-hourly">
+        <div class="hour-item">
+          <div class="hour-time">21:00</div>
+          <svg class="wi" viewBox="0 0 40 40"><g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="22" rx="10" ry="7" fill="#B0BEC5"/><circle cx="14" cy="20" r="6" fill="#B0BEC5"/></g></g><g class="wi-moon"><circle cx="30" cy="10" r="5" fill="#C4C9D4"/><circle cx="33" cy="8" r="4" fill="#2a2a2a"/></g></svg>
+          <div class="hour-temp">-5.1°</div>
+          <div class="hour-extra">2.5m/s<br>0mm</div>
+        </div>
+        <div class="hour-item">
+          <div class="hour-time">22:00</div>
+          <svg class="wi" viewBox="0 0 40 40"><g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="20" rx="12" ry="8" fill="#B0BEC5"/><circle cx="12" cy="18" r="7" fill="#B0BEC5"/><circle cx="28" cy="18" r="6" fill="#B0BEC5"/></g></g></svg>
+          <div class="hour-temp">-5.8°</div>
+          <div class="hour-extra">2.6m/s<br>0mm</div>
+        </div>
+        <div class="hour-item">
+          <div class="hour-time">23:00</div>
+          <svg class="wi" viewBox="0 0 40 40"><g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="16" rx="10" ry="6" fill="#B0BEC5"/><circle cx="14" cy="14" r="5" fill="#B0BEC5"/></g></g><g class="wi-rain"><line class="drop1" x1="14" y1="24" x2="12" y2="30"/><line class="drop2" x1="20" y1="24" x2="18" y2="30"/><line class="drop3" x1="26" y1="24" x2="24" y2="30"/></g></svg>
+          <div class="hour-temp">-6.9°</div>
+          <div class="hour-extra">2.5m/s<br>0.2mm</div>
+        </div>
+        <div class="hour-item">
+          <div class="hour-time">00:00</div>
+          <svg class="wi" viewBox="0 0 40 40"><g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="20" rx="11" ry="7" fill="#B0BEC5"/><circle cx="13" cy="18" r="6" fill="#B0BEC5"/><circle cx="27" cy="18" r="5" fill="#B0BEC5"/></g></g></svg>
+          <div class="hour-temp">-7.7°</div>
+          <div class="hour-extra">2.5m/s<br>0mm</div>
+        </div>
+        <div class="hour-item">
+          <div class="hour-time">01:00</div>
+          <svg class="wi" viewBox="0 0 40 40"><g class="wi-moon"><circle cx="20" cy="18" r="8" fill="#C4C9D4"/><circle cx="24" cy="15" r="7" fill="#2a2a2a"/></g><g class="wi-stars"><circle cx="8" cy="10" r="1.2"/><circle cx="34" cy="8" r="1"/><circle cx="12" cy="30" r="0.8"/></g></svg>
+          <div class="hour-temp">-8.3°</div>
+          <div class="hour-extra">2.6m/s<br>0mm</div>
+        </div>
+      </div>
+
+      <div class="forecast-daily">
+        <div class="day-item">
+          <div>
+            <div class="day-name">Samstag</div>
+            <div class="day-temp">-4.5°</div>
+            <div class="day-condition">Bewölkt · 0mm</div>
+          </div>
+          <svg class="wi wi-popup" viewBox="0 0 40 40"><g class="wi-sun"><g class="sun-rays"><line x1="20" y1="3" x2="20" y2="7"/><line x1="20" y1="33" x2="20" y2="37"/><line x1="7" y1="20" x2="3" y2="20"/><line x1="33" y1="20" x2="37" y2="20"/></g><circle cx="20" cy="20" r="6" class="sun-body"/></g><g class="wi-cloud" style="transform:translate(4px,5px)scale(0.55)"><g class="cloud-group"><ellipse cx="22" cy="22" rx="10" ry="7" fill="#B0BEC5"/><circle cx="16" cy="20" r="6" fill="#B0BEC5"/></g></g></svg>
+        </div>
+        <div class="day-item">
+          <div>
+            <div class="day-name">Sonntag</div>
+            <div class="day-temp">-4.1°</div>
+            <div class="day-condition">Teilw. bewölkt · 0mm</div>
+          </div>
+          <svg class="wi wi-popup" viewBox="0 0 40 40"><g class="wi-sun"><g class="sun-rays"><line x1="20" y1="5" x2="20" y2="9"/><line x1="20" y1="31" x2="20" y2="35"/><line x1="9" y1="20" x2="5" y2="20"/><line x1="31" y1="20" x2="35" y2="20"/></g><circle cx="20" cy="20" r="7" class="sun-body"/></g></svg>
+        </div>
+        <div class="day-item">
+          <div>
+            <div class="day-name">Montag</div>
+            <div class="day-temp">2.3°</div>
+            <div class="day-condition">Regen · 4.2mm</div>
+          </div>
+          <svg class="wi wi-popup" viewBox="0 0 40 40"><g class="wi-cloud"><g class="cloud-group"><ellipse cx="20" cy="16" rx="10" ry="6" fill="#B0BEC5"/><circle cx="14" cy="14" r="5" fill="#B0BEC5"/><circle cx="26" cy="14" r="4" fill="#B0BEC5"/></g></g><g class="wi-rain"><line class="drop1" x1="14" y1="24" x2="12" y2="30"/><line class="drop2" x1="20" y1="24" x2="18" y2="30"/><line class="drop3" x1="26" y1="24" x2="24" y2="30"/></g></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AREA POPUP -->
+  <div>
+    <div class="section-title"><span>Feature 3:</span> Bereichs-Popup</div>
+    <div class="area-popup">
+      <div class="popup-header">
+        <div class="popup-header-left">
+          <div class="area-popup-icon">🛋️</div>
+          <div class="popup-title">Wohnzimmer</div>
+        </div>
+        <button class="popup-close">✕</button>
+      </div>
+
+      <div class="text-overview">
+        Es ist <span class="highlight warm">22.4°</span> im Wohnzimmer und die Luftqualität ist
+        <span class="highlight good">gut 👍</span>. Der Fernseher läuft seit
+        <span class="highlight info">2 Std 15 Min</span> heute.
+      </div>
+
+      <div class="scenes-row">
+        <div class="scene-btn"><div class="scene-icon">💡</div><div class="scene-name">Mehr Licht</div></div>
+        <div class="scene-btn"><div class="scene-icon">🔅</div><div class="scene-name">Weniger Licht</div></div>
+        <div class="scene-btn"><div class="scene-icon">🎬</div><div class="scene-name">Filmabend</div></div>
+        <div class="scene-btn"><div class="scene-icon">🌙</div><div class="scene-name">Abendlicht</div></div>
+        <div class="scene-btn"><div class="scene-icon">🎉</div><div class="scene-name">Party</div></div>
+      </div>
+
+      <div class="media-section">
+        <div class="media-art">🎵</div>
+        <div class="media-info">
+          <div class="media-title">Bohemian Rhapsody</div>
+          <div class="media-artist">Queen · Sonos Wohnzimmer</div>
+        </div>
+        <button class="media-btn">⏸</button>
+      </div>
+
+      <div class="category-tabs">
+        <div class="cat-tab active">💡 Licht</div>
+        <div class="cat-tab">🪟 Rollos</div>
+        <div class="cat-tab">❄️ Klima</div>
+      </div>
+
+      <!-- LightSliderCard style -->
+      <div class="light-slider-list">
+        <div class="light-slider">
+          <div class="light-slider-track">
+            <div class="light-slider-fill on" style="width: 78%;"></div>
+            <div class="light-slider-thumb" style="left: 78%;"></div>
+            <div class="light-slider-content">
+              <div class="light-slider-icon on">💡</div>
+              <div class="light-slider-info">
+                <div class="light-slider-name">Deckenlampe</div>
+                <div class="light-slider-value">78%</div>
+              </div>
+            </div>
+          </div>
+          <div class="light-slider-controls">
+            <button class="slider-toggle on">⏻</button>
+          </div>
+        </div>
+
+        <div class="light-slider">
+          <div class="light-slider-track">
+            <div class="light-slider-fill on" style="width: 45%;"></div>
+            <div class="light-slider-thumb" style="left: 45%;"></div>
+            <div class="light-slider-content">
+              <div class="light-slider-icon on">⭐</div>
+              <div class="light-slider-info">
+                <div class="light-slider-name">Stehlampe Sofa</div>
+                <div class="light-slider-value">45%</div>
+              </div>
+            </div>
+          </div>
+          <div class="light-slider-controls">
+            <button class="slider-toggle on">⏻</button>
+          </div>
+        </div>
+
+        <div class="light-slider">
+          <div class="light-slider-track">
+            <div class="light-slider-fill off"></div>
+            <div class="light-slider-content">
+              <div class="light-slider-icon off">💡</div>
+              <div class="light-slider-info">
+                <div class="light-slider-name">Hinter TV</div>
+                <div class="light-slider-value">Aus</div>
+              </div>
+            </div>
+          </div>
+          <div class="light-slider-controls">
+            <button class="slider-toggle off">⏻</button>
+          </div>
+        </div>
+
+        <div class="light-slider">
+          <div class="light-slider-track">
+            <div class="light-slider-fill on" style="width: 100%;"></div>
+            <div class="light-slider-content">
+              <div class="light-slider-icon on">✨</div>
+              <div class="light-slider-info">
+                <div class="light-slider-name">LED Strip</div>
+                <div class="light-slider-value">100%</div>
+              </div>
+            </div>
+          </div>
+          <div class="light-slider-controls">
+            <button class="slider-toggle on">⏻</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

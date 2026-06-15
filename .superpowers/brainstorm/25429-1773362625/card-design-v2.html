@@ -1,0 +1,301 @@
+<h2>Bereichskarte — Design v2</h2>
+<p class="subtitle">Angelehnt an dein Referenzbild. Helles Design, große runde Buttons.</p>
+
+<style>
+  .area-card {
+    width: 240px;
+    height: 240px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
+  }
+  .area-card.light {
+    background: #f5f5f0;
+    color: #333;
+  }
+  .area-card.dark-bg {
+    color: white;
+  }
+  .area-card.dark-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.4) 100%);
+    z-index: 1;
+  }
+  .area-card.dark-bg > * { position: relative; z-index: 2; }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .area-info {
+    flex: 1;
+  }
+  .area-name {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .area-temp {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-top: 2px;
+  }
+
+  .entity-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .entity-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .entity-btn.light-on {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .entity-btn.light-off {
+    background: #e8e8e3;
+    color: #999;
+  }
+  .entity-btn.media-on {
+    background: #fce7f3;
+    color: #9d174d;
+  }
+  .entity-btn.media-off {
+    background: #e8e8e3;
+    color: #999;
+  }
+  .entity-btn.special-on {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .entity-btn.special-off {
+    background: #e8e8e3;
+    color: #999;
+  }
+  /* Dark background variants */
+  .dark-bg .entity-btn.light-on {
+    background: rgba(254, 243, 199, 0.9);
+    color: #92400e;
+  }
+  .dark-bg .entity-btn.light-off {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+  }
+  .dark-bg .entity-btn.media-on {
+    background: rgba(252, 231, 243, 0.9);
+    color: #9d174d;
+  }
+  .dark-bg .entity-btn.media-off {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+  }
+  .dark-bg .entity-btn.special-on {
+    background: rgba(209, 250, 229, 0.9);
+    color: #065f46;
+  }
+  .dark-bg .entity-btn.special-off {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+  }
+
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .play-btn-big {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .play-btn-big.playing {
+    background: #22c55e;
+    color: white;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+  }
+  .play-btn-big.stopped {
+    background: #e8e8e3;
+    color: #999;
+  }
+  .play-btn-big.no-media {
+    display: none;
+  }
+  .dark-bg .play-btn-big.playing {
+    background: rgba(34, 197, 94, 0.85);
+    color: white;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+  }
+  .dark-bg .play-btn-big.stopped {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+  }
+
+  .volume-mini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vol-bar {
+    width: 60px;
+    height: 4px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .vol-fill {
+    height: 100%;
+    background: #22c55e;
+    border-radius: 2px;
+  }
+  .dark-bg .vol-bar {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .demo-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }
+  .demo-container { text-align: center; }
+  .demo-label {
+    font-size: 11px;
+    color: #888;
+    margin-top: 10px;
+    max-width: 240px;
+  }
+</style>
+
+<div class="demo-row">
+  <!-- Wohnzimmer: helles Design, Musik läuft, Licht an -->
+  <div class="demo-container">
+    <div class="area-card light">
+      <div class="card-top">
+        <div class="area-info">
+          <div class="area-name">Wohnzimmer</div>
+          <div class="area-temp">21.8 °C</div>
+        </div>
+        <div class="entity-buttons">
+          <button class="entity-btn light-on" title="Licht an">💡</button>
+          <button class="entity-btn media-on" title="Sonos spielt">🔊</button>
+          <button class="entity-btn special-off" title="Saugroboter aus">🤖</button>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div>
+          <button class="play-btn-big playing">⏸</button>
+          <div class="volume-mini" style="margin-top:6px;">
+            <div class="vol-bar"><div class="vol-fill" style="width:65%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-label">Hell (Default) — Licht an, Musik läuft</div>
+  </div>
+
+  <!-- Schlafzimmer: mit Hintergrundbild, alles aus -->
+  <div class="demo-container">
+    <div class="area-card dark-bg" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%22 stop-color=%22%232d1b4e%22/><stop offset=%221%22 stop-color=%22%231a1030%22/></linearGradient></defs><rect fill=%22url(%23g)%22 width=%22400%22 height=%22400%22/><circle cx=%22280%22 cy=%22120%22 r=%2280%22 fill=%22%233d2660%22 opacity=%220.4%22/><rect x=%2260%22 y=%22200%22 width=%22280%22 height=%2280%22 rx=%2212%22 fill=%22%234a3070%22 opacity=%220.25%22/></svg>');">
+      <div class="card-top">
+        <div class="area-info">
+          <div class="area-name">Schlafzimmer</div>
+          <div class="area-temp">18.2 °C</div>
+        </div>
+        <div class="entity-buttons">
+          <button class="entity-btn light-off">💡</button>
+          <button class="entity-btn media-off">🔊</button>
+          <button class="entity-btn special-off">🧹</button>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <button class="play-btn-big stopped">▶</button>
+      </div>
+    </div>
+    <div class="demo-label">Mit Hintergrundbild — Alles aus</div>
+  </div>
+
+  <!-- Küche: hell, Waschmaschine aktiv, kein Media -->
+  <div class="demo-container">
+    <div class="area-card light">
+      <div class="card-top">
+        <div class="area-info">
+          <div class="area-name">Küche</div>
+          <div class="area-temp">22.4 °C</div>
+        </div>
+        <div class="entity-buttons">
+          <button class="entity-btn light-on">💡</button>
+          <button class="entity-btn media-off">🔊</button>
+          <button class="entity-btn special-on" title="Waschmaschine läuft">🫧</button>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <!-- Kein Media Player konfiguriert → kein Play-Button -->
+      </div>
+    </div>
+    <div class="demo-label">Kein Media Player — Waschmaschine aktiv</div>
+  </div>
+
+  <!-- Bad: Webcam-Hintergrund -->
+  <div class="demo-container">
+    <div class="area-card dark-bg" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a2a1a%22 width=%22400%22 height=%22400%22/><rect x=%2220%22 y=%22100%22 width=%22360%22 height=%22200%22 rx=%224%22 fill=%22%23243024%22 opacity=%220.5%22/><text x=%22200%22 y=%22210%22 fill=%22%234a6a4a%22 font-size=%2214%22 text-anchor=%22middle%22 opacity=%220.6%22>📷 Webcam Feed</text></svg>');">
+      <div class="card-top">
+        <div class="area-info">
+          <div class="area-name">Garten</div>
+          <div class="area-temp">8.1 °C</div>
+        </div>
+        <div class="entity-buttons">
+          <button class="entity-btn light-off">💡</button>
+          <button class="entity-btn special-off">🌱</button>
+        </div>
+      </div>
+      <div class="card-bottom">
+      </div>
+    </div>
+    <div class="demo-label">Webcam als Hintergrund — nur 2 Entities</div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card" data-choice="yes" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>✓ Passt so</h3>
+      <p>Name+Temp oben links, runde Buttons rechts, großer Play-Button unten links</p>
+    </div>
+  </div>
+  <div class="card" data-choice="changes" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>↻ Änderungen nötig</h3>
+      <p>Sag mir im Terminal was anders sein soll</p>
+    </div>
+  </div>
+</div>

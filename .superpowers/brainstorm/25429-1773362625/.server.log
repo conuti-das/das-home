@@ -1,0 +1,11 @@
+{"type":"server-started","port":54069,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:54069","screen_dir":"C:\\das\\dev\\smarthome\\das-home/.superpowers/brainstorm/25429-1773362625"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\layout-options.html"}
+{"source":"user-event","type":"click","text":"Option C: Normales Grid — freie Platzierung\n      \n        🌧️ Radar\n        Wohn\n        Schlaf\n        Küche\n        Bad\n        Andere Karte\n        Andere Karte\n      \n    \n    \n      C: Freie Platzierung im Grid\n      Bereichskarten sind normale 1×1-Karten im Grid. User platziert sie frei neben den Radar. Keine erzwungene Gruppierung — maximale Flexibilität.","choice":"c","id":null,"timestamp":1773362699794}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\card-design.html"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\card-design-v2.html"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\card-design-v3.html"}
+{"source":"user-event","type":"click","text":"✓ Passt so\n      Name klein oben links, Temperatur fett & groß darunter","choice":"yes","id":null,"timestamp":1773363376107}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\all-features-preview.html"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\all-features-v2.html"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\all-features-v3.html"}
+{"type":"screen-added","file":"C:\\das\\dev\\smarthome\\das-home\\.superpowers\\brainstorm\\25429-1773362625\\waiting.html"}

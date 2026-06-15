@@ -1,0 +1,182 @@
+<h2>Bereichskarten neben dem Radar — Layout</h2>
+<p class="subtitle">Wie sollen 1–4 Bereichskarten neben dem Radar angeordnet werden?</p>
+
+<style>
+  .radar-grid {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .radar-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .radar-box {
+    background: linear-gradient(135deg, #1a3a2a, #2a5a3a);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4ade80;
+    font-size: 14px;
+    font-weight: 600;
+    aspect-ratio: 1;
+    min-height: 80px;
+  }
+  .area-box {
+    background: linear-gradient(135deg, #1a2a3a, #2a4a6a);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    padding: 4px;
+    min-height: 40px;
+  }
+  .layout-label {
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .variant-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .variant {
+    text-align: center;
+  }
+  .variant-label {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px;">
+      <p class="layout-label"><strong>Option A: Gleiche Gesamtgröße wie Radar (2×2)</strong></p>
+      <div class="variant-row">
+        <div class="variant">
+          <div class="variant-label">4 Karten</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:160px;">
+            <div class="radar-box" style="grid-row:span 2;grid-column:span 2;">🌧️ Radar</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:160px;margin-top:4px;">
+            <div class="area-box">Wohn</div>
+            <div class="area-box">Schlaf</div>
+            <div class="area-box">Küche</div>
+            <div class="area-box">Bad</div>
+          </div>
+          <div style="display:flex;gap:4px;margin-top:8px;width:160px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div class="radar-box" style="grid-row:span 2;grid-column:span 2;font-size:11px;">🌧️ Radar<br>2×2</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div class="area-box" style="font-size:9px;">Wohn</div>
+              <div class="area-box" style="font-size:9px;">Schlaf</div>
+              <div class="area-box" style="font-size:9px;">Küche</div>
+              <div class="area-box" style="font-size:9px;">Bad</div>
+            </div>
+          </div>
+          <div class="variant-label">→ Radar 2×2 | 4× Area je 1×1</div>
+        </div>
+        <div class="variant">
+          <div class="variant-label">3 Karten</div>
+          <div style="display:flex;gap:4px;width:160px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div class="radar-box" style="grid-row:span 2;grid-column:span 2;font-size:11px;">🌧️ Radar<br>2×2</div>
+            </div>
+            <div style="display:grid;grid-template-rows:1fr 1fr;gap:4px;flex:1;">
+              <div class="area-box" style="font-size:9px;">Wohn<br>1×1</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <div class="area-box" style="font-size:9px;">Schlaf</div>
+                <div class="area-box" style="font-size:9px;">Küche</div>
+              </div>
+            </div>
+          </div>
+          <div class="variant-label">→ 1× groß oben, 2× klein unten</div>
+        </div>
+        <div class="variant">
+          <div class="variant-label">2 Karten</div>
+          <div style="display:flex;gap:4px;width:160px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div class="radar-box" style="grid-row:span 2;grid-column:span 2;font-size:11px;">🌧️ Radar<br>2×2</div>
+            </div>
+            <div style="display:grid;grid-template-rows:1fr 1fr;gap:4px;flex:1;">
+              <div class="area-box">Wohn<br>1×2</div>
+              <div class="area-box">Schlaf<br>1×2</div>
+            </div>
+          </div>
+          <div class="variant-label">→ 2× gestapelt, je 1×1</div>
+        </div>
+        <div class="variant">
+          <div class="variant-label">1 Karte</div>
+          <div style="display:flex;gap:4px;width:160px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div class="radar-box" style="grid-row:span 2;grid-column:span 2;font-size:11px;">🌧️ Radar<br>2×2</div>
+            </div>
+            <div style="display:grid;gap:4px;flex:1;">
+              <div class="area-box" style="height:100%;">Wohn<br>1×2</div>
+            </div>
+          </div>
+          <div class="variant-label">→ 1× volle Höhe</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A: Nebeneinander — Area-Block = Radar-Größe</h3>
+      <p>Radar links 2×2, Bereichskarten rechts daneben in einem 2×2-Block. Bei 4 Karten: je 1×1. Bei weniger: Karten füllen den 2×2-Platz adaptiv aus. Gesamtbreite = 4 Spalten.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px;">
+      <p class="layout-label"><strong>Option B: Feste Sektion — Radar + Areas als eigene Zeile</strong></p>
+      <div style="display:flex;gap:6px;max-width:400px;margin:12px auto;">
+        <div class="radar-box" style="width:50%;aspect-ratio:2/1;">🌧️ Radar<br>2×2</div>
+        <div style="width:50%;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <div class="area-box">Wohn</div>
+          <div class="area-box">Schlaf</div>
+          <div class="area-box">Küche</div>
+          <div class="area-box">Bad</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#666;">Eigene Sektion, nicht Teil des normalen Card-Grids</p>
+    </div>
+    <div class="card-body">
+      <h3>B: Dedizierte Sektion oben</h3>
+      <p>Radar + Bereichskarten als eigene, spezielle Sektion über dem normalen Dashboard-Grid. Feste Anordnung, nicht verschiebbar.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px;">
+      <p class="layout-label"><strong>Option C: Normales Grid — freie Platzierung</strong></p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-width:400px;margin:12px auto;">
+        <div class="radar-box" style="grid-column:span 2;grid-row:span 2;">🌧️ Radar</div>
+        <div class="area-box">Wohn</div>
+        <div class="area-box">Schlaf</div>
+        <div class="area-box">Küche</div>
+        <div class="area-box">Bad</div>
+        <div style="background:#222;border-radius:8px;padding:8px;text-align:center;color:#555;font-size:10px;">Andere Karte</div>
+        <div style="background:#222;border-radius:8px;padding:8px;text-align:center;color:#555;font-size:10px;">Andere Karte</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C: Freie Platzierung im Grid</h3>
+      <p>Bereichskarten sind normale 1×1-Karten im Grid. User platziert sie frei neben den Radar. Keine erzwungene Gruppierung — maximale Flexibilität.</p>
+    </div>
+  </div>
+</div>
