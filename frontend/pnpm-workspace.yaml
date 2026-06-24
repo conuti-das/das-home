@@ -1,0 +1,10 @@
+# prince-ui is vendored locally (npm publish is gated behind a 2FA token).
+# prince-ui@0.3.0 declares `prince-ui-tokens@0.1.0` as a normal dependency,
+# which pnpm would try to fetch from the registry (404). The override below
+# redirects that internal resolution to the vendored tarball.
+overrides:
+  prince-ui-tokens: file:./vendor/prince-ui/prince-ui-tokens-0.1.0.tgz
+
+# Moved here from package.json's `pnpm` field, which pnpm 10 no longer reads.
+onlyBuiltDependencies:
+  - esbuild

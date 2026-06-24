@@ -26,6 +26,8 @@
     "@ui5/webcomponents-icons": "^2.19.2",
     "@ui5/webcomponents-react": "^2.19.0",
     "home-assistant-js-websocket": "^9.6.0",
+    "prince-ui": "file:vendor/prince-ui/prince-ui-0.3.0.tgz",
+    "prince-ui-tokens": "file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "zustand": "^5.0.11"
@@ -42,10 +44,5 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vitest": "^1.6.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
