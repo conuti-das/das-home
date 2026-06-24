@@ -6,6 +6,10 @@ import "@ui5/webcomponents-icons/dist/AllIcons.js";
 import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
 import App from "./App";
 import "@/styles/design-tokens.css";
+import "@/styles/apple-theme.css";
+// Side-effect: reads persisted design mode and applies data-design on <html>
+// before first paint to avoid a flash of the wrong skin.
+import "@/stores/designStore";
 import { apiUrl } from "@/utils/basePath";
 
 setTheme("sap_horizon_dark");

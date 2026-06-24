@@ -1,0 +1,340 @@
+/* =============================================================================
+   Apple / iOS design language for das-home.
+
+   Everything here is scoped under :root[data-design="apple"] so it is fully
+   non-destructive — toggling back to "fiori" restores the original UI5 look.
+
+   Strategy: the app is already themed through --dh-* design tokens and ~23
+   --sap* UI5 theming variables. We redefine BOTH layers here, so the entire
+   surface (custom React components AND UI5 web components, whose Shadow DOM
+   inherits CSS custom properties) re-skins at once. Component-specific Apple
+   refinements follow at the bottom.
+   ============================================================================= */
+
+:root[data-design="apple"] {
+  /* ---- Apple system palette (Dark, default) ------------------------------ */
+  /* Neutral "grays" keep their existing semantics: gray100 = lightest (text),
+     gray500/600/1000 = darkest (backgrounds). Values mapped to iOS dark. */
+  --dh-gray100: #F5F5F7;   /* primary label */
+  --dh-gray200: #2C2C2E;   /* elevated chrome (toolbars, raised chips) */
+  --dh-gray300: #1C1C1E;   /* card / list surface (secondary system bg) */
+  --dh-gray400: #1C1C1E;   /* sheet surface */
+  --dh-gray500: #000000;   /* app base background */
+  --dh-gray600: #0A0A0B;
+  --dh-gray1000: #000000;
+
+  /* Semantic label colors (iOS) */
+  --dh-label: rgba(255, 255, 255, 0.96);
+  --dh-label-secondary: rgba(235, 235, 245, 0.60);
+  --dh-label-tertiary: rgba(235, 235, 245, 0.30);
+
+  /* Fill colors (iOS translucent fills) */
+  --dh-fill: rgba(120, 120, 128, 0.36);
+  --dh-fill-secondary: rgba(120, 120, 128, 0.32);
+  --dh-fill-tertiary: rgba(118, 118, 128, 0.24);
+  --dh-fill-quaternary: rgba(116, 116, 128, 0.18);
+
+  /* ---- Accent (System Blue) --------------------------------------------- */
+  --dh-accent: #0A84FF;
+  --dh-accent-pressed: #0974E0;
+
+  /* ---- Domain colors → Apple system colors (Dark) ----------------------- */
+  --dh-yellow: #FFD60A;  --dh-yellow-tint: rgba(255, 214, 10, 0.16);
+  --dh-red:    #FF453A;  --dh-red-tint:    rgba(255, 69, 58, 0.16);
+  --dh-green:  #30D158;  --dh-green-tint:  rgba(48, 209, 88, 0.16);
+  --dh-blue:   #0A84FF;  --dh-blue-tint:   rgba(10, 132, 255, 0.16);
+  --dh-blue-dark: #0A84FF;
+  --dh-orange: #FF9F0A;  --dh-orange-tint: rgba(255, 159, 10, 0.16);
+  --dh-purple: #BF5AF2;  --dh-purple-tint: rgba(191, 90, 242, 0.16);
+  --dh-pink:   #FF375F;  --dh-pink-tint:   rgba(255, 55, 95, 0.16);
+
+  /* ---- Geometry: continuous, generous corners --------------------------- */
+  --dh-card-radius: 18px;
+  --dh-card-radius-sm: 10px;
+  --dh-card-radius-lg: 22px;
+  --dh-icon-size-circle: 40px;
+  --dh-grid-gap: 14px;
+  --dh-toolbar-height: 60px;
+
+  /* ---- Surface: hairline borders + soft depth --------------------------- */
+  --dh-surface-border: 1px solid rgba(255, 255, 255, 0.07);
+  --dh-card-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.20),
+    0 8px 24px rgba(0, 0, 0, 0.22);
+
+  /* ---- Vibrancy / frosted glass ----------------------------------------- */
+  --dh-blur: saturate(180%) blur(20px);
+  --dh-glass-bg: rgba(40, 40, 44, 0.72);
+  --dh-glass-border: 1px solid rgba(255, 255, 255, 0.10);
+
+  /* ---- Motion (spring-like easing) -------------------------------------- */
+  --dh-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dh-ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+  --dh-transition-normal: 0.22s var(--dh-ease-standard);
+
+  /* ---- Typography (SF Pro / system) ------------------------------------- */
+  --dh-font-family:
+    -apple-system, "SF Pro Text", "SF Pro Display", BlinkMacSystemFont,
+    system-ui, "Segoe UI", Roboto, sans-serif;
+  --dh-font-value: 28px;
+  --dh-font-label: 15px;
+  --dh-font-weight-value: 700;
+  --dh-font-weight-label: 400;
+
+  /* ===== UI5 (--sap*) theming overrides ================================== */
+  /* These re-skin every UI5 web component used (Button, Input, Select, Switch,
+     Tab, Dialog, MessageStrip, BusyIndicator, Link, …). Higher specificity
+     than UI5's own :root rules, and custom properties cross the shadow DOM. */
+  --sapFontFamily: var(--dh-font-family);
+  --sapFontSize: 15px;
+
+  --sapBrandColor: var(--dh-accent);
+  --sapHighlightColor: var(--dh-accent);
+  --sapBaseColor: var(--dh-gray300);
+  --sapBackgroundColor: var(--dh-gray300);
+  --sapContent_ForegroundColor: var(--dh-gray200);
+  --sapContent_LabelColor: var(--dh-label-secondary);
+  --sapContent_ForegroundTextColor: var(--dh-gray100);
+  --sapTextColor: var(--dh-gray100);
+
+  --sapNegativeColor: var(--dh-red);
+  --sapPositiveColor: var(--dh-green);
+  --sapCriticalColor: var(--dh-orange);
+  --sapInformativeColor: var(--dh-accent);
+  --sapWarning_TextColor: var(--dh-orange);
+  --sapWarning_BackgroundColor: var(--dh-orange-tint);
+  --sapInformationBackground: var(--dh-blue-tint);
+
+  --sapField_BorderColor: rgba(255, 255, 255, 0.14);
+  --sapField_Background: var(--dh-fill-quaternary);
+  --sapField_BorderCornerRadius: 12px;
+  --sapElement_BorderCornerRadius: 12px;
+
+  /* Buttons */
+  --sapButton_BorderCornerRadius: 12px;
+  --sapButton_Background: var(--dh-fill-tertiary);
+  --sapButton_BorderColor: transparent;
+  --sapButton_TextColor: var(--dh-accent);
+  --sapButton_Hover_Background: var(--dh-fill-secondary);
+  --sapButton_Emphasized_Background: var(--dh-accent);
+  --sapButton_Emphasized_BorderColor: transparent;
+  --sapButton_Emphasized_TextColor: #ffffff;
+  --sapButton_Emphasized_Hover_Background: var(--dh-accent-pressed);
+
+  /* Group / dialog headers */
+  --sapGroup_TitleTextColor: var(--dh-gray100);
+  --sapGroup_ContentBackground: var(--dh-gray300);
+  --sapPageHeader_Background: var(--dh-glass-bg);
+}
+
+/* ===== Light mode (auto via prefers-color-scheme) ======================== */
+@media (prefers-color-scheme: light) {
+  :root[data-design="apple"] {
+    --dh-gray100: #1C1C1E;   /* primary label (dark text) */
+    --dh-gray200: #FFFFFF;   /* elevated chrome */
+    --dh-gray300: #FFFFFF;   /* card / list surface */
+    --dh-gray400: #FFFFFF;   /* sheet surface */
+    --dh-gray500: #F2F2F7;   /* app base background (iOS grouped bg) */
+    --dh-gray600: #E5E5EA;
+    --dh-gray1000: #FFFFFF;
+
+    --dh-label: rgba(0, 0, 0, 0.92);
+    --dh-label-secondary: rgba(60, 60, 67, 0.60);
+    --dh-label-tertiary: rgba(60, 60, 67, 0.30);
+
+    --dh-accent: #007AFF;
+    --dh-accent-pressed: #0062CC;
+
+    --dh-yellow: #FFCC00; --dh-red: #FF3B30; --dh-green: #34C759;
+    --dh-blue: #007AFF;   --dh-orange: #FF9500; --dh-purple: #AF52DE;
+    --dh-pink: #FF2D55;   --dh-blue-dark: #007AFF;
+
+    --dh-surface-border: 1px solid rgba(0, 0, 0, 0.06);
+    --dh-card-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.04),
+      0 8px 24px rgba(0, 0, 0, 0.08);
+    --dh-glass-bg: rgba(255, 255, 255, 0.72);
+    --dh-glass-border: 1px solid rgba(0, 0, 0, 0.06);
+
+    --sapField_BorderColor: rgba(0, 0, 0, 0.14);
+    --sapButton_Background: rgba(120, 120, 128, 0.12);
+  }
+}
+
+/* ===== Global surface ==================================================== */
+:root[data-design="apple"] body {
+  background: var(--dh-gray500);
+  color: var(--dh-gray100);
+  font-family: var(--dh-font-family);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular figures for numeric-heavy elements (values, percentages, clocks) */
+:root[data-design="apple"] .control-tile__pct,
+:root[data-design="apple"] .status-chip__value,
+:root[data-design="apple"] [class*="__value"],
+:root[data-design="apple"] [class*="__temp"] {
+  font-feature-settings: "tnum" 1, "case" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Bottom navigation → iOS frosted tab bar ========================== */
+:root[data-design="apple"] .bottom-toolbar {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--dh-glass-bg);
+  border: var(--dh-glass-border);
+  border-radius: 26px;
+  -webkit-backdrop-filter: var(--dh-blur);
+  backdrop-filter: var(--dh-blur);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30);
+}
+
+:root[data-design="apple"] .bottom-toolbar__btn {
+  min-width: 56px;
+  min-height: 48px;
+  border-radius: 16px;
+  color: var(--dh-label-secondary);
+  transition: background 0.2s var(--dh-ease-standard),
+              color 0.2s var(--dh-ease-standard),
+              transform 0.12s var(--dh-ease-spring);
+}
+
+:root[data-design="apple"] .bottom-toolbar__btn:active {
+  transform: scale(0.9);
+}
+
+:root[data-design="apple"] .bottom-toolbar__btn--active {
+  background: transparent;
+  color: var(--dh-accent);
+}
+
+:root[data-design="apple"] .bottom-toolbar__label {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 1;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Status chips → iOS pill chips ==================================== */
+:root[data-design="apple"] .status-chip {
+  border-radius: 980px;
+  padding: 7px 14px;
+  background: var(--dh-fill-quaternary);
+  border: var(--dh-surface-border);
+  transition: transform 0.12s var(--dh-ease-spring), background 0.2s;
+}
+
+:root[data-design="apple"] .status-chip:active {
+  transform: scale(0.96);
+}
+
+/* ===== Cards & control tiles ============================================ */
+:root[data-design="apple"] .control-tile {
+  border-radius: var(--dh-card-radius);
+  transition: transform 0.14s var(--dh-ease-spring),
+              opacity 0.2s ease, background 0.2s ease;
+}
+
+:root[data-design="apple"] .control-tile--switch:active {
+  transform: scale(0.97);
+}
+
+/* iOS green "on" toggle */
+:root[data-design="apple"] .control-tile__toggle--on {
+  background: var(--dh-green);
+}
+
+:root[data-design="apple"] .control-tile__toggle-knob {
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-design="apple"] .control-tile--switch .control-tile__toggle--on .control-tile__toggle-knob {
+  background: #ffffff;
+}
+
+/* ===== Sheets / popups → iOS bottom sheet with grabber ================== */
+:root[data-design="apple"] .popup-modal__backdrop {
+  background: rgba(0, 0, 0, 0.40);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+:root[data-design="apple"] .popup-modal__sheet {
+  background: var(--dh-glass-bg);
+  -webkit-backdrop-filter: var(--dh-blur);
+  backdrop-filter: var(--dh-blur);
+  border: var(--dh-glass-border);
+  border-radius: 28px 28px 0 0;
+  animation: dh-apple-sheet-up 0.4s var(--dh-ease-standard);
+}
+
+/* Grabber handle */
+:root[data-design="apple"] .popup-modal__sheet::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--dh-label-tertiary);
+  z-index: 2;
+}
+
+:root[data-design="apple"] .popup-modal__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+:root[data-design="apple"] .popup-modal__close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--dh-fill-tertiary);
+  color: var(--dh-label-secondary);
+}
+
+@keyframes dh-apple-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@media (min-width: 768px) {
+  :root[data-design="apple"] .popup-modal__sheet {
+    border-radius: 28px;
+    animation: dh-apple-sheet-in 0.3s var(--dh-ease-standard);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.44);
+  }
+  @keyframes dh-apple-sheet-in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+}
+
+/* ===== Floating "+" FAB ================================================= */
+:root[data-design="apple"] .entity-wizard__fab {
+  border-radius: 50%;
+  background: var(--dh-accent);
+  box-shadow: 0 8px 24px rgba(10, 132, 255, 0.4);
+  transition: transform 0.14s var(--dh-ease-spring);
+}
+
+:root[data-design="apple"] .entity-wizard__fab:active {
+  transform: scale(0.92);
+}
+
+/* ===== Accessibility: respect Reduce Motion ============================= */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-design="apple"] *,
+  :root[data-design="apple"] *::before,
+  :root[data-design="apple"] *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
