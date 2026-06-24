@@ -1,0 +1,98 @@
+/* =============================================================================
+   prince-ui Token-Brücke für das-home.
+
+   Strategie (gespiegelt von roadmap `src/styles/tokens.css` & tippspiel `apple.css`):
+   Statt 96 Komponenten umzuschreiben, zeigen die bestehenden `--dh-*` Design-Tokens
+   (und die UI5 `--sap*` Theming-Variablen) jetzt auf ihre `--prn-*` Pendants aus
+   prince-ui. Die gesamte Apple-Oberfläche (PillCards, StatusBar-Chips, Popups/Sheets,
+   sowie alle UI5 Web Components) re-skinnt damit auf einen Schlag prince-ui-getrieben.
+
+   Scope: alles unter `:root[data-design="apple"]`, identisch zur bestehenden
+   apple-theme.css — toggeln auf "fiori" bleibt non-destruktiv (UI5-Look unverändert).
+
+   Light/Dark: prince-ui-tokens reagiert auf `data-theme` am <html> (gesetzt via
+   `setTheme` aus prince-ui, siehe stores/designStore.ts) bzw. auf prefers-color-scheme,
+   wenn kein Override gesetzt ist. Hier daher KEINE modus-abhängigen Rohwerte mehr —
+   die Brücke erbt die Hell/Dunkel-Auflösung vollständig von prince-ui.
+
+   Import-Reihenfolge (main.tsx): prince-ui-tokens → prince-ui/styles → design-tokens
+   → apple-theme → DIESE Datei (zuletzt, damit sie die `--dh-*`-Rohwerte überschreibt).
+   ============================================================================= */
+
+:root[data-design="apple"] {
+  /* ---- Neutrale "Grays" → prince-ui Flächen-/Label-Hierarchie ------------- */
+  /* Semantik wie in design-tokens.css: gray100 = hellstes (Text/Label),
+     gray500/600/1000 = dunkelste (Hintergründe). Auf prince-ui gemappt. */
+  --dh-gray100: var(--prn-label);            /* primäres Label */
+  --dh-gray200: var(--prn-bg-elevated-2);    /* erhöhtes Chrome (Toolbars, Chips) */
+  --dh-gray300: var(--prn-bg-elevated);      /* Card-/Listen-Fläche */
+  --dh-gray400: var(--prn-bg-elevated);      /* Sheet-Fläche */
+  --dh-gray500: var(--prn-app-bg);           /* App-Basis-Hintergrund */
+  --dh-gray600: var(--prn-bg);
+  --dh-gray1000: var(--prn-app-bg);
+
+  /* Semantische Label-Farben → prince-ui Label-Stufen */
+  --dh-label: var(--prn-label);
+  --dh-label-secondary: var(--prn-label-2);
+  --dh-label-tertiary: var(--prn-label-3);
+
+  /* iOS-Fills → prince-ui Fill-Stufen */
+  --dh-fill: var(--prn-fill-strong);
+  --dh-fill-secondary: var(--prn-fill-strong);
+  --dh-fill-tertiary: var(--prn-fill);
+  --dh-fill-quaternary: var(--prn-fill);
+
+  /* ---- Akzent → prince-ui Akzent ----------------------------------------- */
+  --dh-accent: var(--prn-accent);
+  --dh-accent-pressed: var(--prn-accent-pressed);
+
+  /* ---- Domain-/Statusfarben → prince-ui Palette -------------------------- */
+  --dh-yellow: var(--prn-yellow);
+  --dh-red:    var(--prn-red);
+  --dh-green:  var(--prn-green);
+  --dh-blue:   var(--prn-blue);
+  --dh-blue-dark: var(--prn-blue);
+  --dh-orange: var(--prn-orange);
+  --dh-purple: var(--prn-accent-strong);     /* kein prince-Purple — Akzent-Stark */
+  --dh-pink:   var(--prn-red);
+
+  /* Tints: prince-ui hat nur Status-Tints — Domain-Tints app-lokal lassen,
+     daher hier NICHT übersteuert (behalten ihre apple-theme.css-Werte). */
+
+  /* ---- Geometrie → prince-ui Radien -------------------------------------- */
+  --dh-card-radius:    var(--prn-radius-card);
+  --dh-card-radius-sm: var(--prn-radius-sm);
+  --dh-card-radius-lg: var(--prn-radius-lg);
+
+  /* ---- Oberfläche: Linien + Tiefe ---------------------------------------- */
+  --dh-surface-border: var(--prn-hairline);
+  --dh-card-shadow:    var(--prn-shadow);
+
+  /* ---- Vibrancy / Frosted Glass ------------------------------------------ */
+  --dh-blur:         var(--prn-blur);
+  --dh-glass-border: var(--prn-card-border);
+  /* --dh-glass-bg bleibt app-lokal (prince-ui hat kein 1:1-Glas-Flächen-Token). */
+
+  /* ---- Motion → prince-ui Easing/Dauer ----------------------------------- */
+  --dh-ease-spring:   var(--prn-ease-spring);
+  --dh-ease-standard: var(--prn-ease-standard);
+
+  /* ---- Typografie → prince-ui Schrift ------------------------------------ */
+  --dh-font-family: var(--prn-font);
+
+  /* ===== UI5 (--sap*) → prince-ui ======================================== */
+  --sapFontFamily:               var(--prn-font);
+  --sapBrandColor:               var(--prn-accent);
+  --sapHighlightColor:           var(--prn-accent);
+  --sapBaseColor:                var(--prn-bg-elevated);
+  --sapBackgroundColor:          var(--prn-bg-elevated);
+  --sapContent_LabelColor:       var(--prn-label-2);
+  --sapTextColor:                var(--prn-label);
+  --sapNegativeColor:            var(--prn-red);
+  --sapPositiveColor:            var(--prn-green);
+  --sapCriticalColor:            var(--prn-orange);
+  --sapInformativeColor:         var(--prn-blue);
+  --sapButton_Emphasized_Background: var(--prn-accent);
+  --sapButton_Emphasized_Hover_Background: var(--prn-accent-hover);
+  --sapButton_TextColor:         var(--prn-accent);
+}

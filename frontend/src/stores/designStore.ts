@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { setTheme as setPrinceTheme } from "prince-ui";
 
 /**
  * Design language switch — independent of the HA/UI5 color theme.
@@ -29,6 +30,15 @@ function readStored(): DesignMode {
 export function applyDesignMode(mode: DesignMode): void {
   if (typeof document === "undefined") return;
   document.documentElement.dataset.design = mode;
+  // prince-ui-Kopplung: im Apple-Design treibt prince-ui Hell/Dunkel.
+  // setTheme(null) lässt prince-ui-tokens prefers-color-scheme folgen — deckt
+  // sich mit der bestehenden auto-Hell/Dunkel-Logik in apple-theme.css.
+  // Im Fiori-Design bleibt prince-ui inaktiv (kein data-theme erzwungen).
+  try {
+    setPrinceTheme(null);
+  } catch {
+    /* prince-ui evtl. (in Tests) nicht geladen — ignorieren */
+  }
 }
 
 interface DesignStore {

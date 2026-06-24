@@ -5,8 +5,15 @@ import "@ui5/webcomponents-react/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/AllIcons.js";
 import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
 import App from "./App";
+// prince-ui Fundament: Tokens + Komponenten-Styles als globale Side-Effects.
+// Müssen VOR den App-Styles stehen, damit die Brücke (prince-bridge.css) die
+// --prn-* Tokens auflösen kann und app-eigenes CSS später höhere Priorität hat.
+import "prince-ui-tokens/tokens.css";
+import "prince-ui/styles.css";
 import "@/styles/design-tokens.css";
 import "@/styles/apple-theme.css";
+// Brücke ZULETZT: re-pointet --dh-*/--sap* auf --prn-* (siehe prince-bridge.css).
+import "@/styles/prince-bridge.css";
 // Side-effect: reads persisted design mode and applies data-design on <html>
 // before first paint to avoid a flash of the wrong skin.
 import "@/stores/designStore";

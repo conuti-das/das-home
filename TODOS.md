@@ -23,6 +23,14 @@
 
 ## In Progress
 
+### prince-ui Einführung (Branch `feat/prince-ui`)
+- [x] prince-ui (0.3.0) + tokens (0.1.0) vendoren + via pnpm installieren; Baseline tsc/build grün
+- [ ] Theme-Bridge: `--dh-*`/`--sap*` auf `--prn-*` mappen; apple-theme → prince-ui-getrieben; Light/Dark an `setTheme`/`data-theme` koppeln
+- [ ] Wave B: HomeOpsBriefing → prince `KpiCard` + Charts (löst Tremor ab)
+- [ ] Wave C: Settings/Wizard-Formulare → prince `TextField`/`Switch`/`Select`/`Slider`/`Button`/`Modal`
+- [ ] Wave D: Layout-Chrome → prince `Toolbar`/`TabBar`/`Sidebar`/`Badge` wo sinnvoll
+- [ ] Wave E: `ObjectPageView` → prince `ObjectPage`
+- [ ] Visuelle Verifikation (design-shots Light+Dark) + Schlussbericht
 
 ## Done
 
