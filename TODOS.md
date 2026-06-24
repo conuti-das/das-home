@@ -25,7 +25,8 @@
 
 ### prince-ui Einführung (Branch `feat/prince-ui`)
 - [x] prince-ui (0.3.0) + tokens (0.1.0) vendoren + via pnpm installieren; Baseline tsc/build grün
-- [ ] Theme-Bridge: `--dh-*`/`--sap*` auf `--prn-*` mappen; apple-theme → prince-ui-getrieben; Light/Dark an `setTheme`/`data-theme` koppeln
+- [x] Theme-Bridge: `--dh-*`/`--sap*` auf `--prn-*` gemappt (`src/styles/prince-bridge.css`); Light/Dark an prince-ui `setTheme` gekoppelt (designStore)
+- [ ] Welle 1: geteilte Primitive (Badge/Card/Button) auf prince-ui wrappen — StatusBar-Chips, BaseCard, KPITile
 - [ ] Wave B: HomeOpsBriefing → prince `KpiCard` + Charts (löst Tremor ab)
 - [ ] Wave C: Settings/Wizard-Formulare → prince `TextField`/`Switch`/`Select`/`Slider`/`Button`/`Modal`
 - [ ] Wave D: Layout-Chrome → prince `Toolbar`/`TabBar`/`Sidebar`/`Badge` wo sinnvoll
