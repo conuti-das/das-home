@@ -30,10 +30,13 @@ function readStored(): DesignMode {
 export function applyDesignMode(mode: DesignMode): void {
   if (typeof document === "undefined") return;
   document.documentElement.dataset.design = mode;
-  // prince-ui-Kopplung: im Apple-Design treibt prince-ui Hell/Dunkel.
-  // setTheme(null) lässt prince-ui-tokens prefers-color-scheme folgen — deckt
-  // sich mit der bestehenden auto-Hell/Dunkel-Logik in apple-theme.css.
-  // Im Fiori-Design bleibt prince-ui inaktiv (kein data-theme erzwungen).
+  // prince-ui-Kopplung (0.4.0, 3-Mode light/dark/cu):
+  // Im Apple-Design wird der konkrete prince-ui-Modus aus der UI5-Horizon-Theme
+  // abgeleitet und in `useThemeSync` (hooks/useTheme.ts) gesetzt — dort liegt die
+  // Hell/Dunkel/CU-Quelle (dashboard.theme + auto_theme). Hier setzen wir beim
+  // Initial-Load nur einen Default (prefers-color-scheme via null), den
+  // useThemeSync sofort überschreibt, sobald das Dashboard geladen ist.
+  // Im Fiori-Design bleibt prince-ui ungesteuert (kein data-theme erzwungen).
   try {
     setPrinceTheme(null);
   } catch {
