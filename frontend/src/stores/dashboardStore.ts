@@ -2,6 +2,13 @@ import { create } from "zustand";
 import type { DashboardConfig, ViewConfig, CardItem } from "@/types";
 import { autoAssignPositions } from "@/utils/gridLayout";
 
+/**
+ * Sidebar/Store-Id für die synthetische Launchpad-Übersicht (Landing).
+ * Bewusst hier als Literal definiert (kein Import aus der Launchpad-Komponente),
+ * um einen Import-Zyklus Store ↔ Komponente zu vermeiden.
+ */
+export const OVERVIEW_VIEW_ID = "__overview__";
+
 interface DashboardStore {
   dashboard: DashboardConfig | null;
   activeViewId: string;
@@ -82,7 +89,9 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   editMode: false,
   setDashboard: (dashboard) => {
     const migrated = migrateCards(dashboard);
-    set({ dashboard: migrated, activeViewId: migrated.default_view || migrated.views[0]?.id || "" });
+    // Landing ist die Launchpad-Übersicht; die echten Views bleiben über
+    // Sidebar und Launchpad-Kacheln erreichbar.
+    set({ dashboard: migrated, activeViewId: OVERVIEW_VIEW_ID });
   },
   setActiveViewId: (activeViewId) => set({ activeViewId }),
   setEditMode: (editMode) => set({ editMode }),

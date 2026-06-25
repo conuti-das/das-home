@@ -3,6 +3,7 @@ import { AppShell as PrinceAppShell, Sidebar, Icon } from "prince-ui";
 import type { SidebarGroup } from "prince-ui";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { toPrinceIcon } from "@/utils/princeIcon";
+import { OVERVIEW_VIEW_ID } from "@/components/views/OverviewLaunchpad";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -24,6 +25,16 @@ export function AppShell({ children }: AppShellProps) {
   const groups = useMemo<SidebarGroup[]>(() => {
     if (!dashboard) return [];
     return [
+      {
+        label: "Start",
+        items: [
+          {
+            id: OVERVIEW_VIEW_ID,
+            label: "Übersicht",
+            icon: <Icon name="grid" />,
+          },
+        ],
+      },
       {
         label: "Bereiche",
         items: dashboard.views.map((view) => ({

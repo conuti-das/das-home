@@ -2,6 +2,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { useHomeAssistant } from "@/hooks/useHomeAssistant";
 import { GridView } from "@/components/views/GridView";
 import { ObjectPageView } from "@/components/views/ObjectPageView";
+import { OverviewLaunchpad, OVERVIEW_VIEW_ID } from "@/components/views/OverviewLaunchpad";
 import "@/components/cards";
 
 interface ViewRendererProps {
@@ -9,12 +10,18 @@ interface ViewRendererProps {
 }
 
 export function ViewRenderer({ onOpenPopup }: ViewRendererProps) {
+  const activeViewId = useDashboardStore((s) => s.activeViewId);
   const activeView = useDashboardStore((s) => {
     const { dashboard, activeViewId } = s;
     return dashboard?.views.find((v) => v.id === activeViewId);
   });
 
   const { callService } = useHomeAssistant();
+
+  // Synthetische Launchpad-Übersicht (gehört zu keiner Dashboard-View).
+  if (activeViewId === OVERVIEW_VIEW_ID) {
+    return <OverviewLaunchpad />;
+  }
 
   if (!activeView) {
     return (
