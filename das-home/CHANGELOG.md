@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.8.0
+## 0.8.1
+
+### Fixed
+
+- Docker-/Add-on-Build: vendored prince-ui-Tarballs werden jetzt vor `pnpm install --frozen-lockfile` ins Image kopiert (sonst ENOENT auf `prince-ui-*.tgz`).
 
 ### Changed
 

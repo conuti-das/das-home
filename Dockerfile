@@ -1,7 +1,11 @@
 # Stage 1: Build frontend
 FROM node:20-alpine AS frontend-build
 WORKDIR /build
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/.npmrc ./
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/.npmrc frontend/pnpm-workspace.yaml ./
+# Vendored prince-ui Tarballs (file:-Deps in package.json/lock) müssen VOR
+# pnpm install vorliegen, sonst schlägt die Auflösung von "prince-ui"/
+# "prince-ui-tokens" fehl (frozen-lockfile ENOENT auf die *.tgz).
+COPY frontend/vendor/ ./vendor/
 RUN corepack enable && pnpm install --frozen-lockfile
 COPY frontend/ ./
 RUN pnpm build
