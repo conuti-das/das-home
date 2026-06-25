@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  prince-ui-tokens: file:./vendor/prince-ui/prince-ui-tokens-0.1.0.tgz
+  prince-ui-tokens: file:./vendor/prince-ui/prince-ui-tokens-0.2.0.tgz
 
 importers:
 
@@ -42,11 +42,11 @@ importers:
         specifier: ^9.6.0
         version: 9.6.0
       prince-ui:
-        specifier: file:vendor/prince-ui/prince-ui-0.3.0.tgz
-        version: file:vendor/prince-ui/prince-ui-0.3.0.tgz(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: file:vendor/prince-ui/prince-ui-0.4.0.tgz
+        version: file:vendor/prince-ui/prince-ui-0.4.0.tgz(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       prince-ui-tokens:
-        specifier: file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz
-        version: file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz
+        specifier: file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz
+        version: file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -1493,13 +1493,13 @@ packages:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  prince-ui-tokens@file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz:
-    resolution: {integrity: sha512-8lXNkhyudm0RC3tWgHrgLBPbpVdQR1LXiqKYSg4ZUXxl6xSP78qJAVud/NL+YkGzZdwpbvfSxEi2oM//9y2Hjw==, tarball: file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz}
-    version: 0.1.0
+  prince-ui-tokens@file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz:
+    resolution: {integrity: sha512-+IshYZ9MRN86OJ+RLAsmJNcFjbUGf85vFSIdfAw/+Y3/x8PYSld4y+D0wUVBJ4IPDZdl37cNHr76TjswKQy5zg==, tarball: file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz}
+    version: 0.2.0
 
-  prince-ui@file:vendor/prince-ui/prince-ui-0.3.0.tgz:
-    resolution: {integrity: sha512-ZYxHckP6wjIsoaVOVCIrs4FRvr8xvpOXz3Ugs53FhSE1qHPrscre6mSSBS6NbCFIJxr4zjnL8uTgrYQpBZIfJA==, tarball: file:vendor/prince-ui/prince-ui-0.3.0.tgz}
-    version: 0.3.0
+  prince-ui@file:vendor/prince-ui/prince-ui-0.4.0.tgz:
+    resolution: {integrity: sha512-bHyi5ttc6n4cTlGroA8lmhkbWm3j2TR1w0qSAhiRCQIsVhDLCPNWwbXzXnj5c8x2G4BmbvgVvXuCKlKN7lR7JA==, tarball: file:vendor/prince-ui/prince-ui-0.4.0.tgz}
+    version: 0.4.0
     peerDependencies:
       react: '>=18 <20'
       react-dom: '>=18 <20'
@@ -3215,14 +3215,14 @@ snapshots:
       ansi-styles: 5.2.0
       react-is: 18.3.1
 
-  prince-ui-tokens@file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz: {}
+  prince-ui-tokens@file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz: {}
 
-  prince-ui@file:vendor/prince-ui/prince-ui-0.3.0.tgz(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  prince-ui@file:vendor/prince-ui/prince-ui-0.4.0.tgz(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@internationalized/date': 3.12.2
       '@tanstack/react-table': 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-virtual': 3.13.18(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prince-ui-tokens: file:vendor/prince-ui/prince-ui-tokens-0.1.0.tgz
+      prince-ui-tokens: file:vendor/prince-ui/prince-ui-tokens-0.2.0.tgz
       react: 19.2.4
       react-aria-components: 1.19.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-dom: 19.2.4(react@19.2.4)
