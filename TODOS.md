@@ -24,13 +24,17 @@
 ## In Progress
 
 ### prince-ui Einführung (Branch `feat/prince-ui`)
-- [x] prince-ui (0.3.0) + tokens (0.1.0) vendoren + via pnpm installieren; Baseline tsc/build grün
-- [x] Theme-Bridge: `--dh-*`/`--sap*` auf `--prn-*` gemappt (`src/styles/prince-bridge.css`); Light/Dark an prince-ui `setTheme` gekoppelt (designStore)
-- [ ] Welle 1: geteilte Primitive (Badge/Card/Button) auf prince-ui wrappen — StatusBar-Chips, BaseCard, KPITile
-- [ ] Wave B: HomeOpsBriefing → prince `KpiCard` + Charts (löst Tremor ab)
-- [ ] Wave C: Settings/Wizard-Formulare → prince `TextField`/`Switch`/`Select`/`Slider`/`Button`/`Modal`
-- [ ] Wave D: Layout-Chrome → prince `Toolbar`/`TabBar`/`Sidebar`/`Badge` wo sinnvoll
-- [ ] Wave E: `ObjectPageView` → prince `ObjectPage`
+- [x] prince-ui vendoren + via pnpm installieren; Baseline tsc/build grün
+- [x] **Re-Vendoring auf 0.4.0**: prince-ui 0.4.0 + tokens 0.2.0 (Flotten-Konvergenz mit roadmap/finops); pnpm-workspace-Override auf tokens 0.2.0
+- [x] Theme-Bridge: `--dh-*`/`--sap*` auf `--prn-*` gemappt (`src/styles/prince-bridge.css`)
+- [x] Welle 1: BaseCard auf prince-ui `Card` + `@/components/ui`-Primitiv-Barrel
+- [x] Welle 2: CardErrorBoundary → prince-ui `Card` + `Notice` (letzte UI5-Card im Card-Layer)
+- [x] Welle 3: HomeOpsBriefing-Charts → prince-ui `Sparkline` + `AreaChart` (löst @tremor/react ab)
+- [x] Welle 4: 3-Mode-Theming (Light/Dark/CU) an prince-ui `setTheme` gekoppelt (useThemeSync, abgeleitet aus UI5-Horizon-Theme)
+- [x] Welle 5: SettingsDialog → prince-ui `Modal` + `Tabs` + `TextField`/`Select`/`Switch`/`Button`/`Link`
+- [x] Welle 6: ViewWizard + CardWizard → prince-ui `Modal`/`Tabs`/`ComboBox`/`Select`/`TextField`/`Button`
+- [x] Welle 7: toten `@tremor/react`-Dependency entfernt
+- [ ] Rest-UI5 (bewusst app-lokal belassen): `Icon`-Glyphen (kein prince-ui-Pendant), `SetupWizard` (UI5 `Wizard`/`MessageStrip`/`BusyIndicator`), `Sidebar` (`SideNavigation`), `ObjectPageView`
 - [ ] Visuelle Verifikation (design-shots Light+Dark) + Schlussbericht
 
 ## Done
