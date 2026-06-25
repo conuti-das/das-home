@@ -10,9 +10,9 @@ type PrinceTheme = "light" | "dark" | "cu";
 /**
  * Bildet eine aufgelöste UI5-Horizon-Theme-ID auf den prince-ui-Modus ab.
  *
- * prince-ui 0.4.0 kennt drei Modi: "light", "dark" und "cu" (CU/Brand).
- * Hochkontrast-Varianten (hcb/hcw) werden auf "cu" gelegt, da prince-ui
- * keine eigenen HC-Modi hat — "cu" ist der nächstliegende ausgeprägte Modus.
+ * prince-ui kennt drei Modi: "light", "dark" und "cu" (CU/Brand). Hochkontrast-
+ * Varianten (hcb/hcw) werden auf "cu" gelegt, da prince-ui keine eigenen
+ * HC-Modi hat — "cu" ist der nächstliegende ausgeprägte Modus.
  */
 function princeThemeFor(ui5Theme: string): PrinceTheme {
   if (ui5Theme.includes("hcb") || ui5Theme.includes("hcw")) return "cu";
@@ -28,22 +28,35 @@ export function useThemeSync() {
   useEffect(() => {
     if (!dashboard) return;
 
-    // Aufgelöste UI5-Horizon-Theme-ID bestimmen (auto via Sonnenstand oder fest).
-    let resolved: string;
+    // --- UI5-Horizon-Theme: weiterhin aus dashboard.theme (+ auto via Sonne). ---
+    // Die UI5-Theme-Engine kennt kein „System" — hier bleibt eine konkrete ID.
+    let resolvedUi5: string;
     if (dashboard.auto_theme && sunEntity) {
       const isDark = sunEntity.state === "below_horizon";
-      resolved = isDark ? "sap_horizon_dark" : "sap_horizon";
+      resolvedUi5 = isDark ? "sap_horizon_dark" : "sap_horizon";
     } else {
-      resolved = dashboard.theme;
+      resolvedUi5 = dashboard.theme;
     }
-    setTheme(resolved);
+    setTheme(resolvedUi5);
 
-    // prince-ui-Kopplung (0.4.0, 3-Mode): nur im Apple-Design treibt prince-ui
-    // Hell/Dunkel/CU. Im Fiori-Design bleibt prince-ui ungesteuert.
+    // --- prince-ui-Kopplung: Default = System (null → @media prefers-color-scheme). ---
+    // Nur im Apple-Design steuert prince-ui das Hell/Dunkel.
+    //   • auto_theme an  → prince-ui folgt der Sonne (explizit dark/light).
+    //   • auto_theme aus → prince-ui bleibt auf „System" (null), es sei denn der
+    //     Nutzer hat im Theme-Switcher explizit eine Hell/Dunkel/HC-Variante
+    //     gewählt (dashboard.theme weicht vom System-Default ab).
     try {
-      if (designMode === "apple") {
-        setPrinceTheme(princeThemeFor(resolved));
+      if (designMode !== "apple") {
+        setPrinceTheme(null);
+        return;
+      }
+      if (dashboard.auto_theme && sunEntity) {
+        setPrinceTheme(sunEntity.state === "below_horizon" ? "dark" : "light");
+      } else if (dashboard.theme && dashboard.theme !== "system") {
+        // Nutzer hat im Switcher eine konkrete Theme-Variante gewählt → übernehmen.
+        setPrinceTheme(princeThemeFor(dashboard.theme));
       } else {
+        // System-Default: kein data-theme erzwingen.
         setPrinceTheme(null);
       }
     } catch {

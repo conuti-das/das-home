@@ -42,9 +42,12 @@
   --dh-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
   --dh-transition-normal: 0.2s ease;
 
-  /* Typography */
-  --dh-font-value: 28px;
-  --dh-font-label: 14px;
+  /* Typography — auf den prince-ui-Maßstab ausgerichtet (System-Default).
+     Schriftart über --prn-font (prince-ui-tokens), Größen auf der prince-Skala
+     statt eigener überdimensionierter px-Werte. */
+  --dh-font-family: var(--prn-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  --dh-font-value: 1.75rem;   /* ~28px Hero-Wert, jetzt rem-skaliert */
+  --dh-font-label: 0.875rem;  /* 14px = prince subhead */
   --dh-font-weight-value: 700;
   --dh-font-weight-label: 400;
 }
@@ -52,7 +55,8 @@
 body {
   background: var(--dh-gray500);
   color: var(--dh-gray100);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--dh-font-family);
+  font-size: 0.9375rem; /* 15px — prince callout; vermeidet UI5-Default-Bloat */
   margin: 0;
   padding: 0;
   overflow: hidden;

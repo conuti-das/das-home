@@ -72,12 +72,12 @@
   --dh-ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
   --dh-transition-normal: 0.22s var(--dh-ease-standard);
 
-  /* ---- Typography (SF Pro / system) ------------------------------------- */
-  --dh-font-family:
-    -apple-system, "SF Pro Text", "SF Pro Display", BlinkMacSystemFont,
-    system-ui, "Segoe UI", Roboto, sans-serif;
-  --dh-font-value: 28px;
-  --dh-font-label: 15px;
+  /* ---- Typography → prince-ui-Maßstab ----------------------------------- */
+  /* Schriftart aus prince-ui-tokens (--prn-font); Größen auf der prince-Skala
+     (rem) statt eigener großer px-Werte → einheitlich mit der Flotte. */
+  --dh-font-family: var(--prn-font);
+  --dh-font-value: 1.75rem;   /* ~28px Hero-Wert, rem-skaliert */
+  --dh-font-label: 0.9375rem; /* 15px = prince callout */
   --dh-font-weight-value: 700;
   --dh-font-weight-label: 400;
 
@@ -86,7 +86,7 @@
      Tab, Dialog, MessageStrip, BusyIndicator, Link, …). Higher specificity
      than UI5's own :root rules, and custom properties cross the shadow DOM. */
   --sapFontFamily: var(--dh-font-family);
-  --sapFontSize: 15px;
+  --sapFontSize: 0.9375rem; /* 15px = prince callout; kein UI5-Default-Bloat */
 
   --sapBrandColor: var(--dh-accent);
   --sapHighlightColor: var(--dh-accent);

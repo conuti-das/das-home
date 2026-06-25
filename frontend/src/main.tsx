@@ -4,6 +4,7 @@ import { ThemeProvider } from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-react/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/AllIcons.js";
 import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
+import { setTheme as setPrinceTheme } from "prince-ui";
 import App from "./App";
 // prince-ui Fundament: Tokens + Komponenten-Styles als globale Side-Effects.
 // Müssen VOR den App-Styles stehen, damit die Brücke (prince-bridge.css) die
@@ -19,7 +20,18 @@ import "@/styles/prince-bridge.css";
 import "@/stores/designStore";
 import { apiUrl } from "@/utils/basePath";
 
+// UI5-Bootstrap-Theme (die UI5-Engine kennt kein „System"); wird von
+// useThemeSync überschrieben, sobald das Dashboard geladen ist.
 setTheme("sap_horizon_dark");
+
+// prince-ui-Default = System: kein data-theme erzwingen → @media(prefers-color-scheme)
+// (Default Dark, Light bei System-Light). useThemeSync übersteuert nur, wenn der
+// Nutzer im Switcher bewusst eine Variante wählt oder auto_theme aktiv ist.
+try {
+  setPrinceTheme(null);
+} catch {
+  /* ignore */
+}
 
 // Auto-reload when HA shows/hides the ingress iframe with a stale version
 let knownVersion: string | null = null;
