@@ -14,6 +14,8 @@ export {
   TextField,
   Select,
   SelectItem,
+  ComboBox,
+  ComboBoxItem,
   Slider,
   Modal,
   Notice,

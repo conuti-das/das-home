@@ -1,14 +1,6 @@
 import { useState } from "react";
-import {
-  Dialog,
-  Input,
-  Select,
-  Option,
-  Button,
-  FlexBox,
-  FlexBoxDirection,
-  Title,
-} from "@ui5/webcomponents-react";
+import type { Key } from "react";
+import { Modal, TextField, Select, SelectItem, Button } from "@/components/ui";
 import type { ViewConfig } from "@/types";
 
 interface ViewWizardProps {
@@ -17,6 +9,11 @@ interface ViewWizardProps {
   onClose: () => void;
   editView?: ViewConfig;
 }
+
+const VIEW_TYPES = [
+  { value: "grid", label: "Grid" },
+  { value: "object_page", label: "Object Page" },
+];
 
 export function ViewWizard({ open, onSave, onClose, editView }: ViewWizardProps) {
   const [name, setName] = useState(editView?.name || "");
@@ -39,43 +36,59 @@ export function ViewWizard({ open, onSave, onClose, editView }: ViewWizardProps)
   };
 
   return (
-    <Dialog
-      open={open}
-      headerText={editView ? "Edit View" : "Add View"}
-      style={{ width: "min(500px, 90vw)" }}
-      footer={
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", padding: "0.5rem" }}>
-          <Button design="Transparent" onClick={onClose}>Cancel</Button>
-          <Button design="Emphasized" onClick={handleSave} disabled={!name}>Save</Button>
-        </div>
-      }
+    <Modal
+      isOpen={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title={editView ? "Edit View" : "Add View"}
+      className="view-wizard"
     >
-      <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-        <Title level="H5">View Name</Title>
-        <Input
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "8px 4px" }}>
+        <TextField
+          label="View Name"
           value={name}
-          onInput={(e) => setName((e.target as unknown as { value: string }).value)}
+          onChange={setName}
           placeholder="e.g., Living Room"
-          style={{ width: "100%" }}
         />
-        <Title level="H5">Icon</Title>
-        <Input
+        <TextField
+          label="Icon"
           value={icon}
-          onInput={(e) => setIcon((e.target as unknown as { value: string }).value)}
+          onChange={setIcon}
           placeholder="mdi:home"
-          style={{ width: "100%" }}
         />
-        <Title level="H5">View Type</Title>
         <Select
-          onChange={(e) => {
-            const val = e.detail.selectedOption?.dataset?.value;
-            if (val === "grid" || val === "object_page") setType(val);
+          label="View Type"
+          selectedKey={type}
+          onSelectionChange={(key: Key | null) => {
+            if (key === "grid" || key === "object_page") setType(key);
           }}
         >
-          <Option data-value="grid" selected={type === "grid"}>Grid</Option>
-          <Option data-value="object_page" selected={type === "object_page"}>Object Page</Option>
+          {VIEW_TYPES.map((t) => (
+            <SelectItem key={t.value} id={t.value}>
+              {t.label}
+            </SelectItem>
+          ))}
         </Select>
-      </FlexBox>
-    </Dialog>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "8px",
+          paddingTop: "12px",
+          marginTop: "8px",
+          borderTop: "1px solid var(--prn-separator)",
+        }}
+      >
+        <Button variant="plain" onPress={onClose}>
+          Cancel
+        </Button>
+        <Button variant="filled" onPress={handleSave} isDisabled={!name}>
+          Save
+        </Button>
+      </div>
+    </Modal>
   );
 }

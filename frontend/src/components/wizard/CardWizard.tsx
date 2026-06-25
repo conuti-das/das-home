@@ -1,20 +1,17 @@
 import { useState } from "react";
+import type { Key } from "react";
 import {
-  Dialog,
-  Wizard,
-  WizardStep,
-  Input,
+  Modal,
+  Tabs,
+  TabBar,
+  Tab,
+  TabPanel,
+  ComboBox,
+  ComboBoxItem,
   Select,
-  Option,
+  SelectItem,
   Button,
-  FlexBox,
-  FlexBoxDirection,
-  Title,
-  Text,
-} from "@ui5/webcomponents-react";
-import "@ui5/webcomponents-icons/dist/add.js";
-import "@ui5/webcomponents-icons/dist/hint.js";
-import "@ui5/webcomponents-icons/dist/accept.js";
+} from "@/components/ui";
 import { getRegisteredTypes } from "@/components/cards";
 import { useEntityStore } from "@/stores/entityStore";
 import type { CardItem } from "@/types";
@@ -26,12 +23,14 @@ interface CardWizardProps {
   editCard?: CardItem;
 }
 
+const SIZES = ["1x1", "2x1", "1x2", "2x2"];
+
 export function CardWizard({ open, onSave, onClose, editCard }: CardWizardProps) {
   const entities = useEntityStore((s) => s.entities);
   const [entityId, setEntityId] = useState(editCard?.entity || "");
   const [cardType, setCardType] = useState(editCard?.type || "");
   const [size, setSize] = useState(editCard?.size || "1x1");
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<string>("entity");
 
   const entityList = Array.from(entities.keys()).sort();
   const cardTypes = getRegisteredTypes();
@@ -55,80 +54,115 @@ export function CardWizard({ open, onSave, onClose, editCard }: CardWizardProps)
     onClose();
   };
 
+  const suggestions = entityList.filter((id) => id.includes(entityId)).slice(0, 20);
+
   return (
-    <Dialog
-      open={open}
-      headerText={editCard ? "Edit Card" : "Add Card"}
-      style={{ width: "min(600px, 90vw)" }}
-      footer={
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", padding: "0.5rem" }}>
-          <Button design="Transparent" onClick={onClose}>Cancel</Button>
-          <Button design="Emphasized" onClick={handleSave} disabled={!entityId || !cardType}>Save</Button>
-        </div>
-      }
+    <Modal
+      isOpen={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title={editCard ? "Edit Card" : "Add Card"}
+      className="card-wizard"
     >
-      <Wizard>
-        {/* Step 1: Select Entity */}
-        <WizardStep icon="hint" titleText="Entity" selected={step === 0} data-step="0">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <Title level="H5">Select Entity</Title>
-            <Input
-              value={entityId}
-              onInput={(e) => {
-                const val = (e.target as unknown as { value: string }).value;
+      <Tabs
+        selectedKey={step}
+        onSelectionChange={(key: Key) => setStep(String(key))}
+        className="card-wizard__tabs"
+      >
+        <TabBar aria-label="Karten-Assistent">
+          <Tab id="entity">Entity</Tab>
+          <Tab id="type">Card Type</Tab>
+          <Tab id="preview">Preview</Tab>
+        </TabBar>
+
+        <TabPanel id="entity">
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "8px 4px" }}>
+            <ComboBox
+              label="Select Entity"
+              placeholder="entity_id (e.g., light.living_room)"
+              allowsCustomValue
+              inputValue={entityId}
+              onInputChange={(val: string) => {
                 setEntityId(val);
                 autoDetectType(val);
               }}
-              placeholder="entity_id (e.g., light.living_room)"
-              showSuggestions
-              style={{ width: "100%" }}
+              onSelectionChange={(key: Key | null) => {
+                if (key != null) {
+                  const val = String(key);
+                  setEntityId(val);
+                  autoDetectType(val);
+                }
+              }}
             >
-              {entityList
-                .filter((id) => id.includes(entityId))
-                .slice(0, 20)
-                .map((id) => (
-                  <Option key={id} value={id}>{id}</Option>
-                ))}
-            </Input>
+              {suggestions.map((id) => (
+                <ComboBoxItem key={id} id={id}>
+                  {id}
+                </ComboBoxItem>
+              ))}
+            </ComboBox>
             {entityId && (
-              <Button design="Transparent" onClick={() => setStep(1)}>Next</Button>
+              <Button variant="plain" onPress={() => setStep("type")}>
+                Next
+              </Button>
             )}
-          </FlexBox>
-        </WizardStep>
+          </div>
+        </TabPanel>
 
-        {/* Step 2: Card Type */}
-        <WizardStep icon="add" titleText="Card Type" selected={step === 1} data-step="1">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <Title level="H5">Card Type</Title>
+        <TabPanel id="type">
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "8px 4px" }}>
             <Select
-              onChange={(e) => setCardType(e.detail.selectedOption?.dataset?.value || "")}
-              style={{ width: "100%" }}
+              label="Card Type"
+              selectedKey={cardType || null}
+              onSelectionChange={(key: Key | null) => key != null && setCardType(String(key))}
             >
               {cardTypes.map((t) => (
-                <Option key={t} data-value={t} selected={t === cardType}>{t}</Option>
+                <SelectItem key={t} id={t}>
+                  {t}
+                </SelectItem>
               ))}
             </Select>
-            <Title level="H5">Size</Title>
             <Select
-              onChange={(e) => setSize(e.detail.selectedOption?.dataset?.value || "1x1")}
+              label="Size"
+              selectedKey={size}
+              onSelectionChange={(key: Key | null) => key != null && setSize(String(key))}
             >
-              {["1x1", "2x1", "1x2", "2x2"].map((s) => (
-                <Option key={s} data-value={s} selected={s === size}>{s}</Option>
+              {SIZES.map((s) => (
+                <SelectItem key={s} id={s}>
+                  {s}
+                </SelectItem>
               ))}
             </Select>
-          </FlexBox>
-        </WizardStep>
+          </div>
+        </TabPanel>
 
-        {/* Step 3: Preview */}
-        <WizardStep icon="accept" titleText="Preview" selected={step === 2} data-step="2">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "0.5rem", padding: "1rem" }}>
-            <Title level="H5">Card Summary</Title>
-            <Text>Entity: {entityId}</Text>
-            <Text>Type: {cardType}</Text>
-            <Text>Size: {size}</Text>
-          </FlexBox>
-        </WizardStep>
-      </Wizard>
-    </Dialog>
+        <TabPanel id="preview">
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "8px 4px" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--prn-label)" }}>Card Summary</div>
+            <div style={{ color: "var(--prn-label-2)" }}>Entity: {entityId}</div>
+            <div style={{ color: "var(--prn-label-2)" }}>Type: {cardType}</div>
+            <div style={{ color: "var(--prn-label-2)" }}>Size: {size}</div>
+          </div>
+        </TabPanel>
+      </Tabs>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "8px",
+          paddingTop: "12px",
+          marginTop: "8px",
+          borderTop: "1px solid var(--prn-separator)",
+        }}
+      >
+        <Button variant="plain" onPress={onClose}>
+          Cancel
+        </Button>
+        <Button variant="filled" onPress={handleSave} isDisabled={!entityId || !cardType}>
+          Save
+        </Button>
+      </div>
+    </Modal>
   );
 }
