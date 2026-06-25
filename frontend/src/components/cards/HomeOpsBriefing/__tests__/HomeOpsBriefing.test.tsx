@@ -4,20 +4,14 @@ import userEvent from "@testing-library/user-event";
 import type { CardItem } from "@/types";
 import type { InsightsResponse } from "@/services/api";
 
-// Mock Tremor charts (jsdom can't render recharts properly)
-vi.mock("@tremor/react", () => ({
-  SparkAreaChart: ({ data }: { data: unknown[] }) => (
+// Mock prince-ui charts (jsdom can't measure responsive SVG)
+vi.mock("prince-ui", () => ({
+  Sparkline: ({ data }: { data: number[] }) => (
     <div data-testid="mock-sparkchart" data-points={data.length} />
   ),
-  LineChart: ({ data, categories }: { data: unknown[]; categories: string[] }) => (
-    <div
-      data-testid="mock-linechart"
-      data-points={data.length}
-      data-categories={categories.join(",")}
-    />
+  AreaChart: ({ data }: { data: number[] }) => (
+    <div data-testid="mock-areachart" data-points={data.length} />
   ),
-  Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Metric: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 import HomeOpsBriefing from "../index";
@@ -130,7 +124,7 @@ describe("HomeOpsBriefing", () => {
     expect(screen.getByText("Home Operations Briefing")).toBeInTheDocument();
     const tiles = screen.getAllByTestId("hob-kpi-tile");
     expect(tiles).toHaveLength(4);
-    expect(screen.getByTestId("mock-linechart")).toBeInTheDocument();
+    expect(screen.getAllByTestId("mock-areachart").length).toBeGreaterThan(0);
     expect(screen.getAllByTestId("hob-anomaly-item")).toHaveLength(1);
   });
 

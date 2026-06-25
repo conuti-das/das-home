@@ -1,4 +1,4 @@
-import { LineChart } from "@tremor/react";
+import { AreaChart } from "prince-ui";
 import type { InsightsTrendPoint } from "@/services/api";
 
 interface TrendChartProps {
@@ -24,32 +24,51 @@ export function TrendChart({ trend }: TrendChartProps) {
 
   const hasYoY = trend.some((p) => p.yoy_value !== null && p.yoy_value !== undefined);
 
-  const chartData = trend.map((p) => {
-    const row: Record<string, string | number | null> = {
-      label: shortDate(p.date),
-      Aktuell: p.value,
-    };
-    if (hasYoY) {
-      row["Vorjahr"] = p.yoy_value;
-    }
-    return row;
-  });
-
-  const categories = hasYoY ? ["Aktuell", "Vorjahr"] : ["Aktuell"];
-  const colors = hasYoY ? ["blue", "gray"] : ["blue"];
+  const labels = trend.map((p) => shortDate(p.date));
+  const current = trend.map((p) => p.value);
+  // YoY-Vergleichsreihe: fehlende Punkte mit 0 auffüllen (Tremor-Verhalten gespiegelt).
+  const previous = hasYoY
+    ? trend.map((p) => (p.yoy_value === null || p.yoy_value === undefined ? 0 : p.yoy_value))
+    : [];
 
   return (
     <div className="hob-trend-chart" data-testid="hob-trend-chart" data-yoy={hasYoY ? "true" : "false"}>
-      <LineChart
-        data={chartData}
-        index="label"
-        categories={categories}
-        colors={colors}
-        showLegend={hasYoY}
-        showAnimation={false}
-        className="hob-line-chart"
-        valueFormatter={(v: number) => v.toFixed(2)}
-      />
+      <div className="hob-trend-chart__plot">
+        {/* prince-ui AreaChart ist einreihig — die YoY-Vergleichsreihe ("Vorjahr")
+            wird als zweite, gedämpfte Fläche dahinter gelegt. */}
+        {hasYoY && (
+          <AreaChart
+            data={previous}
+            color="var(--prn-label-3)"
+            className="hob-area-chart hob-area-chart--prev"
+          />
+        )}
+        <AreaChart
+          data={current}
+          showAxes
+          color="var(--prn-blue)"
+          className="hob-area-chart hob-area-chart--current"
+        />
+      </div>
+      {hasYoY && (
+        <div className="hob-trend-legend" data-testid="hob-trend-legend">
+          <span className="hob-trend-legend__item">
+            <span className="hob-trend-legend__dot" style={{ background: "var(--prn-blue)" }} />
+            Aktuell
+          </span>
+          <span className="hob-trend-legend__item">
+            <span className="hob-trend-legend__dot" style={{ background: "var(--prn-label-3)" }} />
+            Vorjahr
+          </span>
+        </div>
+      )}
+      <div className="hob-trend-axis" aria-hidden="true">
+        {labels.map((l, i) => (
+          <span key={i} className="hob-trend-axis__tick">
+            {l}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

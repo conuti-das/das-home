@@ -1,4 +1,4 @@
-import { SparkAreaChart } from "@tremor/react";
+import { Sparkline } from "prince-ui";
 import type { InsightsKPI } from "@/services/api";
 
 interface KPITileProps {
@@ -30,8 +30,8 @@ export function KPITile({ label, kpi }: KPITileProps) {
     );
   }
 
-  const sparkData = (kpi.trend_7d || []).map((v, i) => ({ idx: i, value: v }));
-  const hasSparkData = sparkData.length > 0 && sparkData.some((p) => p.value !== 0);
+  const sparkData = kpi.trend_7d || [];
+  const hasSparkData = sparkData.length > 0 && sparkData.some((v) => v !== 0);
 
   return (
     <div
@@ -59,11 +59,9 @@ export function KPITile({ label, kpi }: KPITileProps) {
         data-testid="hob-kpi-spark"
       >
         {hasSparkData && (
-          <SparkAreaChart
+          <Sparkline
             data={sparkData}
-            categories={["value"]}
-            index="idx"
-            colors={["blue"]}
+            color={kpi.anomaly_flag ? "var(--prn-orange)" : "var(--prn-blue)"}
             className="hob-sparkline"
           />
         )}

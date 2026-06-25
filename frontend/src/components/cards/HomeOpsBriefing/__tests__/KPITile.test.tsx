@@ -2,16 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { InsightsKPI } from "@/services/api";
 
-// Mock Tremor's SparkAreaChart to a thin stub — jsdom can't render recharts canvas/svg cleanly
-vi.mock("@tremor/react", () => ({
-  SparkAreaChart: ({ data }: { data: unknown[] }) => (
+// Mock prince-ui's Sparkline to a thin stub — jsdom can't measure responsive SVG cleanly.
+vi.mock("prince-ui", () => ({
+  Sparkline: ({ data }: { data: number[] }) => (
     <div data-testid="mock-sparkchart" data-points={data.length} />
   ),
-  LineChart: ({ data, categories }: { data: unknown[]; categories: string[] }) => (
-    <div data-testid="mock-linechart" data-points={data.length} data-categories={categories.join(",")} />
+  AreaChart: ({ data }: { data: number[] }) => (
+    <div data-testid="mock-areachart" data-points={data.length} />
   ),
-  Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Metric: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 import { KPITile } from "../KPITile";

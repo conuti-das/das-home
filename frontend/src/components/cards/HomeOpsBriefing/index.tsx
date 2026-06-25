@@ -1,17 +1,10 @@
 /**
  * HomeOpsBriefing — enterprise-style KPI dashboard card.
  *
- * Theming: Tremor ships tailwind-styled wrapper elements; das-home does NOT
- * use tailwind. We therefore:
- *   - Use Tremor chart components (LineChart, SparkAreaChart) — these render
- *     Recharts SVG and work fine without tailwind classes on the outer
- *     wrappers. We override chart colors via the `colors` prop (blue/gray)
- *     to match UI5's navy accent.
- *   - Use our own CSS (HomeOpsBriefing.css) for tile layout / typography
- *     so it matches existing UI5-based cards (var(--dh-*) tokens).
- *
- * Polish (legend typography, tooltip skin) is deferred to
- * /plan-design-review — "good enough" per lane brief.
+ * Charts: prince-ui-Primitive (`Sparkline` in den KPI-Kacheln, `AreaChart`
+ * im 7-Tage-Trend) — löst die frühere Tremor/Recharts-Abhängigkeit ab.
+ * Farben kommen über `--prn-*`-Tokens; Kachel-Layout/Typo bleibt app-lokal
+ * in HomeOpsBriefing.css (über die Token-Bridge an prince-ui gekoppelt).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchInsights } from "@/services/api";
