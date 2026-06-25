@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from "react";
-import { Card, CardHeader } from "@ui5/webcomponents-react";
+import { Card, Notice } from "@/components/ui";
 
 interface Props {
   cardType: string;
@@ -24,17 +24,10 @@ export class CardErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <Card
-          header={
-            <CardHeader
-              titleText={`Error: ${this.props.cardType}`}
-              additionalText="Error"
-            />
-          }
-        >
-          <div style={{ padding: "0.5rem", color: "var(--sapNegativeColor)" }}>
-            <p>{this.state.error?.message || "Unknown error"}</p>
-          </div>
+        <Card title={`Error: ${this.props.cardType}`} className="base-card">
+          <Notice tone="negative" title="Error">
+            {this.state.error?.message || "Unknown error"}
+          </Notice>
         </Card>
       );
     }
