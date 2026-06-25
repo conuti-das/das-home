@@ -18,8 +18,11 @@ export {
   Modal,
   Notice,
   Toolbar,
+  Tabs,
   TabBar,
   Tab,
+  TabPanel,
+  Link,
   Tag,
 } from "prince-ui";
 

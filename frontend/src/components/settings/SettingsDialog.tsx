@@ -1,30 +1,26 @@
 import { useState, useEffect } from "react";
+import { Icon } from "@ui5/webcomponents-react";
+import "@ui5/webcomponents-icons/dist/home.js";
 import {
-  Dialog,
-  TabContainer,
+  Modal,
+  Tabs,
+  TabBar,
   Tab,
-  Input,
+  TabPanel,
+  TextField,
   Switch,
   Select,
-  Option,
+  SelectItem,
   Button,
-  FlexBox,
-  FlexBoxDirection,
-  Label,
   Link,
-  Icon,
-} from "@ui5/webcomponents-react";
-import "@ui5/webcomponents-icons/dist/settings.js";
-import "@ui5/webcomponents-icons/dist/connected.js";
-import "@ui5/webcomponents-icons/dist/palette.js";
-import "@ui5/webcomponents-icons/dist/synchronize.js";
-import "@ui5/webcomponents-icons/dist/sys-help.js";
-import "@ui5/webcomponents-icons/dist/home.js";
+} from "@/components/ui";
 import { useConfigStore } from "@/stores/configStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { api } from "@/services/api";
 import { suggestDashboard } from "@/services/discovery";
 import type { AppConfiguration } from "@/types";
+import type { Key } from "react";
+import "./SettingsDialog.css";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -36,6 +32,11 @@ const THEMES = [
   { value: "sap_horizon", label: "Horizon Light" },
   { value: "sap_horizon_hcb", label: "High Contrast Black" },
   { value: "sap_horizon_hcw", label: "High Contrast White" },
+];
+
+const LOCALES = [
+  { value: "de", label: "Deutsch" },
+  { value: "en", label: "English" },
 ];
 
 export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
@@ -110,151 +111,140 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   };
 
   return (
-    <Dialog
-      open={open}
-      headerText="Settings"
-      style={{ width: "min(600px, 90vw)" }}
-      footer={
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", padding: "0.5rem" }}>
-          <Button design="Transparent" onClick={onClose}>Cancel</Button>
-          <Button design="Emphasized" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      }
+    <Modal
+      isOpen={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title="Settings"
+      className="settings-dialog"
     >
-      <TabContainer>
-        <Tab text="General" icon="settings" selected>
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div>
-              <Label>Language</Label>
-              <Select
-                onChange={(e) => setLocale(e.detail.selectedOption?.dataset?.value || "de")}
-                style={{ width: "100%" }}
-              >
-                <Option data-value="de" selected={locale === "de"}>Deutsch</Option>
-                <Option data-value="en" selected={locale === "en"}>English</Option>
-              </Select>
-            </div>
-          </FlexBox>
-        </Tab>
+      <Tabs className="settings-dialog__tabs">
+        <TabBar aria-label="Einstellungen">
+          <Tab id="general">Allgemein</Tab>
+          <Tab id="connection">Verbindung</Tab>
+          <Tab id="dashboard">Dashboard</Tab>
+          <Tab id="theme">Theme</Tab>
+          <Tab id="home">Startseite</Tab>
+          <Tab id="version">Version</Tab>
+        </TabBar>
 
-        <Tab text="Connection" icon="connected">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div>
-              <Label>Home Assistant URL</Label>
-              <Input
-                value={hassUrl}
-                onInput={(e) => setHassUrl((e.target as unknown as { value: string }).value)}
-                style={{ width: "100%" }}
-              />
-            </div>
-          </FlexBox>
-        </Tab>
+        <TabPanel id="general">
+          <div className="settings-dialog__section">
+            <Select
+              label="Sprache"
+              selectedKey={locale}
+              onSelectionChange={(key: Key | null) => key != null && setLocale(String(key))}
+            >
+              {LOCALES.map((l) => (
+                <SelectItem key={l.value} id={l.value}>
+                  {l.label}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        </TabPanel>
 
-        <Tab text="Dashboard" icon="synchronize">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div>
-              <Label>Dashboard neu generieren</Label>
-              <div style={{ fontSize: 13, opacity: 0.6, marginTop: 4, marginBottom: 12 }}>
-                Erkennt alle Entities neu und erstellt ein frisches Dashboard mit allen neuen Card-Typen (Wetter, Radar, Müllabfuhr, Bereiche).
-              </div>
-              <Button design="Attention" onClick={handleRegenerate} disabled={regenerating}>
-                {regenerating ? "Wird generiert..." : "Dashboard neu generieren"}
-              </Button>
-            </div>
-          </FlexBox>
-        </Tab>
+        <TabPanel id="connection">
+          <div className="settings-dialog__section">
+            <TextField
+              label="Home Assistant URL"
+              value={hassUrl}
+              onChange={setHassUrl}
+            />
+          </div>
+        </TabPanel>
 
-        <Tab text="Theme" icon="palette">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div>
-              <Label>Theme</Label>
-              <Select
-                onChange={(e) => setTheme(e.detail.selectedOption?.dataset?.value || "sap_horizon_dark")}
-                style={{ width: "100%" }}
-              >
-                {THEMES.map((t) => (
-                  <Option key={t.value} data-value={t.value} selected={t.value === theme}>
-                    {t.label}
-                  </Option>
-                ))}
-              </Select>
+        <TabPanel id="dashboard">
+          <div className="settings-dialog__section">
+            <div className="settings-dialog__field-label">Dashboard neu generieren</div>
+            <div className="settings-dialog__hint">
+              Erkennt alle Entities neu und erstellt ein frisches Dashboard mit allen neuen Card-Typen (Wetter, Radar, Müllabfuhr, Bereiche).
             </div>
-            <div>
-              <Label>Accent Color</Label>
-              <Input
-                value={accentColor}
-                onInput={(e) => setAccentColor((e.target as unknown as { value: string }).value)}
-                placeholder="#0070f3"
-              />
+            <Button variant="tinted" onPress={handleRegenerate} isDisabled={regenerating}>
+              {regenerating ? "Wird generiert..." : "Dashboard neu generieren"}
+            </Button>
+          </div>
+        </TabPanel>
+
+        <TabPanel id="theme">
+          <div className="settings-dialog__section">
+            <Select
+              label="Theme"
+              selectedKey={theme}
+              onSelectionChange={(key: Key | null) => key != null && setTheme(String(key))}
+            >
+              {THEMES.map((t) => (
+                <SelectItem key={t.value} id={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <TextField
+              label="Akzentfarbe"
+              value={accentColor}
+              onChange={setAccentColor}
+              placeholder="#0070f3"
+            />
+            <Switch isSelected={autoTheme} onChange={setAutoTheme}>
+              Auto Theme (folgt der Sonnen-Entität)
+            </Switch>
+          </div>
+        </TabPanel>
+
+        <TabPanel id="home">
+          <div className="settings-dialog__section">
+            <div className="settings-dialog__field-label">DAS Home als Startseite</div>
+            <div className="settings-dialog__hint">
+              Setzt DAS Home als Standard-Startseite in Home Assistant.
+              Beim Oeffnen von HA wird dann direkt das Dashboard angezeigt.
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Label>Auto Theme (follow sun entity)</Label>
-              <Switch
-                checked={autoTheme}
-                onChange={() => setAutoTheme(!autoTheme)}
-              />
-            </div>
-          </FlexBox>
-        </Tab>
-        <Tab text="Startseite" icon="home">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div>
-              <Label>DAS Home als Startseite</Label>
-              <div style={{ fontSize: 13, opacity: 0.6, marginTop: 4, marginBottom: 12 }}>
-                Setzt DAS Home als Standard-Startseite in Home Assistant.
-                Beim Oeffnen von HA wird dann direkt das Dashboard angezeigt.
-              </div>
-              {versionInfo?.mode === "addon" ? (
-                <>
-                  <Button
-                    design="Emphasized"
-                    onClick={async () => {
-                      setSettingDefault(true);
-                      setDefaultPanelResult(null);
-                      try {
-                        const result = await api.setDefaultPanel();
-                        if (result.status === "ok") {
-                          setDefaultPanelResult("Startseite gesetzt! Beim naechsten Oeffnen von HA wird DAS Home angezeigt.");
-                        } else {
-                          setDefaultPanelResult(
-                            "Hinweis: Die Einstellung wurde fuer den Supervisor-User gesetzt. " +
-                            "Fuer deinen eigenen User gehe zu: HA Profil → Dashboard → und waehle den Eintrag mit DAS Home."
-                          );
-                        }
-                      } catch {
-                        setDefaultPanelResult("Fehler beim Setzen der Startseite. Versuche es manuell in den HA-Profileinstellungen.");
-                      } finally {
-                        setSettingDefault(false);
+            {versionInfo?.mode === "addon" ? (
+              <>
+                <Button
+                  variant="filled"
+                  isDisabled={settingDefault}
+                  onPress={async () => {
+                    setSettingDefault(true);
+                    setDefaultPanelResult(null);
+                    try {
+                      const result = await api.setDefaultPanel();
+                      if (result.status === "ok") {
+                        setDefaultPanelResult("Startseite gesetzt! Beim naechsten Oeffnen von HA wird DAS Home angezeigt.");
+                      } else {
+                        setDefaultPanelResult(
+                          "Hinweis: Die Einstellung wurde fuer den Supervisor-User gesetzt. " +
+                          "Fuer deinen eigenen User gehe zu: HA Profil → Dashboard → und waehle den Eintrag mit DAS Home."
+                        );
                       }
-                    }}
-                    disabled={settingDefault}
-                  >
-                    {settingDefault ? "Wird gesetzt..." : "Als Startseite setzen"}
-                  </Button>
-                  {defaultPanelResult && (
-                    <div style={{ fontSize: 13, marginTop: 12, padding: "10px 14px", background: "var(--sapBackgroundColor)", borderRadius: 8, lineHeight: 1.5 }}>
-                      {defaultPanelResult}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div style={{ fontSize: 13, opacity: 0.6 }}>
-                  Im Standalone-Modus: Setze die Browser-Startseite auf die DAS Home URL.
-                </div>
-              )}
-            </div>
-          </FlexBox>
-        </Tab>
+                    } catch {
+                      setDefaultPanelResult("Fehler beim Setzen der Startseite. Versuche es manuell in den HA-Profileinstellungen.");
+                    } finally {
+                      setSettingDefault(false);
+                    }
+                  }}
+                >
+                  {settingDefault ? "Wird gesetzt..." : "Als Startseite setzen"}
+                </Button>
+                {defaultPanelResult && (
+                  <div className="settings-dialog__result">{defaultPanelResult}</div>
+                )}
+              </>
+            ) : (
+              <div className="settings-dialog__hint">
+                Im Standalone-Modus: Setze die Browser-Startseite auf die DAS Home URL.
+              </div>
+            )}
+          </div>
+        </TabPanel>
 
-        <Tab text="Version" icon="sys-help">
-          <FlexBox direction={FlexBoxDirection.Column} style={{ gap: "1rem", padding: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <Icon name="home" style={{ width: 32, height: 32, color: "var(--sapBrandColor)" }} />
+        <TabPanel id="version">
+          <div className="settings-dialog__section">
+            <div className="settings-dialog__version-head">
+              <Icon name="home" style={{ width: 32, height: 32, color: "var(--prn-accent)" }} />
               <div>
-                <div style={{ fontSize: 16, fontWeight: 600 }}>das-home</div>
-                <div style={{ fontSize: 13, opacity: 0.6 }}>
+                <div className="settings-dialog__version-title">das-home</div>
+                <div className="settings-dialog__hint">
                   {versionInfo ? `v${versionInfo.version} (${versionInfo.mode})` : "..."}
                 </div>
               </div>
@@ -267,15 +257,24 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
               </div>
             )}
             {versionInfo && (
-              <div style={{ fontSize: 13, opacity: 0.5, marginTop: "0.5rem" }}>
+              <div className="settings-dialog__hint">
                 <Link href={versionInfo.releases_url} target="_blank">
                   Alle Releases auf GitHub
                 </Link>
               </div>
             )}
-          </FlexBox>
-        </Tab>
-      </TabContainer>
-    </Dialog>
+          </div>
+        </TabPanel>
+      </Tabs>
+
+      <div className="settings-dialog__footer">
+        <Button variant="plain" onPress={onClose}>
+          Cancel
+        </Button>
+        <Button variant="filled" onPress={handleSave} isDisabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+      </div>
+    </Modal>
   );
 }

@@ -1,0 +1,60 @@
+/* SettingsDialog — prince-ui Modal + Tabs + Form-Primitive (Welle 5).
+   Layout/Spacing app-lokal; Farben/Flächen über die prince-ui-Token-Bridge. */
+
+.settings-dialog {
+  width: min(600px, 90vw);
+}
+
+.settings-dialog__tabs {
+  min-height: 280px;
+}
+
+.settings-dialog__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 4px;
+}
+
+.settings-dialog__field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--prn-label);
+}
+
+.settings-dialog__hint {
+  font-size: 13px;
+  color: var(--prn-label-2);
+  line-height: 1.5;
+}
+
+.settings-dialog__result {
+  font-size: 13px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  background: var(--prn-bg-elevated);
+  border-radius: var(--prn-radius-sm);
+  line-height: 1.5;
+  color: var(--prn-label);
+}
+
+.settings-dialog__version-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-dialog__version-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--prn-label);
+}
+
+.settings-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--prn-separator);
+}
