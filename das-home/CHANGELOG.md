@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+### Changed
+
+- UI auf prince-ui 0.8.0 umgestellt: einheitliche **AppShell** (ShellBar + Sidebar, Liquid-Glass) statt eigener Hülle.
+- **System-Default-Theme**: Das Theme folgt jetzt der OS-Einstellung (Prince Dark/Light), statt einen Modus zu erzwingen; manueller Umschalter bleibt erhalten.
+- Schrift auf die prince-ui-Typo-Skala vereinheitlicht (Basisgröße 16px → 15px, prince-Font-Stack) — keine überdimensionierten Schriften mehr.
+
 ## 0.7.1
 
 ### Fixed
