@@ -8,7 +8,7 @@ on:
 
 jobs:
   backend-test:
-    runs-on: ubuntu-latest
+    runs-on: das-home
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,7 +27,7 @@ jobs:
           python -m pytest tests/ -v
 
   frontend-build:
-    runs-on: ubuntu-latest
+    runs-on: das-home
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -47,7 +47,7 @@ jobs:
 
   docker-standalone:
     needs: [backend-test, frontend-build]
-    runs-on: ubuntu-latest
+    runs-on: das-home
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
@@ -81,7 +81,7 @@ jobs:
 
   docker-addon-amd64:
     needs: [backend-test, frontend-build]
-    runs-on: ubuntu-latest
+    runs-on: das-home
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
@@ -113,7 +113,7 @@ jobs:
 
   docker-addon-aarch64:
     needs: [backend-test, frontend-build]
-    runs-on: ubuntu-latest
+    runs-on: das-home
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
