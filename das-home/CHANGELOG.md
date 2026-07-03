@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.3
+
+### Changed
+
+- Rolled prince-ui to **0.12.0** and prince-ui-tokens to **0.4.1** (vendored tarballs). The new `Timeline` (event/activity feed) component is now available for use.
+
+### Geändert
+
+- prince-ui auf **0.12.0** und prince-ui-tokens auf **0.4.1** angehoben (vendored Tarballs). Die neue `Timeline`-Komponente (Event-/Activity-Feed) steht jetzt zur Verfügung.
+
 ## 0.8.1
 
 ### Fixed
